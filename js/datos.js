@@ -19,6 +19,10 @@ const CONFIG = {
   waApertura: '¡Hola! Quiero hacer este pedido:',
   waCierre: 'Gracias. Quedo atento/a a la confirmación.',
 
+  // --- qué medidas se muestran en las tarjetas del catálogo ---
+  // El resto de las presentaciones sigue disponible en la ficha del producto.
+  medidasEnCard: ['50g', '500g', '1kg'],
+
   // --- reglas de precio ---
   redondeo: 50,                          // redondea el precio final a múltiplos de $50 (0 = sin redondeo)
   margenPorDefecto: 60,                  // % de recargo sobre el costo

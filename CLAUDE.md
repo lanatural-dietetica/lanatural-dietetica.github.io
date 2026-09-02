@@ -98,3 +98,15 @@ GitHub Pages sirve los archivos con `cache-control: max-age=600`, así que el na
 queda con la versión vieja. **Cada vez que se toca `css/estilos.css`, `js/app.js` o
 `js/datos.js` hay que subir el `?v=` de esa etiqueta en `index.html`.** Si no, los cambios
 están publicados pero nadie los ve. Al tocar css/ o js/, bumpear la versión en el mismo commit.
+
+## Tarjetas: medidas y precios — 2026-09-02
+- En la tarjeta se muestran pocas medidas, las de `CONFIG.medidasEnCard`
+  (hoy `['50g','500g','1kg']`). El resto de las presentaciones sigue disponible en la ficha
+  del producto. Si un producto no tiene ninguna de esas, se muestran sus primeras tres.
+- **El precio grande de la tarjeta es siempre el precio por kilo** (`$ 4.150 / kg`), y debajo,
+  en chico, el de la medida elegida (`500 g · $ 2.100`). Es un pedido explícito de Juani.
+  Los productos envasados muestran el precio de la unidad.
+- El chip verde "carrito · 250 g · $850" es lo que ya hay de ese producto en el pedido.
+- En el carrito, cada fila lleva la medida, el precio por kilo abajo en gris, la cantidad,
+  el monto a la derecha en negrita y la papelera; el subtotal por producto aparece cuando
+  hay más de una medida. Es el formato de Paladear.

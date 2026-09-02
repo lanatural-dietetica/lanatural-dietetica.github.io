@@ -216,10 +216,18 @@ const ICO = {
 };
 
 /* ---------------- componentes ---------------- */
+/* en la tarjeta se muestran pocas medidas; el resto está en la ficha */
+function presentacionesCard(p) {
+  const permitidas = CONFIG.medidasEnCard || [];
+  const filtradas = p.presentaciones.filter(id => permitidas.includes(id));
+  return filtradas.length ? filtradas : p.presentaciones.slice(0, 3);
+}
+
 function estadoCard(p) {
   if (!estado.cards[p.id]) estado.cards[p.id] = { pres: p.presentacionDefecto, cant: 1 };
   const c = estado.cards[p.id];
-  if (!p.presentaciones.includes(c.pres)) c.pres = p.presentacionDefecto;
+  const visibles = presentacionesCard(p);
+  if (!visibles.includes(c.pres)) c.pres = visibles.includes(p.presentacionDefecto) ? p.presentacionDefecto : visibles[0];
   return c;
 }
 
@@ -257,40 +265,54 @@ function tarjetaProducto(p) {
     '<h3 class="prod__nom"><a href="#/producto/' + p.slug + '">' + esc(p.nombre) + '</a></h3>' +
     '<p class="prod__sub">' + esc(p.subtitulo || (cat ? cat.nombre : '')) + '</p>' +
 
-    (p.presentaciones.length > 1
+    (presentacionesCard(p).length > 1
       ? '<div class="pesos" role="group" aria-label="Cantidad de ' + esc(p.nombre) + '">' +
-          p.presentaciones.map(id =>
+          presentacionesCard(p).map(id =>
             '<button class="peso-btn" data-peso="' + id + '" data-pid="' + p.id + '" aria-pressed="' + (id === st.pres) + '">' +
             esc(presNombre(id)) + '</button>').join('') +
         '</div>'
-      : '<span class="prod__sel prod__sel--fija">' + esc(presNombre(st.pres)) + '</span>') +
+      : '') +
 
-    '<div class="prod__pie">' +
-      '<span class="precio" data-precio="' + p.id + '">' +
-        (pr.descuento ? '<span class="precio__antes">' + money(pr.venta) + '</span>' : '') +
-        money(pr.final) +
-      '</span>' +
-      (p.disponible
-        ? '<span class="stepper stepper--card">' +
+    '<div class="prod__precios" data-precio="' + p.id + '">' + preciosCard(p, st.pres) + '</div>' +
+
+    (p.disponible
+      ? '<div class="prod__pie">' +
+          '<span class="stepper stepper--card">' +
             '<button data-cardcant="-1" data-pid="' + p.id + '" aria-label="Quitar una unidad">−</button>' +
             '<span data-cardq="' + p.id + '">' + st.cant + '</span>' +
             '<button data-cardcant="1" data-pid="' + p.id + '" aria-label="Sumar una unidad">+</button>' +
-          '</span>'
-        : '<span class="prod__agotado">Sin stock</span>') +
-    '</div>' +
-
-    (p.disponible
-      ? '<button class="prod__add btn-onda" data-add="' + p.id + '">' + ICO.carrito + '<span>Agregar</span></button>'
-      : '') +
+          '</span>' +
+          (ped ? '<span class="prod__enpedido">' + ICO.carrito + '<span>' + esc(ped.texto) + ' · <strong>' + money(ped.subtotal) + '</strong></span></span>' : '') +
+        '</div>' +
+        '<button class="prod__add btn-onda" data-add="' + p.id + '">' + ICO.carrito + '<span>Agregar</span></button>'
+      : '<p class="prod__agotado">Sin stock</p>') +
 
     (ped
-      ? '<p class="prod__enpedido">En tu pedido: <strong>' + esc(ped.texto) + '</strong> · ' + money(ped.subtotal) + '</p>' +
-        '<div class="prod__acciones">' +
+      ? '<div class="prod__acciones">' +
           '<button class="prod__quitar" data-quitar-prod="' + p.id + '" aria-label="Quitar ' + esc(p.nombre) + ' del pedido">' + ICO.basura + '</button>' +
           '<button class="prod__vercarrito" data-abrir-carrito>Ver en el carrito</button>' +
         '</div>'
       : '') +
   '</article>';
+}
+
+/* precio por kilo primero (como pidió Juani) y debajo el de la medida elegida */
+function preciosCard(p, presId) {
+  const pr = precios(p, presId);
+  if (p.tipo === 'granel') {
+    const porKg = precioKgVenta(p);
+    const listaKg = redondear((p.costoKg || 0) * (1 + (Number.isFinite(p.margen) ? p.margen : CONFIG.margenPorDefecto) / 100));
+    return '<span class="precio precio--kg">' +
+        (pr.descuento ? '<span class="precio__antes">' + money(listaKg) + '</span>' : '') +
+        money(porKg) + '<em> / kg</em>' +
+      '</span>' +
+      '<span class="precio-medida">' + esc(presNombre(presId)) + ' · <strong>' + money(pr.final) + '</strong></span>';
+  }
+  return '<span class="precio precio--kg">' +
+      (pr.descuento ? '<span class="precio__antes">' + money(pr.venta) + '</span>' : '') +
+      money(pr.final) +
+    '</span>' +
+    '<span class="precio-medida">' + esc(presNombre(presId)) + '</span>';
 }
 
 /* vuelve a dibujar una sola tarjeta, sin tocar el resto de la grilla */
@@ -791,27 +813,31 @@ function pasoProductos() {
   const total = totalCarrito();
   const falta = Math.max((CONFIG.compraMinima || 0) - total, 0);
 
-  return agruparCarrito().map(b =>
-      '<div class="item">' +
+  return agruparCarrito().map(b => {
+      const prod = prodPorId(b.lineas[0].id);
+      const porKg = prod && prod.tipo === 'granel' ? money(precioKgVenta(prod)) + ' / kg' : '';
+      return '<div class="item">' +
         '<div class="item__fig"><img src="' + b.img + '" alt="" width="70" height="70" loading="lazy"></div>' +
         '<div class="item__cuerpo">' +
           '<p class="item__nom">' + esc(b.nombre) + '</p>' +
           b.lineas.map(i =>
             '<div class="item__var">' +
-              '<span class="item__var-lbl">' + esc(i.detalle || '') + '<em>' + money(i.precio) + ' c/u</em></span>' +
+              '<span class="item__var-lbl">' + esc(i.detalle || '') +
+                '<em>' + (porKg || money(i.precio) + ' c/u') + '</em></span>' +
               '<span class="stepper stepper--mini">' +
                 '<button data-mas="' + i.key + '" data-delta="-1" aria-label="Quitar uno de ' + esc(i.detalle || i.nombre) + '">−</button>' +
                 '<span>' + i.cant + '</span>' +
                 '<button data-mas="' + i.key + '" data-delta="1" aria-label="Sumar uno de ' + esc(i.detalle || i.nombre) + '">+</button>' +
               '</span>' +
-              '<strong>' + money(i.precio * i.cant) + '</strong>' +
+              '<strong class="item__monto">' + money(i.precio * i.cant) + '</strong>' +
+              '<button class="item__papelera" data-quitar="' + esc(i.key) + '" aria-label="Quitar ' + esc(i.detalle || i.nombre) + '">' + ICO.basura + '</button>' +
             '</div>').join('') +
           (b.lineas.length > 1
             ? '<div class="item__sub"><span>Subtotal</span><strong>' + money(b.subtotal) + '</strong></div>'
             : '') +
-          '<button class="item__quitar" data-quitar-bloque="' + esc(b.clave) + '">Quitar</button>' +
         '</div>' +
-      '</div>').join('') +
+      '</div>';
+    }).join('') +
 
     '<div class="totales">' +
       '<div class="totales__fila"><span>Productos (' + unidadesCarrito() + ')</span><span>' + money(total) + '</span></div>' +
@@ -1088,9 +1114,8 @@ document.addEventListener('click', ev => {
     estadoCard(p).pres = peso.dataset.peso;
     const card = peso.closest('.prod');
     card.querySelectorAll('[data-peso]').forEach(b => b.setAttribute('aria-pressed', b === peso));
-    const pr = precios(p, peso.dataset.peso);
     const cont = card.querySelector('[data-precio]');
-    if (cont) cont.innerHTML = (pr.descuento ? '<span class="precio__antes">' + money(pr.venta) + '</span>' : '') + money(pr.final);
+    if (cont) cont.innerHTML = preciosCard(p, peso.dataset.peso);
     return;
   }
 
