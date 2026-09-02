@@ -92,3 +92,9 @@ Juani pidió adaptar La Natural a cómo funciona Paladear, **manteniendo la est�
   botones (`onda`), confirmación en verde (`confirmarBoton`), header compacto al bajar
   (clase `compacto` en el body) y pastilla deslizante + rebote del ícono en la barra inferior.
   Todo respeta `prefers-reduced-motion`.
+
+## Regla de caché (importante, se olvidó una vez)
+GitHub Pages sirve los archivos con `cache-control: max-age=600`, así que el navegador se
+queda con la versión vieja. **Cada vez que se toca `css/estilos.css`, `js/app.js` o
+`js/datos.js` hay que subir el `?v=` de esa etiqueta en `index.html`.** Si no, los cambios
+están publicados pero nadie los ve. Al tocar css/ o js/, bumpear la versión en el mismo commit.
