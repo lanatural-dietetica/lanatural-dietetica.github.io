@@ -10,6 +10,7 @@
   --champan:#f4ead9;
   --champan-claro:#faf4e9;
   --crema-card:#fbf6ec;
+  --foto-crema:#f5e6d4;
   --oliva:#6f7a52;
   --oliva-osc:#5b6543;
   --oliva-claro:#e6e9dc;
@@ -725,7 +726,7 @@ body::before{
     border-radius:0;mix-blend-mode:normal;transform:translateY(22px);
   }
   .hero__txt{position:relative;z-index:2;width:270px;max-width:none;padding-top:28px}
-  .hero h1{max-width:10ch;font-size:40px;line-height:.86;letter-spacing:-.025em}
+  .hero h1{max-width:8ch;font-size:38px;line-height:.9;letter-spacing:-.025em;text-wrap:balance}
   .hero p{max-width:18ch;margin:14px 0 18px;font-size:18px;line-height:1.35;color:#50382b}
   .hero .btn{min-height:44px;padding:10px 17px;font-size:12px}
 
@@ -886,4 +887,29 @@ body::before{
   .pie{margin-top:0;background:#7a4423;background-image:none}
   .tabbar{padding:5px 4px calc(5px + env(safe-area-inset-bottom));background:#faf4e9;backdrop-filter:none}
   .tabbar a{min-height:46px;font-size:9px}
+}
+
+/* Auditoría visual: encuadres completos y superficies fotográficas continuas. */
+.prod__sel--fija{
+  display:flex;align-items:center;background-image:none;
+}
+.cat-card,.mix-card{background:var(--foto-crema)}
+.mix-card[aria-pressed="true"]{background:var(--foto-crema)}
+.prod__fig,.ficha__img,.mix-card__fig,.combo__fig{background:var(--foto-crema)}
+.cat-card__fig,
+.prod__fig img,
+.ficha__img img,
+.mix-card__fig img,
+.combo__fig img{
+  object-fit:contain;
+  object-position:center;
+  transform:none;
+  mix-blend-mode:normal;
+}
+.combo{background:var(--foto-crema)}
+
+@media (max-width:639px){
+  body[data-vista="catalogo"] .prod__sub{display:none}
+  body[data-vista="catalogo"] .prod__nom{min-height:2.2em;text-wrap:balance}
+  .cat-card__fig{background:var(--foto-crema)}
 }

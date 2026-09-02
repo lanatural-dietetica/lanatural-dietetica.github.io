@@ -192,7 +192,7 @@ function tarjetaProducto(p) {
     (p.presentaciones.length > 1
       ? '<label class="visually-hidden" for="sel-' + p.id + '">Cantidad de ' + esc(p.nombre) + '</label>' +
         '<select class="prod__sel" id="sel-' + p.id + '" data-sel="' + p.id + '">' + opciones + '</select>'
-      : '') +
+      : '<span class="prod__sel prod__sel--fija">' + esc(presNombre(p.presentacionDefecto)) + '</span>') +
     '<div class="prod__pie">' +
       '<span class="precio" data-precio="' + p.id + '">' +
         (pr.descuento ? '<span class="precio__antes">' + money(pr.venta) + '</span>' : '') +

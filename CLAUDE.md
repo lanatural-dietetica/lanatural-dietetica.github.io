@@ -4,13 +4,13 @@ Sitio estático publicado en GitHub Pages. Trabajan en paralelo Claude y Codex:
 **antes de editar, traé la versión fresca del archivo** (el otro pudo haberlo tocado).
 
 ## Marca
-- La marca real todavía no está definida. Se muestra **DIETÉTICA** como provisional.
+- La marca definida es **La Natural** y su subtítulo es **dietetica**.
 - **Nunca usar MUNA.** Era el nombre ficticio de las maquetas de referencia.
 - Todo lo del negocio (nombre, WhatsApp, dirección, horarios, textos) vive en
   `CONFIG`, dentro de `js/datos.js`. No hardcodear datos en el HTML ni en `app.js`.
 
 ## Identidad visual (viene de las maquetas en ../referencia/)
-- Russet `#7b3f1d` (header, franjas, acentos fuertes).
+- Marrón cálido `#7a4423` (header, franjas, acentos fuertes), medido en las maquetas.
 - Champán `#f4ead9` / crema `#fbf6ec` (fondos y tarjetas).
 - Oliva `#6f7a52` (botones, categorías, estados activos).
 - Títulos en Playfair Display; textos, precios y controles en Karla.

@@ -11,7 +11,7 @@ const DEMO = true; // marca visible en la web mientras sean datos de prueba
 const CONFIG = {
   marca: 'La Natural',
   bajada: 'dietetica',
-  slogan: 'Lo bueno empieza en la despensa.',
+  slogan: 'Elegí lo natural.',
   slogan2: 'Productos simples para todos los días.',
 
   // --- WhatsApp (editable) ---
