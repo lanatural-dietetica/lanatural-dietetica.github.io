@@ -257,6 +257,7 @@ const COMBOS = [
       { productoId: 'p11', presentacionId: 'u',    cant: 1 }
     ],
     descuento: 10, precioEspecial: null, activo: true, destacado: true, orden: 1,
+    img: 'assets/combo-despensa.jpg',
     color: '#c07a45', color2: '#e0a674'
   },
   {
@@ -269,6 +270,7 @@ const COMBOS = [
       { productoId: 'p12', presentacionId: 'u',    cant: 1 }
     ],
     descuento: 8, precioEspecial: null, activo: true, destacado: false, orden: 2,
+    img: 'assets/combo-pausa.jpg',
     color: '#7a4327', color2: '#a86a44'
   },
   {
@@ -281,6 +283,7 @@ const COMBOS = [
       { productoId: 'p11', presentacionId: 'u',    cant: 2 }
     ],
     descuento: 5, precioEspecial: null, activo: true, destacado: false, orden: 3,
+    img: 'assets/combo-cocina.jpg',
     color: '#b09150', color2: '#d3b981'
   }
 ];

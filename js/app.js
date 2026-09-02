@@ -161,7 +161,11 @@ const ICO = {
   wa: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.5 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.7-1.2-4.5-4-4.6-4.2-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2 0 .4-.1.5l-.3.4c-.1.2-.3.3-.1.6.2.3.7 1.2 1.6 1.9 1.1 1 2 1.3 2.3 1.5.2.1.4.1.5-.1l.7-.8c.2-.2.3-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.6-.2 1.2z"/></svg>',
   inicio: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
   hoja: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 20C4 10 12 4 20 4c0 8-5 15-13 15-1.4 0-3-.4-3-.4z"/><path d="M4 20c3-5 7-8 11-10"/></svg>',
-  bolsa: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14l-1 13H6z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>'
+  bolsa: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14l-1 13H6z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>',
+  ornamento: '<svg class="pasos__ornamento" viewBox="0 0 300 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M0 12h124M176 12h124"/><path d="M126 12c9-15 18 15 27 0s18 15 27 0M138 5c4 7 8 10 12 7M162 5c-4 7-8 10-12 7"/><circle cx="2" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="298" cy="12" r="2" fill="currentColor" stroke="none"/></svg>',
+  pasoProducto: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="50" cy="50" r="42"/><path d="M28 51h44c-2 17-10 25-22 25s-20-8-22-25z"/><path d="M37 48c-5-11 0-19 8-26 5 11 2 20-4 26M49 46c4-13 13-18 25-18-2 12-10 19-22 21M59 48c7-7 15-7 22-4-5 8-12 11-21 9"/><ellipse cx="75" cy="70" rx="4" ry="2.5"/><ellipse cx="82" cy="64" rx="3" ry="2"/></svg>',
+  pasoCantidad: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="50" cy="50" r="42"/><path d="M31 31h38c0 9-6 15-14 17v5h11l5 24H29l5-24h11v-5c-8-2-14-8-14-17z"/><circle cx="50" cy="65" r="8"/><path d="M50 65l5-5M42 31h16"/></svg>',
+  pasoEntrega: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="50" cy="50" r="42"/><path d="M14 61h24V43H14v18zm24-13h10l8 8v5H38V48z"/><circle cx="24" cy="65" r="4"/><circle cx="47" cy="65" r="4"/><path d="M61 41h25v28H61zM58 41h31l-4-12H62l-4 12zM70 69V55h8v14M58 41c1 5 7 5 8 0 1 5 7 5 8 0 1 5 7 5 8 0 1 5 7 5 8 0"/><path d="M55 27v48" stroke-dasharray="3 4"/></svg>'
 };
 
 /* ---------------- componentes ---------------- */
@@ -195,7 +199,7 @@ function tarjetaProducto(p) {
         money(pr.final) +
       '</span>' +
       (p.disponible
-        ? '<button class="prod__add" data-add="' + p.id + '" aria-label="Agregar ' + esc(p.nombre) + ' al carrito">' + ICO.carrito + '</button>'
+        ? '<button class="prod__add" data-add="' + p.id + '" aria-label="Agregar ' + esc(p.nombre) + ' al carrito">' + ICO.carrito + '<span class="prod__add-label">Agregar</span></button>'
         : '<span class="prod__agotado">Sin stock</span>') +
     '</div>' +
   '</article>';
@@ -241,7 +245,7 @@ function vistaHome() {
 
   '<div class="franja"><div class="contenedor">' + ICO.camion + '<span>' + esc(CONFIG.franja) + '</span></div></div>' +
 
-  '<section class="seccion"><div class="contenedor">' +
+  '<section class="seccion favoritos"><div class="contenedor">' +
     '<div class="titulo-filete"><h2>Nuestros favoritos</h2></div>' +
     grilla(destacados) +
     '<p style="text-align:center;margin-top:22px"><a class="btn btn--fantasma" href="#/catalogo">Ver todo el catálogo</a></p>' +
@@ -305,7 +309,7 @@ function vistaCatalogo() {
     .concat(CATEGORIAS.filter(c => c.visible).sort((a, b) => a.orden - b.orden));
 
   return '' +
-  '<section class="seccion"><div class="contenedor">' +
+  '<section class="seccion catalogo"><div class="contenedor">' +
     '<div class="titulo-filete"><h2>Nuestra selección</h2></div>' +
     '<div class="buscador">' + ICO.lupa +
       '<label class="visually-hidden" for="q">Buscar productos</label>' +
@@ -409,7 +413,7 @@ function vistaMix() {
   const total = precioMix(st.ids, st.pres);
 
   return '' +
-  '<section class="seccion"><div class="contenedor">' +
+  '<section class="seccion creador-mix"><div class="contenedor">' +
     '<div class="portada-vista">' +
       '<h1>' + esc(MIX.titulo) + '</h1>' +
       '<p>' + esc(MIX.bajada) + '</p>' +
@@ -452,7 +456,7 @@ function vistaMix() {
 function vistaCombos() {
   const activos = COMBOS.filter(c => c.activo).sort((a, b) => a.orden - b.orden);
   return '' +
-  '<section class="seccion"><div class="contenedor">' +
+  '<section class="seccion combos"><div class="contenedor">' +
     '<div class="portada-vista">' +
       '<h1>Combos para cada día</h1>' +
       '<p>Una selección simple, lista para llevar.</p>' +
@@ -468,7 +472,7 @@ function vistaCombos() {
             '<p class="combo__desc">' + esc(c.descripcion) + '</p>' +
             '<span class="combo__n">' + ICO.caja + n + ' productos</span>' +
           '</div>' +
-          '<div class="combo__fig"><img src="' + imgDemo(c.color, c.color2) + '" alt="" width="300" height="300" loading="lazy" decoding="async"></div>' +
+          '<div class="combo__fig"><img src="' + imgDe(c) + '" alt="Productos incluidos en ' + esc(c.nombre) + '" width="700" height="700" loading="lazy" decoding="async"></div>' +
         '</div>' +
         '<ul class="combo__detalle">' +
           c.items.map(i => {
@@ -486,21 +490,28 @@ function vistaCombos() {
 }
 
 function vistaComoComprar() {
+  const iconosPaso = {
+    '01': ICO.pasoProducto,
+    '02': ICO.pasoCantidad,
+    '03': ICO.pasoEntrega
+  };
   return '' +
-  '<section class="seccion"><div class="contenedor">' +
+  '<section class="seccion como-comprar"><div class="contenedor">' +
     '<div class="pasos">' +
       '<h1>Comprar, paso a paso</h1>' +
+      ICO.ornamento +
       PASOS.map(p =>
         '<div class="pasos__sep"></div>' +
         '<div class="paso">' +
-          '<span class="paso__n">' + esc(p.n) + '</span>' +
+          '<div class="paso__visual"><span class="paso__n">' + esc(p.n) + '</span>' +
+            '<span class="paso__ico">' + iconosPaso[p.n] + '</span></div>' +
           '<div class="paso__cuerpo"><h3>' + esc(p.titulo) + '</h3><p>' + esc(p.texto) + '</p></div>' +
         '</div>').join('') +
       '<div class="pasos__sep"></div>' +
       '<a class="btn btn--claro btn--bloque" href="#/catalogo">Empezar mi compra ' + ICO.flecha + '</a>' +
       '<p class="pasos__cierre">' + esc(CONFIG.avisoStock) + '</p>' +
     '</div>' +
-    '<div style="margin-top:28px">' +
+    '<div class="como-extra">' +
       '<div class="titulo-filete"><h2>Entrega y pagos</h2></div>' +
       '<p style="color:var(--gris-txt)"><strong>Envío o retiro:</strong> ' + esc(CONFIG.zonas) + '</p>' +
       '<p style="color:var(--gris-txt)"><strong>Pagos:</strong> ' + esc(CONFIG.mediosPago) + '</p>' +
@@ -656,6 +667,7 @@ function render() {
     titulo = CONFIG.marca + ' · ' + CONFIG.bajada;
   }
 
+  document.body.dataset.vista = vista;
   app.innerHTML = html;
   document.title = titulo;
   if (vista === 'catalogo') pintarGrillaCatalogo();
