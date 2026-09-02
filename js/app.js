@@ -131,6 +131,33 @@ function quitar(key) {
   pintarContadorCarrito();
   pintarCarrito();
 }
+/* un mismo producto en varias presentaciones se muestra como un solo bloque */
+function agruparCarrito() {
+  const bloques = [];
+  const indice = {};
+  estado.carrito.forEach(i => {
+    const clave = i.tipo === 'producto' ? 'prod:' + i.id : i.key;
+    if (indice[clave] == null) {
+      indice[clave] = bloques.length;
+      bloques.push({ clave: clave, tipo: i.tipo, nombre: i.nombre, img: i.img, lineas: [] });
+    }
+    bloques[indice[clave]].lineas.push(i);
+  });
+  bloques.forEach(b => {
+    b.lineas.sort((x, y) => ((pres(x.presentacionId) || {}).gramos || 0) - ((pres(y.presentacionId) || {}).gramos || 0));
+    b.subtotal = b.lineas.reduce((s, l) => s + l.precio * l.cant, 0);
+    b.unidades = b.lineas.reduce((s, l) => s + l.cant, 0);
+  });
+  return bloques;
+}
+
+function quitarBloque(clave) {
+  estado.carrito = estado.carrito.filter(i => (i.tipo === 'producto' ? 'prod:' + i.id : i.key) !== clave);
+  guardar(LS_CARRITO, estado.carrito);
+  pintarContadorCarrito();
+  pintarCarrito();
+}
+
 const totalCarrito = () => estado.carrito.reduce((s, i) => s + i.precio * i.cant, 0);
 const unidadesCarrito = () => estado.carrito.reduce((s, i) => s + i.cant, 0);
 
@@ -232,7 +259,10 @@ function vistaHome() {
         '<a class="btn btn--oliva btn--hero" href="#/catalogo">Ver productos ' + ICO.flecha + '</a>' +
       '</div>' +
       '<div class="hero__arte">' +
-        '<img src="assets/hero-dietetica.jpg" alt="Selección de productos de la dietética" width="1536" height="1024" fetchpriority="high" decoding="async">' +
+        '<picture>' +
+          '<source srcset="assets/hero-lanatural.webp" type="image/webp">' +
+          '<img src="assets/hero-lanatural.jpg" alt="Legumbres, damascos, flor de jamaica, chocolate y canela sobre una mesada" width="1448" height="1086" fetchpriority="high" decoding="async">' +
+        '</picture>' +
       '</div>' +
     '</div>' +
   '</section>' +
@@ -658,21 +688,25 @@ function pintarCarrito() {
   const falta = Math.max((CONFIG.compraMinima || 0) - total, 0);
 
   cont.innerHTML =
-    estado.carrito.map(i =>
+    agruparCarrito().map(b =>
       '<div class="item">' +
-        '<div class="item__fig"><img src="' + i.img + '" alt="" width="70" height="70" loading="lazy"></div>' +
+        '<div class="item__fig"><img src="' + b.img + '" alt="" width="70" height="70" loading="lazy"></div>' +
         '<div class="item__cuerpo">' +
-          '<p class="item__nom">' + esc(i.nombre) + '</p>' +
-          '<p class="item__meta">' + esc(i.detalle || '') + ' · ' + money(i.precio) + ' c/u</p>' +
-          '<div class="item__pie">' +
-            '<span class="stepper stepper--mini">' +
-              '<button data-mas="' + i.key + '" data-delta="-1" aria-label="Quitar uno">−</button>' +
-              '<span>' + i.cant + '</span>' +
-              '<button data-mas="' + i.key + '" data-delta="1" aria-label="Sumar uno">+</button>' +
-            '</span>' +
-            '<strong>' + money(i.precio * i.cant) + '</strong>' +
-          '</div>' +
-          '<button class="item__quitar" data-quitar="' + i.key + '">Quitar</button>' +
+          '<p class="item__nom">' + esc(b.nombre) + '</p>' +
+          b.lineas.map(i =>
+            '<div class="item__var">' +
+              '<span class="item__var-lbl">' + esc(i.detalle || '') + '<em>' + money(i.precio) + ' c/u</em></span>' +
+              '<span class="stepper stepper--mini">' +
+                '<button data-mas="' + i.key + '" data-delta="-1" aria-label="Quitar uno de ' + esc(i.detalle || i.nombre) + '">−</button>' +
+                '<span>' + i.cant + '</span>' +
+                '<button data-mas="' + i.key + '" data-delta="1" aria-label="Sumar uno de ' + esc(i.detalle || i.nombre) + '">+</button>' +
+              '</span>' +
+              '<strong>' + money(i.precio * i.cant) + '</strong>' +
+            '</div>').join('') +
+          (b.lineas.length > 1
+            ? '<div class="item__sub"><span>Subtotal</span><strong>' + money(b.subtotal) + '</strong></div>'
+            : '') +
+          '<button class="item__quitar" data-quitar-bloque="' + esc(b.clave) + '">Quitar</button>' +
         '</div>' +
       '</div>').join('') +
 
@@ -712,9 +746,18 @@ function armarMensaje(datos) {
   L.push('');
   L.push('Pedido N° ' + datos.nro);
   L.push('');
-  estado.carrito.forEach(i => {
-    L.push('• ' + i.nombre + (i.detalle ? ' (' + i.detalle + ')' : ''));
-    L.push('   ' + i.cant + ' × ' + money(i.precio) + ' = ' + money(i.precio * i.cant));
+  agruparCarrito().forEach(b => {
+    if (b.lineas.length === 1) {
+      const i = b.lineas[0];
+      L.push('• ' + b.nombre + (i.detalle ? ' (' + i.detalle + ')' : ''));
+      L.push('   ' + i.cant + ' × ' + money(i.precio) + ' = ' + money(i.precio * i.cant));
+    } else {
+      L.push('• ' + b.nombre);
+      b.lineas.forEach(i => {
+        L.push('   ' + i.detalle + ': ' + i.cant + ' × ' + money(i.precio) + ' = ' + money(i.precio * i.cant));
+      });
+      L.push('   Subtotal: ' + money(b.subtotal));
+    }
   });
   L.push('');
   L.push('TOTAL ESTIMADO: ' + money(totalCarrito()));
@@ -983,6 +1026,8 @@ document.addEventListener('click', ev => {
   if (mas) { cambiarCant(mas.dataset.mas, Number(mas.dataset.delta)); return; }
   const q = t.closest('[data-quitar]');
   if (q) { quitar(q.dataset.quitar); return; }
+  const qb = t.closest('[data-quitar-bloque]');
+  if (qb) { quitarBloque(qb.dataset.quitarBloque); return; }
 
   const entrega = t.closest('[data-entrega]');
   if (entrega) {
