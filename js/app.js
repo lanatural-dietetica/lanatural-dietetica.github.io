@@ -219,7 +219,7 @@ function vistaHome() {
         '<a class="btn btn--oliva" href="#/catalogo">Explorar la tienda ' + ICO.flecha + '</a>' +
       '</div>' +
       '<div class="hero__arte">' +
-        '<img src="' + imgDemo('#c98f4e', '#e8c98f') + '" alt="" width="400" height="400" fetchpriority="high" decoding="async">' +
+        '<img src="assets/hero-dietetica.jpg" alt="Selección de productos de la dietética" width="1536" height="1024" fetchpriority="high" decoding="async">' +
       '</div>' +
     '</div>' +
   '</section>' +
@@ -231,7 +231,7 @@ function vistaHome() {
         cats.map(c =>
           '<a class="cat-card" href="#/catalogo?cat=' + c.id + '">' +
             '<span class="cat-card__nom">' + esc(c.nombre) + '</span>' +
-            '<img class="cat-card__fig" src="' + imgDemo(c.color, '#efe0c4') + '" alt="" width="74" height="74" loading="lazy" decoding="async">' +
+            '<img class="cat-card__fig" src="' + imgDe(c) + '" alt="" width="418" height="418" loading="lazy" decoding="async">' +
             '<span class="cat-card__ver">Ver productos ' + ICO.flecha + '</span>' +
           '</a>'
         ).join('') +
@@ -251,16 +251,16 @@ function vistaHome() {
     '<div class="titulo-filete"><h2>También podés</h2></div>' +
     '<div class="cats-grid">' +
       '<a class="cat-card" href="#/mix"><span class="cat-card__nom">Armá tu mix</span>' +
-        '<img class="cat-card__fig" src="' + imgDemo('#8a6d3b', '#d8c08a') + '" alt="" width="74" height="74" loading="lazy" decoding="async">' +
+        '<img class="cat-card__fig" src="assets/productos/pasas-de-uva.jpg" alt="" width="418" height="418" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Empezar ' + ICO.flecha + '</span></a>' +
       '<a class="cat-card" href="#/combos"><span class="cat-card__nom">Combos</span>' +
-        '<img class="cat-card__fig" src="' + imgDemo('#a9563a', '#e0a674') + '" alt="" width="74" height="74" loading="lazy" decoding="async">' +
+        '<img class="cat-card__fig" src="assets/productos/salsa-de-tomate.jpg" alt="" width="627" height="627" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Ver combos ' + ICO.flecha + '</span></a>' +
       '<a class="cat-card" href="#/como-comprar"><span class="cat-card__nom">Cómo comprar</span>' +
-        '<img class="cat-card__fig" src="' + imgDemo('#6f7a52', '#c3ccab') + '" alt="" width="74" height="74" loading="lazy" decoding="async">' +
+        '<img class="cat-card__fig" src="assets/productos/harina-integral.jpg" alt="" width="627" height="627" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Leer ' + ICO.flecha + '</span></a>' +
       '<a class="cat-card" href="#/catalogo?cat=sintacc"><span class="cat-card__nom">Sin TACC</span>' +
-        '<img class="cat-card__fig" src="' + imgDemo('#e0d3ab', '#f2e8d0') + '" alt="" width="74" height="74" loading="lazy" decoding="async">' +
+        '<img class="cat-card__fig" src="assets/productos/quinoa.jpg" alt="" width="418" height="418" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Ver productos ' + ICO.flecha + '</span></a>' +
     '</div>' +
   '</div></section>';
@@ -410,8 +410,10 @@ function vistaMix() {
 
   return '' +
   '<section class="seccion"><div class="contenedor">' +
-    '<h1 style="font-size:clamp(32px,9vw,48px)">' + esc(MIX.titulo) + '</h1>' +
-    '<p style="color:var(--gris-txt);margin:10px 0 22px">' + esc(MIX.bajada) + '</p>' +
+    '<div class="portada-vista">' +
+      '<h1>' + esc(MIX.titulo) + '</h1>' +
+      '<p>' + esc(MIX.bajada) + '</p>' +
+    '</div>' +
     '<div class="mix-grid">' +
       disponibles.map(p => {
         const sel = st.ids.includes(p.id);
@@ -420,7 +422,7 @@ function vistaMix() {
             '<span class="mix-card__nom">' + esc(p.nombre) + '</span>' +
             '<span class="mix-card__check">' + (sel ? ICO.check : ICO.mas) + '</span>' +
           '</span>' +
-          '<span class="mix-card__fig"><img src="' + imgDe(p) + '" alt="" width="300" height="300" loading="lazy" decoding="async"></span>' +
+          '<span class="mix-card__fig"><img src="' + (p.mixImg || imgDe(p)) + '" alt="" width="418" height="418" loading="lazy" decoding="async"></span>' +
         '</button>';
       }).join('') +
     '</div>' +
@@ -451,8 +453,10 @@ function vistaCombos() {
   const activos = COMBOS.filter(c => c.activo).sort((a, b) => a.orden - b.orden);
   return '' +
   '<section class="seccion"><div class="contenedor">' +
-    '<h1 style="font-size:clamp(32px,9vw,48px)">Combos para cada día</h1>' +
-    '<p style="color:var(--gris-txt);margin:10px 0 24px">Una selección simple, lista para llevar.</p>' +
+    '<div class="portada-vista">' +
+      '<h1>Combos para cada día</h1>' +
+      '<p>Una selección simple, lista para llevar.</p>' +
+    '</div>' +
     (activos.length ? activos.map(c => {
       const pr = preciosCombo(c);
       const n = c.items.reduce((s, i) => s + (i.cant || 1), 0);

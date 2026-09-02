@@ -53,12 +53,12 @@ const PRESENTACIONES = [
 
 /* ---------- categorías ---------- */
 const CATEGORIAS = [
-  { id: 'frutos',     nombre: 'Frutos y semillas', slug: 'frutos-y-semillas', orden: 1, visible: true, color: '#c98f4e' },
-  { id: 'infusiones', nombre: 'Infusiones',        slug: 'infusiones',        orden: 2, visible: true, color: '#8e3b3b' },
-  { id: 'legumbres',  nombre: 'Granos y legumbres',slug: 'granos-y-legumbres',orden: 3, visible: true, color: '#d8b271' },
-  { id: 'sintacc',    nombre: 'Sin TACC',          slug: 'sin-tacc',          orden: 4, visible: true, color: '#e0d3ab' },
-  { id: 'dulces',     nombre: 'Dulces y cacao',    slug: 'dulces-y-cacao',    orden: 5, visible: true, color: '#4a2c1c' },
-  { id: 'despensa',   nombre: 'Despensa',          slug: 'despensa',          orden: 6, visible: true, color: '#a9563a' }
+  { id: 'frutos',     nombre: 'Frutos y semillas', slug: 'frutos-y-semillas', orden: 1, visible: true, img: 'assets/productos/semillas-de-girasol.jpg', color: '#c98f4e' },
+  { id: 'infusiones', nombre: 'Infusiones',        slug: 'infusiones',        orden: 2, visible: true, img: 'assets/productos/flor-de-jamaica.jpg', color: '#8e3b3b' },
+  { id: 'legumbres',  nombre: 'Granos y legumbres',slug: 'granos-y-legumbres',orden: 3, visible: true, img: 'assets/productos/garbanzos.jpg', color: '#d8b271' },
+  { id: 'sintacc',    nombre: 'Sin TACC',          slug: 'sin-tacc',          orden: 4, visible: true, img: 'assets/productos/quinoa.jpg', color: '#e0d3ab' },
+  { id: 'dulces',     nombre: 'Dulces y cacao',    slug: 'dulces-y-cacao',    orden: 5, visible: true, img: 'assets/productos/chocolate-amargo.jpg', color: '#4a2c1c' },
+  { id: 'despensa',   nombre: 'Despensa',          slug: 'despensa',          orden: 6, visible: true, img: 'assets/productos/harina-integral.jpg', color: '#a9563a' }
 ];
 
 /* ---------- etiquetas ---------- */
@@ -84,7 +84,7 @@ const PRODUCTOS = [
     descripcion: 'Lenteja pelada de cocción rápida, ideal para guisos, hamburguesas y sopas cremosas.',
     preparacion: 'No requiere remojo. Hervir 12 a 15 minutos con abundante agua.',
     origen: 'Canadá', ingredientes: 'Lentejas rosadas peladas.', alergenos: 'Puede contener trazas de gluten por fraccionamiento.',
-    color: '#e07a3f', color2: '#f2a86d'
+    img: 'assets/productos/lentejas-rosadas.jpg', color: '#e07a3f', color2: '#f2a86d'
   },
   {
     id: 'p02', sku: 'IN-001', slug: 'flor-de-jamaica', nombre: 'Flor de Jamaica',
@@ -96,7 +96,7 @@ const PRODUCTOS = [
     descripcion: 'De sabor intenso y ligeramente ácido. Ideal para preparar infusiones frías o calientes.',
     preparacion: 'Una cucharada por taza. Infusionar 5 minutos en agua bien caliente.',
     origen: 'Perú', ingredientes: 'Cálices secos de hibiscus.', alergenos: 'No contiene alérgenos declarados.',
-    color: '#8e2f34', color2: '#b6494b'
+    img: 'assets/productos/flor-de-jamaica.jpg', color: '#8e2f34', color2: '#b6494b'
   },
   {
     id: 'p03', sku: 'LG-002', slug: 'garbanzos', nombre: 'Garbanzos',
@@ -108,7 +108,7 @@ const PRODUCTOS = [
     descripcion: 'Garbanzo seleccionado, de piel fina y textura mantecosa. Para hummus, guisos y ensaladas.',
     preparacion: 'Remojar 8 horas. Hervir 45 a 60 minutos.',
     origen: 'Salta, Argentina', ingredientes: 'Garbanzos.', alergenos: 'Puede contener trazas de gluten.',
-    color: '#d9b476', color2: '#eccb95'
+    img: 'assets/productos/garbanzos.jpg', color: '#d9b476', color2: '#eccb95'
   },
   {
     id: 'p04', sku: 'FS-010', slug: 'damascos-secos', nombre: 'Damascos secos',
@@ -120,7 +120,7 @@ const PRODUCTOS = [
     descripcion: 'Damasco deshidratado mendocino, dulce y carnoso. Para snack, repostería y mixes.',
     preparacion: 'Listo para consumir. Conservar en frasco cerrado.',
     origen: 'Mendoza, Argentina', ingredientes: 'Damasco deshidratado, conservante SO2.', alergenos: 'Contiene sulfitos.',
-    color: '#e28a34', color2: '#f4ab5c'
+    img: 'assets/productos/damascos-secos.jpg', color: '#e28a34', color2: '#f4ab5c'
   },
   {
     id: 'p05', sku: 'DU-001', slug: 'chocolate-amargo-70', nombre: 'Chocolate amargo 70%',
@@ -133,7 +133,7 @@ const PRODUCTOS = [
     preparacion: 'Conservar en lugar fresco y seco, lejos de la luz.',
     origen: 'Argentina', ingredientes: 'Pasta de cacao, azúcar, manteca de cacao, lecitina de soja.',
     alergenos: 'Contiene soja. Puede contener leche y frutos secos.',
-    color: '#3b2318', color2: '#5a3524'
+    img: 'assets/productos/chocolate-amargo.jpg', mixImg: 'assets/productos/chocolate-trozos.jpg', color: '#3b2318', color2: '#5a3524'
   },
   {
     id: 'p06', sku: 'ST-001', slug: 'quinoa', nombre: 'Quinoa',
@@ -145,7 +145,7 @@ const PRODUCTOS = [
     descripcion: 'Grano andino de alto valor nutricional, liviano y de cocción rápida.',
     preparacion: 'Enjuagar bien. Hervir 15 minutos, 2 partes de agua por 1 de quinoa.',
     origen: 'Jujuy, Argentina', ingredientes: 'Quinoa blanca.', alergenos: 'Sin TACC.',
-    color: '#e4d5a8', color2: '#f0e5c6'
+    img: 'assets/productos/quinoa.jpg', color: '#e4d5a8', color2: '#f0e5c6'
   },
   {
     id: 'p07', sku: 'FS-020', slug: 'pasas-de-uva', nombre: 'Pasas de uva',
@@ -157,7 +157,7 @@ const PRODUCTOS = [
     descripcion: 'Pasa de uva mendocina, blanda y dulce. Clásica para mixes y panificados.',
     preparacion: 'Lista para consumir.',
     origen: 'Mendoza, Argentina', ingredientes: 'Uva deshidratada.', alergenos: 'Contiene sulfitos.',
-    color: '#4a2a30', color2: '#6b3b42'
+    img: 'assets/productos/pasas-de-uva.jpg', color: '#4a2a30', color2: '#6b3b42'
   },
   {
     id: 'p08', sku: 'FS-021', slug: 'coco-en-escamas', nombre: 'Coco en escamas',
@@ -169,7 +169,7 @@ const PRODUCTOS = [
     descripcion: 'Escamas de coco deshidratado, crocantes y sin endulzar.',
     preparacion: 'Lista para consumir. Ideal para granolas y postres.',
     origen: 'Filipinas', ingredientes: 'Coco deshidratado.', alergenos: 'Puede contener trazas de frutos secos.',
-    color: '#f0ece3', color2: '#ffffff'
+    img: 'assets/productos/coco-en-escamas.jpg', color: '#f0ece3', color2: '#ffffff'
   },
   {
     id: 'p09', sku: 'FS-022', slug: 'semillas-de-girasol', nombre: 'Semillas de girasol',
@@ -181,7 +181,7 @@ const PRODUCTOS = [
     descripcion: 'Semilla de girasol pelada, suave y con buen tostado natural.',
     preparacion: 'Se puede tostar 5 minutos en sartén para realzar el sabor.',
     origen: 'Buenos Aires, Argentina', ingredientes: 'Semillas de girasol.', alergenos: 'Puede contener trazas de frutos secos.',
-    color: '#b9a377', color2: '#d5c39a'
+    img: 'assets/productos/semillas-de-girasol.jpg', color: '#b9a377', color2: '#d5c39a'
   },
   {
     id: 'p10', sku: 'FS-023', slug: 'banana-deshidratada', nombre: 'Banana deshidratada',
@@ -193,7 +193,7 @@ const PRODUCTOS = [
     descripcion: 'Rodajas de banana deshidratada, dulces y crocantes.',
     preparacion: 'Lista para consumir.',
     origen: 'Ecuador', ingredientes: 'Banana, aceite vegetal.', alergenos: 'Puede contener trazas de maní.',
-    color: '#e8c766', color2: '#f5dd97'
+    img: 'assets/productos/banana-deshidratada.jpg', color: '#e8c766', color2: '#f5dd97'
   },
   {
     id: 'p11', sku: 'DE-001', slug: 'salsa-de-tomate', nombre: 'Salsa de tomate',
@@ -205,7 +205,7 @@ const PRODUCTOS = [
     descripcion: 'Salsa natural de tomate en frasco de vidrio, elaborada sin conservantes.',
     preparacion: 'Una vez abierto, conservar refrigerado hasta 4 días.',
     origen: 'Mendoza, Argentina', ingredientes: 'Tomate, sal, aceite de girasol, albahaca.', alergenos: 'No contiene alérgenos declarados.',
-    color: '#b8352a', color2: '#d1523f'
+    img: 'assets/productos/salsa-de-tomate.jpg', color: '#b8352a', color2: '#d1523f'
   },
   {
     id: 'p12', sku: 'DU-010', slug: 'miel-de-flores', nombre: 'Miel de flores',
@@ -217,7 +217,7 @@ const PRODUCTOS = [
     descripcion: 'Miel pura multifloral de productores de la zona, sin agregados.',
     preparacion: 'Si cristaliza, entibiar a baño María. No apta para menores de 1 año.',
     origen: 'Mendoza, Argentina', ingredientes: 'Miel 100%.', alergenos: 'No apta para menores de 1 año.',
-    color: '#d99a1f', color2: '#efbc4d'
+    img: 'assets/productos/miel-de-flores.jpg', color: '#d99a1f', color2: '#efbc4d'
   },
   {
     id: 'p13', sku: 'DE-005', slug: 'harina-integral-de-trigo', nombre: 'Harina integral de trigo',
@@ -229,7 +229,7 @@ const PRODUCTOS = [
     descripcion: 'Harina integral fina de molienda reciente, para panificados y masas.',
     preparacion: 'Conservar en lugar fresco y seco.',
     origen: 'Córdoba, Argentina', ingredientes: 'Harina integral de trigo.', alergenos: 'Contiene gluten.',
-    color: '#c8b28a', color2: '#dfceb0'
+    img: 'assets/productos/harina-integral.jpg', color: '#c8b28a', color2: '#dfceb0'
   },
   {
     id: 'p14', sku: 'IN-005', slug: 'tisana-de-hierbas', nombre: 'Tisana de hierbas',
@@ -241,7 +241,7 @@ const PRODUCTOS = [
     descripcion: 'Mezcla suave de manzanilla, cedrón, menta y flores. Sin teína.',
     preparacion: 'Una cucharada por taza, 4 minutos de infusión.',
     origen: 'Argentina', ingredientes: 'Manzanilla, cedrón, menta, caléndula.', alergenos: 'No contiene alérgenos declarados.',
-    color: '#7d8a55', color2: '#a3ae7c'
+    img: 'assets/productos/tisana-de-hierbas.jpg', color: '#7d8a55', color2: '#a3ae7c'
   }
 ];
 
@@ -311,16 +311,21 @@ const PASOS = [
 function imgDemo(c1, c2) {
   const svg =
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">' +
-      '<rect width="400" height="400" fill="#f2e8d7"/>' +
-      '<ellipse cx="200" cy="330" rx="150" ry="22" fill="#e2d3ba" opacity=".7"/>' +
-      '<path d="M70 205a130 130 0 0 0 260 0z" fill="#fbf6ec"/>' +
-      '<path d="M70 205a130 130 0 0 0 260 0z" fill="none" stroke="#e0d2ba" stroke-width="3"/>' +
-      '<ellipse cx="200" cy="205" rx="130" ry="34" fill="#fbf6ec" stroke="#e0d2ba" stroke-width="3"/>' +
-      '<ellipse cx="200" cy="200" rx="112" ry="27" fill="' + c1 + '"/>' +
-      '<ellipse cx="168" cy="188" rx="42" ry="14" fill="' + c2 + '" opacity=".75"/>' +
-      '<ellipse cx="238" cy="196" rx="30" ry="10" fill="' + c2 + '" opacity=".55"/>' +
-      '<circle cx="92" cy="286" r="9" fill="' + c1 + '"/>' +
-      '<circle cx="116" cy="300" r="6" fill="' + c2 + '"/>' +
+      '<defs><radialGradient id="f" cx="35%" cy="20%"><stop stop-color="#fffaf0"/><stop offset="1" stop-color="#e8dbc5"/></radialGradient>' +
+      '<filter id="s"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#6b4b32" flood-opacity=".2"/></filter>' +
+      '<clipPath id="c"><ellipse cx="200" cy="201" rx="112" ry="29"/></clipPath></defs>' +
+      '<rect width="400" height="400" fill="#f3e8d7"/>' +
+      '<ellipse cx="200" cy="334" rx="148" ry="22" fill="#d9c7aa" opacity=".55"/>' +
+      '<g filter="url(#s)"><path d="M70 202c5 88 54 132 130 132s125-44 130-132z" fill="url(#f)" stroke="#d7c4a7" stroke-width="3"/>' +
+      '<ellipse cx="200" cy="202" rx="130" ry="36" fill="#faf3e7" stroke="#d7c4a7" stroke-width="3"/>' +
+      '<ellipse cx="200" cy="201" rx="112" ry="29" fill="' + c1 + '"/>' +
+      '<g clip-path="url(#c)" fill="' + c2 + '" opacity=".9">' +
+      '<ellipse cx="118" cy="194" rx="15" ry="8"/><ellipse cx="145" cy="207" rx="13" ry="7"/><ellipse cx="168" cy="188" rx="16" ry="8"/>' +
+      '<ellipse cx="191" cy="204" rx="14" ry="7"/><ellipse cx="216" cy="187" rx="15" ry="8"/><ellipse cx="241" cy="204" rx="16" ry="8"/>' +
+      '<ellipse cx="271" cy="191" rx="14" ry="7"/><ellipse cx="292" cy="208" rx="13" ry="7"/><ellipse cx="154" cy="196" rx="9" ry="5"/>' +
+      '<ellipse cx="228" cy="211" rx="9" ry="5"/><ellipse cx="260" cy="186" rx="10" ry="5"/></g></g>' +
+      '<ellipse cx="92" cy="291" rx="11" ry="8" fill="' + c1 + '" transform="rotate(18 92 291)"/>' +
+      '<ellipse cx="119" cy="307" rx="8" ry="6" fill="' + c2 + '" transform="rotate(-16 119 307)"/>' +
     '</svg>';
   return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
