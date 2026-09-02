@@ -725,7 +725,7 @@ body::before{
     border-radius:0;mix-blend-mode:normal;
   }
   .hero__txt{position:relative;z-index:2;width:270px;max-width:none;padding-top:28px}
-  .hero h1{max-width:7.5ch;font-size:40px;line-height:.98;letter-spacing:-.025em}
+  .hero h1{max-width:10ch;font-size:40px;line-height:.98;letter-spacing:-.025em}
   .hero p{max-width:18ch;margin:14px 0 18px;font-size:18px;line-height:1.35;color:#50382b}
   .hero .btn{min-height:44px;padding:10px 17px;font-size:12px}
 
@@ -742,7 +742,7 @@ body::before{
     border:0;border-radius:11px;background:#fbf6ec;
     box-shadow:0 4px 12px rgba(56,39,23,.12);
   }
-  .cat-card__nom{position:relative;z-index:2;max-width:9ch;font-size:15px;line-height:1.08}
+  .cat-card__nom{position:relative;z-index:2;max-width:11ch;font-size:15px;line-height:1.08}
   .cat-card__fig{
     position:absolute;right:-2px;bottom:-4px;width:105px;height:105px;margin:0;
     object-fit:cover;object-position:center;border-radius:0;filter:none;mix-blend-mode:normal;

@@ -10,7 +10,7 @@ const DEMO = true; // marca visible en la web mientras sean datos de prueba
 
 const CONFIG = {
   marca: 'La Natural',
-  bajada: 'dietética',
+  bajada: 'dietetica',
   slogan: 'Lo bueno empieza en la despensa.',
   slogan2: 'Productos simples para todos los días.',
 
