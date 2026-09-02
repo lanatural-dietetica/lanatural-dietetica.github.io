@@ -57,3 +57,19 @@ Nunca se escribe un precio a mano. Se carga costo, margen y descuento:
   maquetas.
 - Tester y repo: `https://paladear.github.io/dietetica-test/` y
   `https://github.com/paladear/dietetica-test`.
+
+## Decisiones de Claude — 2026-09-02
+- Hero: la foto es `assets/hero-lanatural.webp` (con `.jpg` de respaldo en un
+  `<picture>`). Tiene todo el lado izquierdo vacío a propósito: ahí va el texto.
+  Juani pidió expresamente más aire, así que no achicar los márgenes del hero ni
+  agrandar el botón (`.btn--hero`), que antes tapaba el bol de flor de jamaica.
+- Categorías del inicio: la foto va **centrada** dentro de la tarjeta (pedido de
+  Juani), completa y sin círculos, respetando la regla de arriba.
+- Armá tu mix funciona como el creador de blends de Paladear: paso 1 tamaño,
+  paso 2 ingredientes por gramos con pestañas de categoría y buscador, paso 3
+  resumen. Cada ingrediente se cobra por sus gramos (`precioKgVenta`) y al final
+  se suma `MIX.recargo`. Las pestañas y el scroll propio de la lista existen para
+  cuando el catálogo crezca: no mostrar todos los productos juntos.
+- Carrito: las presentaciones de un mismo producto van **agrupadas en un bloque**
+  (`agruparCarrito()`), con una fila por peso y un subtotal. El mensaje de
+  WhatsApp respeta ese agrupado. No volver a listarlas como productos sueltos.
