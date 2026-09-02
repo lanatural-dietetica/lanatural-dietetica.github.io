@@ -1,0 +1,23 @@
+DIETÉTICA — registro de cambios
+================================
+
+2026-09-01 · versión inicial (hecho por Claude)
+- Estructura del proyecto: index.html + css/estilos.css + js/datos.js + js/app.js.
+- Identidad tomada de las 6 maquetas de referencia: russet #7b3f1d, champán #f4ead9,
+  oliva #6f7a52; Playfair Display en títulos y Karla en textos y controles.
+  Marca provisional DIETÉTICA (nunca MUNA).
+- Vistas: Inicio, Catálogo, Ficha de producto, Armá tu mix, Combos, Cómo comprar.
+- Catálogo: buscador, filtro por categoría, filtro de disponibles, orden por
+  destacados / nombre / precio, estados vacío y sin resultados, 2 columnas en
+  móvil y hasta 4 en escritorio.
+- Ficha: selector de presentación, precio con descuento y ahorro, stepper de
+  unidades, solapas Descripción / Preparación / Información, relacionados.
+- Carrito lateral con persistencia (localStorage), edición de cantidades y
+  armado del mensaje de WhatsApp con número de pedido, detalle y total.
+- Precios calculados por fórmula (costo → margen → descuento → redondeo).
+  Granel por costo por kilo; envasados por costo por unidad.
+- Armá tu mix: 2 a 4 ingredientes, presentación final y recargo del 10%.
+- Combos como registros propios con descuento y ahorro calculado.
+- Datos de demostración marcados con una banda visible arriba de la página.
+- Imágenes: SVG generados en el navegador (livianos, sin descargas) hasta que
+  haya fotos reales.
