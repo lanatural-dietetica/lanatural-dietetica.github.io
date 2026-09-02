@@ -100,9 +100,12 @@ queda con la versión vieja. **Cada vez que se toca `css/estilos.css`, `js/app.j
 están publicados pero nadie los ve. Al tocar css/ o js/, bumpear la versión en el mismo commit.
 
 ## Tarjetas: medidas y precios — 2026-09-02
-- En la tarjeta se muestran pocas medidas, las de `CONFIG.medidasEnCard`
-  (hoy `['50g','500g','1kg']`). El resto de las presentaciones sigue disponible en la ficha
-  del producto. Si un producto no tiene ninguna de esas, se muestran sus primeras tres.
+- **Cada producto tiene como máximo 3 medidas**, definidas en su campo `presentaciones` de
+  `js/datos.js` según el volumen con que se vende: los que salen por kilo llevan
+  250 g / 500 g / 1 kg, y los livianos o caros (flor de jamaica, tisana) 50 g / 100 g / 250 g.
+  Las tres entran en una sola fila (grid de 3 columnas). No agregar una cuarta.
+- **La medida que viene elegida es la más grande** que tenga el producto: 1 kg donde existe,
+  si no 500 g o 250 g. Pedido de Juani.
 - **El precio grande de la tarjeta es siempre el precio por kilo** (`$ 4.150 / kg`), y debajo,
   en chico, el de la medida elegida (`500 g · $ 2.100`). Es un pedido explícito de Juani.
   Los productos envasados muestran el precio de la unidad.

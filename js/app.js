@@ -216,11 +216,10 @@ const ICO = {
 };
 
 /* ---------------- componentes ---------------- */
-/* en la tarjeta se muestran pocas medidas; el resto está en la ficha */
+/* cada producto define sus propias medidas en datos.js; la tarjeta muestra hasta tres,
+   que entran en una sola fila */
 function presentacionesCard(p) {
-  const permitidas = CONFIG.medidasEnCard || [];
-  const filtradas = p.presentaciones.filter(id => permitidas.includes(id));
-  return filtradas.length ? filtradas : p.presentaciones.slice(0, 3);
+  return p.presentaciones.slice(0, 3);
 }
 
 function estadoCard(p) {
@@ -306,7 +305,9 @@ function preciosCard(p, presId) {
         (pr.descuento ? '<span class="precio__antes">' + money(listaKg) + '</span>' : '') +
         money(porKg) + '<em> / kg</em>' +
       '</span>' +
-      '<span class="precio-medida">' + esc(presNombre(presId)) + ' · <strong>' + money(pr.final) + '</strong></span>';
+      ((pres(presId) || {}).gramos === 1000
+        ? ''
+        : '<span class="precio-medida">' + esc(presNombre(presId)) + ' · <strong>' + money(pr.final) + '</strong></span>');
   }
   return '<span class="precio precio--kg">' +
       (pr.descuento ? '<span class="precio__antes">' + money(pr.venta) + '</span>' : '') +
