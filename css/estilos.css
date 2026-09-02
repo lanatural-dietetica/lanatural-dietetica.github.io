@@ -1088,11 +1088,11 @@ body::before{
   .hero{height:auto;min-height:0;padding:0;background:#f4ead9}
   .hero .contenedor{
     position:relative;display:block;height:auto;
-    padding:0;aspect-ratio:1/1.02;
+    padding:0;aspect-ratio:1/0.95;
   }
   .hero__arte{position:absolute;inset:0;margin:0;filter:none}
   .hero__arte img{
-    width:100%;height:100%;object-fit:cover;object-position:72% 62%;
+    width:100%;height:100%;object-fit:cover;object-position:100% 55%;
     transform:none;border-radius:0;
   }
   .hero__txt{
@@ -1142,3 +1142,198 @@ body::before{
 .item__var strong{min-width:58px;font-size:13.5px}
 .item__var .stepper button{width:30px;height:34px;font-size:16px}
 .item__var .stepper span{min-width:28px;line-height:34px;font-size:13px}
+
+/* ============================================================
+   Tarjetas con la mecánica de Paladear (botones de peso,
+   cantidad y estado en el pedido), con la piel de La Natural
+   ============================================================ */
+.prod{gap:0}
+.pesos{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 9px}
+.peso-btn{
+  flex:1 1 auto;min-width:0;
+  border:1.5px solid var(--linea);border-radius:8px;
+  background:var(--champan-claro);color:var(--marron-txt);
+  padding:6px 8px;font-size:12.5px;line-height:1.1;min-height:32px;
+  transition:background .18s ease,border-color .18s ease,color .18s ease;
+  white-space:nowrap;
+}
+.peso-btn:hover:not([aria-pressed="true"]){border-color:var(--oliva)}
+.peso-btn[aria-pressed="true"]{background:var(--oliva);border-color:var(--oliva);color:#fff}
+
+.prod__pie{align-items:center;gap:6px;padding-top:2px}
+.stepper--card{border-radius:999px}
+.stepper--card button{width:30px;height:32px;font-size:16px}
+.stepper--card span{min-width:24px;line-height:32px;font-size:14px}
+
+.prod__add{
+  width:100%;margin-top:9px;min-height:42px;border-radius:10px;
+  gap:7px;font-size:12.5px;letter-spacing:.06em;position:relative;overflow:hidden;
+}
+.prod__add svg{width:17px;height:17px}
+.prod__add span{white-space:nowrap}
+
+.prod__enpedido{
+  margin:9px 0 0;padding:7px 9px;border-radius:8px;
+  background:var(--oliva-claro);color:var(--oliva-osc);
+  font-size:11.5px;line-height:1.3;
+}
+.prod__enpedido strong{font-weight:600}
+.prod__acciones{display:flex;gap:6px;margin-top:6px}
+.prod__quitar{
+  width:36px;height:34px;flex:0 0 auto;border-radius:8px;
+  border:1.5px solid rgba(168,52,42,.3);background:rgba(168,52,42,.08);color:var(--rojo);
+  display:flex;align-items:center;justify-content:center;transition:background .18s ease;
+}
+.prod__quitar:hover{background:rgba(168,52,42,.16)}
+.prod__vercarrito{
+  flex:1;height:34px;border-radius:8px;
+  border:1.5px solid var(--linea);background:var(--champan-claro);color:var(--marron-txt);
+  font-size:12px;letter-spacing:.04em;transition:background .18s ease;
+}
+.prod__vercarrito:hover{background:var(--oliva-claro)}
+.prod--en-pedido{border-color:var(--oliva)}
+
+/* ============================================================
+   Movimiento: onda al tocar, confirmación en verde,
+   la foto que vuela al carrito
+   ============================================================ */
+.btn,.prod__add,.peso-btn,.opt,.chip,.mix-tam{position:relative;overflow:hidden}
+.onda{
+  position:absolute;border-radius:50%;pointer-events:none;
+  background:rgba(255,255,255,.45);transform:scale(0);
+  animation:ondaExpandir .6s ease-out forwards;
+}
+.btn--fantasma .onda,.peso-btn .onda,.chip .onda,.mix-tam .onda{background:rgba(111,122,82,.25)}
+@keyframes ondaExpandir{to{transform:scale(1);opacity:0}}
+
+.btn--hecho{background:var(--oliva-osc) !important;color:#fff !important}
+
+.vuela{
+  position:fixed;z-index:9999;pointer-events:none;
+  border-radius:50%;object-fit:cover;background:var(--foto-crema);
+  box-shadow:0 6px 20px rgba(63,36,22,.25);
+  transition:transform .62s cubic-bezier(.4,0,.2,1),opacity .62s ease;
+}
+.carrito-late{animation:carritoLate .45s ease}
+@keyframes carritoLate{0%,100%{transform:scale(1)}40%{transform:scale(1.22)}}
+
+@media (min-width:640px){
+  .peso-btn{font-size:13px;padding:7px 10px;min-height:34px}
+  .prod__add{font-size:13px;min-height:44px}
+  .prod__enpedido{font-size:12.5px}
+}
+
+/* el precio de la tarjeta no se parte en dos líneas */
+.prod__pie .precio{white-space:nowrap;font-size:16.5px;flex:0 1 auto;min-width:0}
+.prod__pie .precio__antes{font-size:11px}
+.stepper--card button{width:28px}
+.stepper--card span{min-width:22px}
+@media (min-width:640px){
+  .prod__pie .precio{font-size:19px}
+  .stepper--card button{width:32px;height:34px}
+  .stepper--card span{min-width:26px;line-height:34px}
+}
+
+/* ============================================================
+   Carrito flotante, header compacto y barra inferior con vida
+   ============================================================ */
+.cart-fab{
+  position:fixed;right:16px;bottom:calc(74px + env(safe-area-inset-bottom));z-index:56;
+  width:54px;height:54px;border-radius:50%;border:0;
+  background:var(--russet);color:var(--champan-claro);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 20px rgba(63,36,22,.32);
+  opacity:0;transform:translateY(14px) scale(.85);
+  transition:opacity .25s ease,transform .25s cubic-bezier(.34,1.4,.64,1),background .2s ease;
+}
+.cart-fab.visible{opacity:1;transform:translateY(0) scale(1)}
+.cart-fab:hover{background:var(--russet-osc)}
+.cart-fab__n{
+  position:absolute;top:-2px;right:-2px;
+  min-width:22px;height:22px;padding:0 5px;border-radius:11px;
+  background:var(--oliva);color:#fff;font-size:12px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--champan);
+}
+@media (min-width:960px){
+  .cart-fab{bottom:24px;right:24px;width:58px;height:58px}
+}
+
+/* header compacto al bajar */
+.header{transition:height .25s ease,box-shadow .25s ease}
+.marca__nombre,.marca__bajada{transition:font-size .25s ease,opacity .2s ease,margin .25s ease}
+body.compacto .header{height:52px;box-shadow:0 4px 16px rgba(63,36,22,.18)}
+body.compacto .marca__nombre{font-size:18px}
+body.compacto .marca__bajada{opacity:0;font-size:0;margin:0}
+body.compacto .icon-btn svg{width:22px;height:22px}
+
+/* barra inferior: pastilla que se desliza y rebote del ícono */
+.tabbar{position:fixed;isolation:isolate}
+.tabbar__pill{
+  position:absolute;top:4px;bottom:calc(4px + env(safe-area-inset-bottom));left:0;
+  width:0;border-radius:12px;background:var(--oliva-claro);
+  opacity:0;z-index:-1;
+  transition:transform .34s cubic-bezier(.2,.7,.35,1),width .34s cubic-bezier(.2,.7,.35,1),opacity .2s ease;
+}
+.tabbar a{position:relative;z-index:1;transition:color .2s ease}
+.rebota{animation:iconoRebota .32s ease-out}
+@keyframes iconoRebota{0%{transform:scale(.86)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+
+@media (prefers-reduced-motion:reduce){
+  .cart-fab,.tabbar__pill,.header,.marca__nombre{transition:none}
+}
+
+/* ============================================================
+   Checkout en pasos dentro del panel del carrito
+   ============================================================ */
+.co-resumen{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  background:var(--crema-card);border:1px solid var(--linea);border-radius:var(--r-md);
+  padding:12px 14px;margin-bottom:16px;font-size:14px;
+}
+.co-resumen strong{font-family:var(--serif);font-size:20px;font-weight:500}
+.co-lbl{font-size:15px;margin:0 0 14px;color:var(--marron-txt)}
+
+.co-opcion{
+  width:100%;display:flex;align-items:center;gap:14px;text-align:left;
+  background:var(--crema-card);border:1.5px solid var(--linea);border-radius:var(--r-lg);
+  padding:16px 14px;margin-bottom:12px;color:var(--marron-txt);
+  transition:border-color .2s ease,background .2s ease,transform .15s ease;
+  position:relative;overflow:hidden;
+}
+.co-opcion:hover{border-color:var(--oliva);background:#f7f4ea}
+.co-opcion:active{transform:scale(.99)}
+.co-opcion__ico{
+  width:46px;height:46px;flex:0 0 auto;border-radius:50%;
+  background:var(--oliva-claro);color:var(--oliva-osc);
+  display:flex;align-items:center;justify-content:center;
+}
+.co-opcion__txt{flex:1;min-width:0}
+.co-opcion__txt b{display:block;font-family:var(--serif);font-size:17px;font-weight:500;line-height:1.2}
+.co-opcion__txt small{display:block;font-size:12.5px;color:var(--gris-txt);margin-top:3px;line-height:1.35}
+.co-opcion__arr{color:var(--russet);flex:0 0 auto}
+
+.co-dir{
+  display:block;width:100%;text-align:left;margin-bottom:6px;
+  border:1.5px solid var(--linea);border-radius:var(--r-sm);background:var(--champan-claro);
+  padding:11px 12px;font-size:14px;color:var(--marron-txt);
+}
+.co-dir:hover{border-color:var(--oliva)}
+.co-dir--elegida{border-color:var(--oliva);background:var(--oliva-claro)}
+
+.btn--wa{background:#1f9d55;color:#fff}
+.btn--wa:hover{background:#178144}
+.btn--wa svg{width:19px;height:19px}
+
+.co-pago{font-size:13px;color:var(--gris-txt);margin:12px 0 0}
+.co-guardado{font-size:12px;color:var(--gris-txt);margin:8px 0 0}
+.co-guardado button{
+  background:none;border:0;padding:0;color:var(--russet);
+  text-decoration:underline;font-size:12px;
+}
+
+/* productos de presentación única: no necesitan un recuadro de selección */
+.prod__sel--fija{
+  display:inline-block;width:auto;min-height:0;padding:0;margin:0 0 9px;
+  border:0;background:none;font-size:12.5px;color:var(--gris-txt);letter-spacing:.02em;
+}

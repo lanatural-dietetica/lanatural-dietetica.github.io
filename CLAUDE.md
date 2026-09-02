@@ -73,3 +73,22 @@ Nunca se escribe un precio a mano. Se carga costo, margen y descuento:
 - Carrito: las presentaciones de un mismo producto van **agrupadas en un bloque**
   (`agruparCarrito()`), con una fila por peso y un subtotal. El mensaje de
   WhatsApp respeta ese agrupado. No volver a listarlas como productos sueltos.
+
+## Mecánica traída de Paladear — 2026-09-02
+Juani pidió adaptar La Natural a cómo funciona Paladear, **manteniendo la estética propia**
+(marrón russet, oliva, champán, Playfair + Karla). Se copió la mecánica, no el estilo azul.
+
+- **Tarjetas**: botones de peso (`.peso-btn`) en lugar del desplegable, stepper de cantidad
+  dentro de la tarjeta, botón "Agregar" ancho, y cuando el producto ya está en el pedido
+  aparece "En tu pedido: 500 g · $X" con los botones de quitar y ver en el carrito.
+  Lo elegido en cada tarjeta vive en `estado.cards`; `repintarCard()` redibuja una sola.
+- **Checkout en tres pasos** dentro del panel del carrito: productos → entrega
+  (retiro / envío, dos botones grandes) → datos. El botón de volver del panel es `#co-volver`.
+- **Datos recordados**: `dietetica_perfil_v1` guarda nombre, teléfono y hasta 3 direcciones;
+  se precargan y hay botón para borrarlos. `dietetica_ultimo_v1` guarda el último pedido y
+  habilita "Volver a pedir lo último" con el carrito vacío.
+- **Carrito flotante** (`#cart-fab`): aparece solo cuando hay productos.
+- **Movimiento**: la foto vuela al carrito al agregar (`volarAlCarrito`), onda al tocar
+  botones (`onda`), confirmación en verde (`confirmarBoton`), header compacto al bajar
+  (clase `compacto` en el body) y pastilla deslizante + rebote del ícono en la barra inferior.
+  Todo respeta `prefers-reduced-motion`.

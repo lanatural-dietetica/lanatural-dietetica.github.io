@@ -90,13 +90,17 @@ const gLabel = g => g >= 1000 && g % 1000 === 0 ? (g / 1000) + ' kg' : g + ' g';
 /* ---------------- estado ---------------- */
 const LS_CARRITO = 'dietetica_carrito_v1';
 const LS_FAVS    = 'dietetica_favs_v1';
+const LS_PERFIL  = 'dietetica_perfil_v1';
+const LS_ULTIMO  = 'dietetica_ultimo_v1';
 
 const estado = {
   carrito: leer(LS_CARRITO, []),
   favs:    leer(LS_FAVS, []),
   catalogo: { q: '', cat: 'todos', orden: 'destacados', soloDisponibles: false },
   mix: { tam: null, ing: {}, cat: 'todos', q: '', nombre: '' },
-  ficha: { pres: null, cant: 1, tab: 'descripcion' }
+  ficha: { pres: null, cant: 1, tab: 'descripcion' },
+  cards: {},  // { idProducto: { pres, cant } } — lo elegido en cada tarjeta del catálogo
+  checkout: { paso: 0, tipo: null }
 };
 
 function leer(k, def) {
@@ -163,7 +167,12 @@ const unidadesCarrito = () => estado.carrito.reduce((s, i) => s + i.cant, 0);
 
 function pintarContadorCarrito() {
   const n = unidadesCarrito();
-  $$('.carrito-btn__n').forEach(el => { el.textContent = n; });
+  $$('.carrito-btn__n, .cart-fab__n').forEach(el => { el.textContent = n; });
+  const fab = $('#cart-fab');
+  if (fab) {
+    if (n > 0) { fab.hidden = false; requestAnimationFrame(() => fab.classList.add('visible')); }
+    else { fab.classList.remove('visible'); setTimeout(() => { if (!unidadesCarrito()) fab.hidden = true; }, 250); }
+  }
 }
 
 function toggleFav(id) {
@@ -197,6 +206,8 @@ const ICO = {
   wa: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.5 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.7-1.2-4.5-4-4.6-4.2-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2 0 .4-.1.5l-.3.4c-.1.2-.3.3-.1.6.2.3.7 1.2 1.6 1.9 1.1 1 2 1.3 2.3 1.5.2.1.4.1.5-.1l.7-.8c.2-.2.3-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.6-.2 1.2z"/></svg>',
   inicio: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
   hoja: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 20C4 10 12 4 20 4c0 8-5 15-13 15-1.4 0-3-.4-3-.4z"/><path d="M4 20c3-5 7-8 11-10"/></svg>',
+  tienda: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h16v11H4z"/><path d="M3 9l1.5-5h15L21 9"/><path d="M9 20v-6h6v6"/></svg>',
+  basura: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>',
   bolsa: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14l-1 13H6z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>',
   ornamento: '<svg class="pasos__ornamento" viewBox="0 0 300 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M0 12h124M176 12h124"/><path d="M126 12c9-15 18 15 27 0s18 15 27 0M138 5c4 7 8 10 12 7M162 5c-4 7-8 10-12 7"/><circle cx="2" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="298" cy="12" r="2" fill="currentColor" stroke="none"/></svg>',
   pasoProducto: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="50" cy="50" r="42"/><path d="M28 51h44c-2 17-10 25-22 25s-20-8-22-25z"/><path d="M37 48c-5-11 0-19 8-26 5 11 2 20-4 26M49 46c4-13 13-18 25-18-2 12-10 19-22 21M59 48c7-7 15-7 22-4-5 8-12 11-21 9"/><ellipse cx="75" cy="70" rx="4" ry="2.5"/><ellipse cx="82" cy="64" rx="3" ry="2"/></svg>',
@@ -205,19 +216,39 @@ const ICO = {
 };
 
 /* ---------------- componentes ---------------- */
+function estadoCard(p) {
+  if (!estado.cards[p.id]) estado.cards[p.id] = { pres: p.presentacionDefecto, cant: 1 };
+  const c = estado.cards[p.id];
+  if (!p.presentaciones.includes(c.pres)) c.pres = p.presentacionDefecto;
+  return c;
+}
+
+/* lo que ya hay de ese producto en el carrito, para mostrarlo en la tarjeta */
+function enElPedido(p) {
+  const lineas = estado.carrito.filter(i => i.tipo === 'producto' && i.id === p.id);
+  if (!lineas.length) return null;
+  const subtotal = lineas.reduce((s, i) => s + i.precio * i.cant, 0);
+  if (p.tipo === 'granel') {
+    const g = lineas.reduce((s, i) => s + ((pres(i.presentacionId) || {}).gramos || 0) * i.cant, 0);
+    return { texto: gLabel(g), subtotal: subtotal };
+  }
+  const u = lineas.reduce((s, i) => s + i.cant, 0);
+  return { texto: u + (u === 1 ? ' unidad' : ' unidades'), subtotal: subtotal };
+}
+
+
 function tarjetaProducto(p) {
-  const pr  = precios(p, p.presentacionDefecto);
+  const st  = estadoCard(p);
+  const pr  = precios(p, st.pres);
   const cat = catPorId(p.categoria);
   const badge = p.destacado
     ? '<span class="prod__badge">Destacado</span>'
     : (p.tags && p.tags.includes('sintacc') ? '<span class="prod__badge prod__badge--tag">Sin TACC</span>' : '');
-  const opciones = p.presentaciones.map(id =>
-    '<option value="' + id + '"' + (id === p.presentacionDefecto ? ' selected' : '') + '>' + esc(presNombre(id)) + '</option>'
-  ).join('');
   const fav = estado.favs.includes(p.id);
+  const ped = enElPedido(p);
 
   return '' +
-  '<article class="prod' + (p.disponible ? '' : ' prod--agotado') + '" data-prod="' + p.id + '">' +
+  '<article class="prod' + (p.disponible ? '' : ' prod--agotado') + (ped ? ' prod--en-pedido' : '') + '" data-prod="' + p.id + '">' +
     '<a class="prod__fig" href="#/producto/' + p.slug + '" aria-label="Ver ' + esc(p.nombre) + '">' +
       badge +
       '<img src="' + imgDe(p) + '" alt="' + esc(p.nombre) + '" width="400" height="400" loading="lazy" decoding="async">' +
@@ -225,20 +256,49 @@ function tarjetaProducto(p) {
     '<button class="prod__fav" data-fav="' + p.id + '" aria-pressed="' + fav + '" aria-label="Guardar ' + esc(p.nombre) + ' en favoritos">' + ICO.corazon + '</button>' +
     '<h3 class="prod__nom"><a href="#/producto/' + p.slug + '">' + esc(p.nombre) + '</a></h3>' +
     '<p class="prod__sub">' + esc(p.subtitulo || (cat ? cat.nombre : '')) + '</p>' +
+
     (p.presentaciones.length > 1
-      ? '<label class="visually-hidden" for="sel-' + p.id + '">Cantidad de ' + esc(p.nombre) + '</label>' +
-        '<select class="prod__sel" id="sel-' + p.id + '" data-sel="' + p.id + '">' + opciones + '</select>'
-      : '<span class="prod__sel prod__sel--fija">' + esc(presNombre(p.presentacionDefecto)) + '</span>') +
+      ? '<div class="pesos" role="group" aria-label="Cantidad de ' + esc(p.nombre) + '">' +
+          p.presentaciones.map(id =>
+            '<button class="peso-btn" data-peso="' + id + '" data-pid="' + p.id + '" aria-pressed="' + (id === st.pres) + '">' +
+            esc(presNombre(id)) + '</button>').join('') +
+        '</div>'
+      : '<span class="prod__sel prod__sel--fija">' + esc(presNombre(st.pres)) + '</span>') +
+
     '<div class="prod__pie">' +
       '<span class="precio" data-precio="' + p.id + '">' +
         (pr.descuento ? '<span class="precio__antes">' + money(pr.venta) + '</span>' : '') +
         money(pr.final) +
       '</span>' +
       (p.disponible
-        ? '<button class="prod__add" data-add="' + p.id + '" aria-label="Agregar ' + esc(p.nombre) + ' al carrito">' + ICO.carrito + '<span class="prod__add-label">Agregar</span></button>'
+        ? '<span class="stepper stepper--card">' +
+            '<button data-cardcant="-1" data-pid="' + p.id + '" aria-label="Quitar una unidad">−</button>' +
+            '<span data-cardq="' + p.id + '">' + st.cant + '</span>' +
+            '<button data-cardcant="1" data-pid="' + p.id + '" aria-label="Sumar una unidad">+</button>' +
+          '</span>'
         : '<span class="prod__agotado">Sin stock</span>') +
     '</div>' +
+
+    (p.disponible
+      ? '<button class="prod__add btn-onda" data-add="' + p.id + '">' + ICO.carrito + '<span>Agregar</span></button>'
+      : '') +
+
+    (ped
+      ? '<p class="prod__enpedido">En tu pedido: <strong>' + esc(ped.texto) + '</strong> · ' + money(ped.subtotal) + '</p>' +
+        '<div class="prod__acciones">' +
+          '<button class="prod__quitar" data-quitar-prod="' + p.id + '" aria-label="Quitar ' + esc(p.nombre) + ' del pedido">' + ICO.basura + '</button>' +
+          '<button class="prod__vercarrito" data-abrir-carrito>Ver en el carrito</button>' +
+        '</div>'
+      : '') +
   '</article>';
+}
+
+/* vuelve a dibujar una sola tarjeta, sin tocar el resto de la grilla */
+function repintarCard(id) {
+  const p = prodPorId(id);
+  const el = document.querySelector('.prod[data-prod="' + id + '"]');
+  if (!p || !el) return;
+  el.outerHTML = tarjetaProducto(p);
 }
 
 const grilla = arr => '<div class="grilla">' + arr.map(tarjetaProducto).join('') + '</div>';
@@ -674,21 +734,64 @@ function vistaComoComprar() {
 }
 
 /* ---------------- carrito (panel) ---------------- */
+/* --- datos guardados en el dispositivo (nombre, teléfono, direcciones) --- */
+const perfil = () => leer(LS_PERFIL, { nombre: '', tel: '', direcciones: [] });
+function guardarPerfil(datos) {
+  const p = perfil();
+  p.nombre = datos.nombre || p.nombre;
+  p.tel = datos.tel || p.tel;
+  if (datos.dir && !p.direcciones.includes(datos.dir)) p.direcciones.unshift(datos.dir);
+  p.direcciones = p.direcciones.slice(0, 3);
+  guardar(LS_PERFIL, p);
+}
+function borrarPerfil() {
+  try { localStorage.removeItem(LS_PERFIL); } catch (e) {}
+  toast('Listo, borramos tus datos de este dispositivo');
+  pintarCarrito();
+}
+
+/* --- el panel del carrito tiene tres pasos: productos, entrega y datos --- */
 function pintarCarrito() {
   const cont = $('#carrito-cuerpo');
   if (!cont) return;
+  const co = estado.checkout;
+  if (!estado.carrito.length) co.paso = 0;
 
+  const volver = $('#co-volver');
+  if (volver) volver.hidden = co.paso === 0;
+  const titulo = $('#carrito-titulo');
+  if (titulo) titulo.textContent = co.paso === 0 ? 'Tu pedido' : (co.paso === 1 ? '¿Cómo lo recibís?' : 'Tus datos');
+
+  if (co.paso === 1) { cont.innerHTML = pasoEntrega(); return; }
+  if (co.paso === 2) { cont.innerHTML = pasoDatos(); return; }
+  cont.innerHTML = pasoProductos();
+}
+
+function resumenChico() {
+  const n = unidadesCarrito();
+  return '<div class="co-resumen">' +
+    '<span>' + n + (n === 1 ? ' producto' : ' productos') + '</span>' +
+    '<strong>' + money(totalCarrito()) + '</strong>' +
+  '</div>';
+}
+
+function pasoProductos() {
   if (!estado.carrito.length) {
-    cont.innerHTML = vacio('Tu carrito está vacío', 'Agregá productos y volvé para terminar el pedido.') +
-      '<p style="text-align:center;margin-top:16px"><button class="btn btn--oliva" data-cerrar-carrito>Ver productos</button></p>';
-    return;
+    const ultimo = leer(LS_ULTIMO, []);
+    return vacio('Tu carrito está vacío', 'Agregá productos y volvé para terminar el pedido.') +
+      '<p style="text-align:center;margin-top:16px;display:flex;flex-direction:column;gap:10px;align-items:center">' +
+        (ultimo.length
+          ? '<button class="btn btn--russet" id="repetir-pedido">Volver a pedir lo último (' +
+            ultimo.length + (ultimo.length === 1 ? ' producto' : ' productos') + ')</button>'
+          : '') +
+        '<button class="btn btn--oliva" data-cerrar-carrito>Ver productos</button>' +
+      '</p>';
   }
 
   const total = totalCarrito();
   const falta = Math.max((CONFIG.compraMinima || 0) - total, 0);
 
-  cont.innerHTML =
-    agruparCarrito().map(b =>
+  return agruparCarrito().map(b =>
       '<div class="item">' +
         '<div class="item__fig"><img src="' + b.img + '" alt="" width="70" height="70" loading="lazy"></div>' +
         '<div class="item__cuerpo">' +
@@ -715,21 +818,57 @@ function pintarCarrito() {
       '<div class="totales__fila totales__total"><span>Total estimado</span><span>' + money(total) + '</span></div>' +
     '</div>' +
     (falta > 0 ? '<p class="aviso">Te faltan ' + money(falta) + ' para llegar a la compra mínima de ' + money(CONFIG.compraMinima) + '.</p>' : '') +
+    '<button class="btn btn--oliva btn--bloque" id="co-continuar"' + (falta > 0 ? ' disabled' : '') + '>Continuar ' + ICO.flecha + '</button>' +
+    '<p class="aviso">' + esc(CONFIG.avisoStock) + '</p>';
+}
 
+function pasoEntrega() {
+  const opciones = [
+    { id: 'retiro',    titulo: CONFIG.entrega[0] || 'Retiro en el local', sub: CONFIG.direccion + ' · ' + CONFIG.horarios, ico: ICO.tienda },
+    { id: 'domicilio', titulo: CONFIG.entrega[1] || 'Envío a domicilio',  sub: CONFIG.zonas, ico: ICO.camion }
+  ];
+  return resumenChico() +
+    '<p class="co-lbl">¿Cómo querés recibir tu pedido?</p>' +
+    opciones.map(o =>
+      '<button class="co-opcion" data-entrega-tipo="' + o.id + '">' +
+        '<span class="co-opcion__ico">' + o.ico + '</span>' +
+        '<span class="co-opcion__txt"><b>' + esc(o.titulo) + '</b><small>' + esc(o.sub) + '</small></span>' +
+        '<span class="co-opcion__arr">' + ICO.flecha + '</span>' +
+      '</button>').join('');
+}
+
+function pasoDatos() {
+  const co = estado.checkout;
+  const pf = perfil();
+  const esEnvio = co.tipo === 'domicilio';
+  const guardados = pf.nombre || pf.tel || (pf.direcciones && pf.direcciones.length);
+
+  return resumenChico() +
+    '<p class="co-lbl">' + (esEnvio ? esc(CONFIG.entrega[1] || 'Envío a domicilio') : esc(CONFIG.entrega[0] || 'Retiro en el local')) + '</p>' +
     '<form id="form-pedido" novalidate>' +
-      '<div class="form-campo"><label for="f-nombre">Nombre y apellido *</label><input id="f-nombre" name="nombre" required autocomplete="name"></div>' +
-      '<div class="form-campo"><label for="f-tel">Teléfono *</label><input id="f-tel" name="tel" type="tel" required autocomplete="tel" inputmode="tel"></div>' +
-      '<div class="form-campo">' +
-        '<label id="lbl-entrega">Entrega *</label>' +
-        '<div class="radio-fila" role="group" aria-labelledby="lbl-entrega">' +
-          CONFIG.entrega.map((e, idx) =>
-            '<button type="button" class="opt" data-entrega="' + esc(e) + '" aria-pressed="' + (idx === 0) + '">' + esc(e) + '</button>').join('') +
-        '</div>' +
-      '</div>' +
-      '<div class="form-campo oculto" id="campo-dir"><label for="f-dir">Dirección *</label><input id="f-dir" name="dir" autocomplete="street-address"></div>' +
-      '<div class="form-campo"><label for="f-obs">Observaciones</label><textarea id="f-obs" name="obs" placeholder="Aclaraciones sobre el pedido"></textarea></div>' +
+      '<div class="form-campo"><label for="f-nombre">Nombre y apellido *</label>' +
+        '<input id="f-nombre" name="nombre" required autocomplete="name" value="' + esc(pf.nombre || '') + '"></div>' +
+      '<div class="form-campo"><label for="f-tel">Teléfono *</label>' +
+        '<input id="f-tel" name="tel" type="tel" required autocomplete="tel" inputmode="tel" value="' + esc(pf.tel || '') + '"></div>' +
+      (esEnvio
+        ? (pf.direcciones && pf.direcciones.length
+            ? '<div class="form-campo"><label>Direcciones guardadas</label>' +
+              pf.direcciones.map(d => '<button type="button" class="co-dir" data-dir="' + esc(d) + '">' + esc(d) + '</button>').join('') +
+              '</div>'
+            : '') +
+          '<div class="form-campo"><label for="f-dir">Dirección *</label>' +
+            '<input id="f-dir" name="dir" autocomplete="street-address" value="' + esc((pf.direcciones || [])[0] || '') + '"></div>'
+        : '<div class="form-campo"><label for="f-hora">Horario en que pasás <span style="text-transform:none;letter-spacing:0">(opcional)</span></label>' +
+            '<input id="f-hora" name="hora" placeholder="Ej: entre 10 y 12"></div>') +
+      '<div class="form-campo"><label for="f-obs">Observaciones</label>' +
+        '<textarea id="f-obs" name="obs" placeholder="Aclaraciones sobre el pedido"></textarea></div>' +
       '<p class="error-msg oculto" id="err-pedido"></p>' +
-      '<button class="btn btn--oliva btn--bloque" type="submit">' + ICO.wa + ' Enviar pedido por WhatsApp</button>' +
+      '<button class="btn btn--wa btn--bloque" type="submit">' + ICO.wa + ' Enviar pedido por WhatsApp</button>' +
+      '<p class="co-pago">' + esc(CONFIG.mediosPago) + '</p>' +
+      (guardados
+        ? '<p class="co-guardado">Guardamos tus datos en este dispositivo para la próxima. ' +
+          '<button type="button" id="borrar-perfil">Borrar mis datos</button></p>'
+        : '<p class="co-guardado">Vamos a guardar tus datos en este dispositivo para la próxima.</p>') +
       '<p class="aviso">' + esc(CONFIG.avisoStock) + '</p>' +
     '</form>';
 }
@@ -766,6 +905,7 @@ function armarMensaje(datos) {
   L.push('Teléfono: ' + datos.tel);
   L.push('Entrega: ' + datos.entrega);
   if (datos.dir) L.push('Dirección: ' + datos.dir);
+  if (datos.hora) L.push('Paso: ' + datos.hora);
   if (datos.obs) L.push('Observaciones: ' + datos.obs);
   L.push('');
   L.push(CONFIG.avisoStock);
@@ -776,7 +916,7 @@ function armarMensaje(datos) {
 /* ---------------- paneles ---------------- */
 function abrirPanel(cual) {
   const p = cual === 'menu' ? $('#panel-menu') : $('#panel-carrito');
-  if (cual !== 'menu') pintarCarrito();
+  if (cual !== 'menu') { estado.checkout.paso = 0; pintarCarrito(); }
   p.classList.add('abierto');
   p.setAttribute('aria-hidden', 'false');
   $('#overlay').classList.add('abierto');
@@ -844,28 +984,86 @@ function render() {
     if (suya) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   });
 
+  moverPastilla(true);
+  requestAnimationFrame(() => moverPastilla(false));  // por si la barra todavía no estaba medida
   cerrarPaneles();
   window.scrollTo(0, 0);
+  alScrollear();
 }
 
 /* ---------------- eventos ---------------- */
-function agregarProductoDesdeTarjeta(id, cant) {
+function agregarProductoDesdeTarjeta(id) {
   const p = prodPorId(id);
   if (!p || !p.disponible) return;
-  const card = document.querySelector('[data-prod="' + id + '"]');
-  const sel  = card ? card.querySelector('[data-sel]') : null;
-  const presId = sel ? sel.value : p.presentacionDefecto;
-  const pr = precios(p, presId);
+  const st = estadoCard(p);
+  const pr = precios(p, st.pres);
+  const card = document.querySelector('.prod[data-prod="' + id + '"]');
+  volarAlCarrito(card ? card.querySelector('.prod__fig img') : null);
   agregar({
-    key: 'p:' + p.id + ':' + presId,
+    key: 'p:' + p.id + ':' + st.pres,
     tipo: 'producto', id: p.id, nombre: p.nombre,
-    detalle: presNombre(presId), presentacionId: presId,
-    precio: pr.final, cant: cant || 1, img: imgDe(p)
+    detalle: presNombre(st.pres), presentacionId: st.pres,
+    precio: pr.final, cant: st.cant, img: imgDe(p)
   });
+  st.cant = 1;
+  repintarCard(id);
+}
+
+/* la foto del producto vuela hasta el carrito */
+function volarAlCarrito(img) {
+  if (!img || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const destino = $('#cart-fab') && $('#cart-fab').offsetParent !== null ? $('#cart-fab') : $('.carrito-btn');
+  if (!destino) return;
+  const o = img.getBoundingClientRect();
+  const d = destino.getBoundingClientRect();
+  const clon = document.createElement('img');
+  clon.src = img.currentSrc || img.src;
+  clon.className = 'vuela';
+  clon.style.left = o.left + 'px';
+  clon.style.top = o.top + 'px';
+  clon.style.width = o.width + 'px';
+  clon.style.height = o.height + 'px';
+  document.body.appendChild(clon);
+  const dx = (d.left + d.width / 2) - (o.left + o.width / 2);
+  const dy = (d.top + d.height / 2) - (o.top + o.height / 2);
+  requestAnimationFrame(() => {
+    clon.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(.18)';
+    clon.style.opacity = '.25';
+  });
+  setTimeout(() => clon.remove(), 700);
+  destino.classList.add('carrito-late');
+  setTimeout(() => destino.classList.remove('carrito-late'), 500);
+}
+
+/* onda al tocar y confirmación en verde */
+function onda(btn, ev) {
+  if (!btn || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const r = btn.getBoundingClientRect();
+  const d = Math.max(r.width, r.height) * 2;
+  const ink = document.createElement('span');
+  ink.className = 'onda';
+  ink.style.width = ink.style.height = d + 'px';
+  ink.style.left = ((ev && ev.clientX ? ev.clientX : r.left + r.width / 2) - r.left - d / 2) + 'px';
+  ink.style.top = ((ev && ev.clientY ? ev.clientY : r.top + r.height / 2) - r.top - d / 2) + 'px';
+  btn.appendChild(ink);
+  setTimeout(() => ink.remove(), 600);
+}
+
+function confirmarBoton(btn, texto) {
+  if (!btn) return;
+  const original = btn.innerHTML;
+  btn.classList.add('btn--hecho');
+  btn.innerHTML = ICO.check + '<span>' + esc(texto || 'Agregado') + '</span>';
+  setTimeout(() => {
+    btn.classList.remove('btn--hecho');
+    btn.innerHTML = original;
+  }, 1200);
 }
 
 document.addEventListener('click', ev => {
   const t = ev.target;
+  const conOnda = t.closest('.btn-onda, .btn--oliva, .btn--russet, .prod__add');
+  if (conOnda && !conOnda.disabled) onda(conOnda, ev);
 
   const cerrar = t.closest('[data-cerrar]');
   if (cerrar) { cerrarPaneles(); return; }
@@ -873,7 +1071,7 @@ document.addEventListener('click', ev => {
   if (t.id === 'overlay') { cerrarPaneles(); return; }
 
   if (t.closest('#btn-menu'))    { abrirPanel('menu'); return; }
-  if (t.closest('.carrito-btn')) { abrirPanel('carrito'); return; }
+  if (t.closest('.carrito-btn') || t.closest('#cart-fab')) { abrirPanel('carrito'); return; }
   if (t.closest('#btn-buscar'))  { location.hash = '#/catalogo'; setTimeout(() => { const q = $('#q'); if (q) q.focus(); }, 60); return; }
 
   const fav = t.closest('[data-fav]');
@@ -883,8 +1081,50 @@ document.addEventListener('click', ev => {
     return;
   }
 
+  const peso = t.closest('[data-peso]');
+  if (peso) {
+    const p = prodPorId(peso.dataset.pid);
+    if (!p) return;
+    estadoCard(p).pres = peso.dataset.peso;
+    const card = peso.closest('.prod');
+    card.querySelectorAll('[data-peso]').forEach(b => b.setAttribute('aria-pressed', b === peso));
+    const pr = precios(p, peso.dataset.peso);
+    const cont = card.querySelector('[data-precio]');
+    if (cont) cont.innerHTML = (pr.descuento ? '<span class="precio__antes">' + money(pr.venta) + '</span>' : '') + money(pr.final);
+    return;
+  }
+
+  const cardCant = t.closest('[data-cardcant]');
+  if (cardCant) {
+    const p = prodPorId(cardCant.dataset.pid);
+    if (!p) return;
+    const st = estadoCard(p);
+    st.cant = Math.max(1, st.cant + Number(cardCant.dataset.cardcant));
+    const n = document.querySelector('[data-cardq="' + p.id + '"]');
+    if (n) n.textContent = st.cant;
+    return;
+  }
+
+  const quitarProd = t.closest('[data-quitar-prod]');
+  if (quitarProd) {
+    const id = quitarProd.dataset.quitarProd;
+    estado.carrito = estado.carrito.filter(i => !(i.tipo === 'producto' && i.id === id));
+    guardar(LS_CARRITO, estado.carrito);
+    pintarContadorCarrito();
+    repintarCard(id);
+    toast('Quitado del pedido');
+    return;
+  }
+
+  if (t.closest('[data-abrir-carrito]')) { abrirPanel('carrito'); return; }
+
   const add = t.closest('[data-add]');
-  if (add) { agregarProductoDesdeTarjeta(add.dataset.add, 1); return; }
+  if (add) {
+    onda(add, ev);
+    confirmarBoton(add, 'Agregado');
+    agregarProductoDesdeTarjeta(add.dataset.add);
+    return;
+  }
 
   const chip = t.closest('[data-chip]');
   if (chip) {
@@ -1029,11 +1269,35 @@ document.addEventListener('click', ev => {
   const qb = t.closest('[data-quitar-bloque]');
   if (qb) { quitarBloque(qb.dataset.quitarBloque); return; }
 
-  const entrega = t.closest('[data-entrega]');
-  if (entrega) {
-    $$('[data-entrega]').forEach(b => b.setAttribute('aria-pressed', b === entrega));
-    const necesitaDir = /env[ií]o|domicilio/i.test(entrega.dataset.entrega);
-    $('#campo-dir').classList.toggle('oculto', !necesitaDir);
+  if (t.closest('#co-continuar')) { estado.checkout.paso = 1; pintarCarrito(); return; }
+  if (t.closest('#co-volver'))    { estado.checkout.paso = Math.max(0, estado.checkout.paso - 1); pintarCarrito(); return; }
+
+  const tipoEntrega = t.closest('[data-entrega-tipo]');
+  if (tipoEntrega) {
+    estado.checkout.tipo = tipoEntrega.dataset.entregaTipo;
+    estado.checkout.paso = 2;
+    pintarCarrito();
+    return;
+  }
+
+  const dirGuardada = t.closest('[data-dir]');
+  if (dirGuardada) {
+    const campo = $('#f-dir');
+    if (campo) { campo.value = dirGuardada.dataset.dir; campo.focus(); }
+    $$('[data-dir]').forEach(b => b.classList.toggle('co-dir--elegida', b === dirGuardada));
+    return;
+  }
+
+  if (t.closest('#borrar-perfil')) { borrarPerfil(); return; }
+
+  if (t.closest('#repetir-pedido')) {
+    const ultimo = leer(LS_ULTIMO, []);
+    if (!ultimo.length) return;
+    estado.carrito = ultimo.slice();
+    guardar(LS_CARRITO, estado.carrito);
+    pintarContadorCarrito();
+    pintarCarrito();
+    toast('Volvimos a cargar tu último pedido');
     return;
   }
 });
@@ -1064,14 +1328,6 @@ document.addEventListener('input', ev => {
   }
   if (ev.target.id === 'mix-nombre') estado.mix.nombre = ev.target.value;
   if (ev.target.id === 'mix-buscar') { estado.mix.q = ev.target.value; pintarMixLista(); }
-  const sel = ev.target.closest('[data-sel]');
-  if (sel) {
-    const p = prodPorId(sel.dataset.sel);
-    if (!p) return;
-    const pr = precios(p, sel.value);
-    const cont = document.querySelector('[data-precio="' + p.id + '"]');
-    if (cont) cont.innerHTML = (pr.descuento ? '<span class="precio__antes">' + money(pr.venta) + '</span>' : '') + money(pr.final);
-  }
 });
 
 document.addEventListener('change', ev => {
@@ -1086,12 +1342,13 @@ document.addEventListener('submit', ev => {
   ev.preventDefault();
   const f = ev.target;
   const err = $('#err-pedido');
-  const entrega = ($('[data-entrega][aria-pressed="true"]') || {}).dataset;
+  const esEnvio = estado.checkout.tipo === 'domicilio';
   const datos = {
     nombre: f.nombre.value.trim(),
     tel: f.tel.value.trim(),
-    entrega: entrega ? entrega.entrega : CONFIG.entrega[0],
-    dir: $('#campo-dir').classList.contains('oculto') ? '' : f.dir.value.trim(),
+    entrega: esEnvio ? (CONFIG.entrega[1] || 'Envío a domicilio') : (CONFIG.entrega[0] || 'Retiro en el local'),
+    dir: esEnvio && f.dir ? f.dir.value.trim() : '',
+    hora: !esEnvio && f.hora ? f.hora.value.trim() : '',
     obs: f.obs.value.trim(),
     nro: numeroPedido()
   };
@@ -1100,7 +1357,7 @@ document.addEventListener('submit', ev => {
   if (!estado.carrito.length) problema = 'El carrito está vacío.';
   else if (datos.nombre.length < 2) problema = 'Escribí tu nombre.';
   else if (datos.tel.replace(/\D/g, '').length < 8) problema = 'Escribí un teléfono válido.';
-  else if (!$('#campo-dir').classList.contains('oculto') && !datos.dir) problema = 'Escribí la dirección de envío.';
+  else if (esEnvio && !datos.dir) problema = 'Escribí la dirección de envío.';
   else if (totalCarrito() < (CONFIG.compraMinima || 0)) problema = 'No llegás a la compra mínima.';
 
   if (problema) {
@@ -1109,6 +1366,9 @@ document.addEventListener('submit', ev => {
     return;
   }
   err.classList.add('oculto');
+
+  guardarPerfil(datos);
+  guardar(LS_ULTIMO, estado.carrito.slice());
 
   const url = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(armarMensaje(datos));
   window.open(url, '_blank', 'noopener');
@@ -1120,6 +1380,36 @@ document.addEventListener('keydown', ev => {
 });
 
 window.addEventListener('hashchange', render);
+
+/* ---------------- movimiento de la cáscara ---------------- */
+/* el header se achica al bajar y vuelve al subir */
+function alScrollear() {
+  const y = window.scrollY || document.documentElement.scrollTop || 0;
+  document.body.classList.toggle('compacto', y > 140);
+}
+window.addEventListener('scroll', alScrollear, { passive: true });
+
+/* la pastilla de la barra inferior se desliza hasta la sección activa */
+function moverPastilla(conRebote) {
+  const pill = $('.tabbar__pill');
+  const activo = $('.tabbar a[aria-current="page"]');
+  if (!pill) return;
+  if (!activo) { pill.style.opacity = '0'; return; }
+  const r = activo.getBoundingClientRect();
+  const rp = activo.parentElement.getBoundingClientRect();
+  pill.style.opacity = '1';
+  pill.style.width = r.width + 'px';
+  pill.style.transform = 'translateX(' + (r.left - rp.left) + 'px)';
+  if (conRebote && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const ico = activo.querySelector('svg');
+    if (ico) {
+      ico.classList.remove('rebota');
+      void ico.offsetWidth;
+      ico.classList.add('rebota');
+    }
+  }
+}
+window.addEventListener('resize', () => moverPastilla(false));
 
 /* ---------------- arranque ---------------- */
 function pintarCascara() {

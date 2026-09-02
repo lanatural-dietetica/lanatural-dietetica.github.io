@@ -56,6 +56,7 @@
 </footer>
 
 <nav class="tabbar" aria-label="Navegación principal">
+  <span class="tabbar__pill" aria-hidden="true"></span>
   <a href="#/">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
     Inicio
@@ -73,6 +74,11 @@
     Combos
   </a>
 </nav>
+
+<button class="cart-fab" id="cart-fab" aria-label="Abrir carrito" hidden>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.4 11.4a2 2 0 0 0 2 1.6h7.5a2 2 0 0 0 2-1.5L21 7H6"/></svg>
+  <span class="cart-fab__n">0</span>
+</button>
 
 <div class="overlay" id="overlay"></div>
 
@@ -100,7 +106,10 @@
 
 <aside class="panel panel--der" id="panel-carrito" aria-hidden="true" aria-label="Carrito">
   <div class="panel__top">
-    <span class="panel__titulo">Tu pedido</span>
+    <button class="icon-btn" id="co-volver" hidden aria-label="Volver">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="panel__titulo" id="carrito-titulo">Tu pedido</span>
     <button class="icon-btn" data-cerrar aria-label="Cerrar carrito">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
