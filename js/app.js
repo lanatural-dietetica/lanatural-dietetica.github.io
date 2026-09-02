@@ -67,16 +67,25 @@ function preciosCombo(combo) {
   return { lista, final, ahorro: Math.max(lista - final, 0) };
 }
 
-function precioMix(ids, presId) {
-  const p = pres(presId);
-  if (!p || !ids.length) return 0;
-  let costoKgProm = 0;
-  ids.forEach(id => { const pr = prodPorId(id); if (pr) costoKgProm += (pr.costoKg || 0); });
-  costoKgProm = costoKgProm / ids.length;
-  const costo = costoKgProm * p.gramos / 1000;
-  const venta = costo * (1 + CONFIG.margenPorDefecto / 100) * (1 + (MIX.recargo || 0) / 100);
-  return redondear(venta);
+/* precio de venta por kilo de un producto a granel (con su margen y descuento) */
+function precioKgVenta(prod) {
+  const margen = Number.isFinite(prod.margen) ? prod.margen : CONFIG.margenPorDefecto;
+  const desc   = Math.min(Math.max(prod.descuento || 0, 0), 90);
+  return redondear((prod.costoKg || 0) * (1 + margen / 100) * (1 - desc / 100));
 }
+
+/* el mix se cobra por lo que lleva: cada ingrediente por sus gramos, más el recargo de armado */
+function cuentaMix(ing) {
+  const filas = Object.entries(ing || {}).filter(([, g]) => g > 0).map(([id, g]) => {
+    const p = prodPorId(id);
+    return { id: id, nombre: p ? p.nombre : '?', gramos: g, subtotal: redondear(precioKgVenta(p || {}) * g / 1000) };
+  });
+  const gramos = filas.reduce((s, f) => s + f.gramos, 0);
+  const suma   = filas.reduce((s, f) => s + f.subtotal, 0);
+  return { filas: filas, gramos: gramos, suma: suma, total: redondear(suma * (1 + (MIX.recargo || 0) / 100)) };
+}
+
+const gLabel = g => g >= 1000 && g % 1000 === 0 ? (g / 1000) + ' kg' : g + ' g';
 
 /* ---------------- estado ---------------- */
 const LS_CARRITO = 'dietetica_carrito_v1';
@@ -86,7 +95,7 @@ const estado = {
   carrito: leer(LS_CARRITO, []),
   favs:    leer(LS_FAVS, []),
   catalogo: { q: '', cat: 'todos', orden: 'destacados', soloDisponibles: false },
-  mix: { ids: [], pres: MIX.presentacionDefecto, nombre: '' },
+  mix: { tam: null, ing: {}, cat: 'todos', q: '', nombre: '' },
   ficha: { pres: null, cant: 1, tab: 'descripcion' }
 };
 
@@ -220,7 +229,7 @@ function vistaHome() {
       '<div class="hero__txt">' +
         '<h1>' + esc(CONFIG.slogan) + '</h1>' +
         '<p>' + esc(CONFIG.slogan2) + '</p>' +
-        '<a class="btn btn--oliva" href="#/catalogo">Explorar la tienda ' + ICO.flecha + '</a>' +
+        '<a class="btn btn--oliva btn--hero" href="#/catalogo">Ver productos ' + ICO.flecha + '</a>' +
       '</div>' +
       '<div class="hero__arte">' +
         '<img src="assets/hero-dietetica.jpg" alt="Selección de productos de la dietética" width="1536" height="1024" fetchpriority="high" decoding="async">' +
@@ -407,10 +416,20 @@ function vistaProducto(slug) {
   '</div></section>';
 }
 
+function mixProductos() {
+  return publicados().filter(p => p.mix && p.disponible && p.tipo === 'granel');
+}
+function mixCategorias() {
+  const usadas = [...new Set(mixProductos().map(p => p.categoria))];
+  return CATEGORIAS.filter(c => usadas.includes(c.id)).sort((a, b) => a.orden - b.orden);
+}
+const mixGramosTam = () => {
+  const p = pres(estado.mix.tam);
+  return p && p.gramos ? p.gramos : 0;
+};
+
 function vistaMix() {
-  const disponibles = publicados().filter(p => p.mix && p.disponible);
   const st = estado.mix;
-  const total = precioMix(st.ids, st.pres);
 
   return '' +
   '<section class="seccion creador-mix"><div class="contenedor">' +
@@ -418,39 +437,143 @@ function vistaMix() {
       '<h1>' + esc(MIX.titulo) + '</h1>' +
       '<p>' + esc(MIX.bajada) + '</p>' +
     '</div>' +
-    '<div class="mix-grid">' +
-      disponibles.map(p => {
-        const sel = st.ids.includes(p.id);
-        return '<button class="mix-card" data-mix="' + p.id + '" aria-pressed="' + sel + '">' +
-          '<span class="mix-card__top">' +
-            '<span class="mix-card__nom">' + esc(p.nombre) + '</span>' +
-            '<span class="mix-card__check">' + (sel ? ICO.check : ICO.mas) + '</span>' +
-          '</span>' +
-          '<span class="mix-card__fig"><img src="' + (p.mixImg || imgDe(p)) + '" alt="" width="418" height="418" loading="lazy" decoding="async"></span>' +
-        '</button>';
-      }).join('') +
+
+    '<div class="mix-paso">' +
+      '<p class="mix-paso__lbl"><span>Paso 1</span> Elegí el tamaño</p>' +
+      '<div class="mix-tams">' +
+        MIX.presentaciones.map(id => {
+          const g = (pres(id) || {}).gramos || 0;
+          return '<button class="mix-tam" data-mixtam="' + id + '" aria-pressed="' + (id === st.tam) + '">' +
+            '<strong>' + esc(gLabel(g)) + '</strong><span>de mix</span></button>';
+        }).join('') +
+      '</div>' +
     '</div>' +
-    '<div class="mix-resumen">' +
-      '<div class="titulo-filete"><h2>Tu selección</h2></div>' +
-      '<p class="mix-resumen__n" id="mix-n">' + st.ids.length + ' de ' + MIX.maxIngredientes + ' ingredientes</p>' +
-      '<div class="opts">' +
-        MIX.presentaciones.map(id =>
-          '<button class="opt" data-mixpres="' + id + '" aria-pressed="' + (id === st.pres) + '">' +
-            esc(presNombre(id)) + (id === st.pres ? ' ' + ICO.check : '') + '</button>').join('') +
+
+    '<div id="mix-armado"' + (st.tam ? '' : ' class="oculto"') + '>' +
+      '<div class="mix-paso">' +
+        '<p class="mix-paso__lbl"><span>Paso 2</span> Sumá ingredientes</p>' +
+        '<div class="buscador buscador--mix">' + ICO.lupa +
+          '<label class="visually-hidden" for="mix-buscar">Buscar ingrediente</label>' +
+          '<input id="mix-buscar" type="search" placeholder="Buscar ingrediente" value="' + esc(st.q) + '" autocomplete="off">' +
+        '</div>' +
+        '<div class="chips" id="mix-cats" role="group" aria-label="Categorías del mix"></div>' +
+        '<div class="mix-lista" id="mix-lista"></div>' +
       '</div>' +
-      '<div class="form-campo" style="margin-top:16px;text-align:left">' +
-        '<label for="mix-nombre" style="color:var(--champan-claro)">Nombre del mix (opcional)</label>' +
-        '<input id="mix-nombre" type="text" maxlength="40" placeholder="Mi mix de la tarde" value="' + esc(st.nombre) + '">' +
+
+      '<div class="mix-barra" id="mix-barra"></div>' +
+
+      '<div class="mix-paso">' +
+        '<p class="mix-paso__lbl"><span>Paso 3</span> Agregá al carrito</p>' +
+        '<div class="mix-resumen" id="mix-resumen"></div>' +
       '</div>' +
-      '<div class="mix-resumen__total">' +
-        '<span>Total estimado</span>' +
-        '<strong id="mix-total">' + money(total) + '</strong>' +
-      '</div>' +
-      '<button class="btn btn--oliva btn--bloque" id="add-mix" style="margin-top:14px"' +
-        (st.ids.length >= MIX.minIngredientes ? '' : ' disabled') + '>Agregar mi mix ' + ICO.flecha + '</button>' +
-      '<p style="font-size:13px;opacity:.85;margin-top:10px">Mínimo ' + MIX.minIngredientes + ' ingredientes. El armado tiene un recargo del ' + MIX.recargo + '%.</p>' +
     '</div>' +
   '</div></section>';
+}
+
+/* --- pintado parcial: no se re-renderiza la vista entera para no perder foco ni scroll --- */
+function pintarMixCats() {
+  const cont = $('#mix-cats');
+  if (!cont) return;
+  const cats = [{ id: 'todos', nombre: 'Todos' }].concat(mixCategorias());
+  cont.innerHTML = cats.map(c =>
+    '<button class="chip" data-mixcat="' + c.id + '" aria-pressed="' + (estado.mix.cat === c.id) + '">' +
+    esc(c.nombre) + '</button>').join('');
+}
+
+function pintarMixLista() {
+  const cont = $('#mix-lista');
+  if (!cont) return;
+  const st = estado.mix;
+  const q = st.q.trim().toLowerCase();
+  let arr = mixProductos();
+  if (st.cat !== 'todos') arr = arr.filter(p => p.categoria === st.cat);
+  if (q) arr = arr.filter(p => p.nombre.toLowerCase().includes(q));
+
+  if (!arr.length) {
+    cont.innerHTML = '<p class="mix-lista__vacio">' +
+      (q ? 'No encontramos “' + esc(st.q) + '” entre los ingredientes.' : 'No hay ingredientes en esta categoría.') + '</p>';
+    return;
+  }
+
+  const usados  = cuentaMix(st.ing).gramos;
+  const libre   = mixGramosTam() - usados;
+  const distintos = Object.values(st.ing).filter(g => g > 0).length;
+
+  cont.innerHTML = arr.map(p => {
+    const g = st.ing[p.id] || 0;
+    const tope = MIX.maxIngredientes && distintos >= MIX.maxIngredientes && !g;
+    const noEntra = libre < MIX.pasoGramos || tope;
+    return '<div class="mix-fila' + (g ? ' mix-fila--sel' : '') + '">' +
+      '<img class="mix-fila__fig" src="' + (p.mixImg || imgDe(p)) + '" alt="" width="120" height="120" loading="lazy" decoding="async">' +
+      '<div class="mix-fila__txt">' +
+        '<p class="mix-fila__nom">' + esc(p.nombre) + '</p>' +
+        '<p class="mix-fila__precio">' + money(precioKgVenta(p)) + ' / kg</p>' +
+      '</div>' +
+      '<div class="stepper stepper--mini">' +
+        '<button data-mixmenos="' + p.id + '" aria-label="Quitar ' + MIX.pasoGramos + ' gramos de ' + esc(p.nombre) + '"' + (g ? '' : ' disabled') + '>−</button>' +
+        '<span>' + esc(gLabel(g)) + '</span>' +
+        '<button data-mixmas="' + p.id + '" aria-label="Sumar ' + MIX.pasoGramos + ' gramos de ' + esc(p.nombre) + '"' + (noEntra ? ' disabled' : '') + '>+</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function pintarMixBarra() {
+  const cont = $('#mix-barra');
+  if (!cont) return;
+  const c = cuentaMix(estado.mix.ing);
+  const tam = mixGramosTam();
+  const pct = tam ? Math.min(100, Math.round(c.gramos / tam * 100)) : 0;
+  const listo = c.gramos === tam && tam > 0;
+  const falta = tam - c.gramos;
+
+  cont.innerHTML =
+    '<div class="mix-barra__top">' +
+      '<span>' + esc(gLabel(c.gramos)) + ' de ' + esc(gLabel(tam)) + '</span>' +
+      '<strong>' + money(c.total) + '</strong>' +
+    '</div>' +
+    '<div class="mix-barra__riel" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100">' +
+      '<div class="mix-barra__fill' + (listo ? ' mix-barra__fill--listo' : '') + '" style="width:' + pct + '%"></div>' +
+    '</div>' +
+    '<p class="mix-barra__hint">' + (listo ? 'Mix completo' : 'Faltan ' + esc(gLabel(falta))) + '</p>';
+}
+
+function pintarMixResumen() {
+  const cont = $('#mix-resumen');
+  if (!cont) return;
+  const st  = estado.mix;
+  const c   = cuentaMix(st.ing);
+  const tam = mixGramosTam();
+  const listo = c.gramos === tam && tam > 0 && c.filas.length >= MIX.minIngredientes;
+  const falta = tam - c.gramos;
+
+  let textoBoton = 'Agregar mi mix';
+  if (c.filas.length && c.filas.length < MIX.minIngredientes) textoBoton = 'Elegí al menos ' + MIX.minIngredientes + ' ingredientes';
+  else if (falta > 0) textoBoton = 'Faltan ' + gLabel(falta);
+
+  cont.innerHTML =
+    '<p class="mix-resumen__head">Tu mix de ' + esc(gLabel(tam)) + '</p>' +
+    (c.filas.length
+      ? '<ul class="mix-ings">' + c.filas.map(f =>
+          '<li><span>' + esc(f.nombre) + '</span><span>' + esc(gLabel(f.gramos)) + ' · ' + money(f.subtotal) + '</span></li>'
+        ).join('') + '</ul>'
+      : '<p class="mix-ings__vacio">Todavía no elegiste ingredientes.</p>') +
+    '<div class="form-campo">' +
+      '<label for="mix-nombre">Nombre del mix (opcional)</label>' +
+      '<input id="mix-nombre" type="text" maxlength="40" placeholder="Mi mix de la tarde" value="' + esc(st.nombre) + '">' +
+    '</div>' +
+    '<div class="mix-tot"><span>Ingredientes</span><span>' + c.filas.length + '</span></div>' +
+    '<div class="mix-tot"><span>Armado (' + MIX.recargo + '%)</span><span>' + money(c.total - c.suma) + '</span></div>' +
+    '<div class="mix-tot mix-tot--main"><span>Total</span><span>' + money(c.total) + '</span></div>' +
+    '<button class="btn btn--oliva btn--bloque" id="add-mix"' + (listo ? '' : ' disabled') + '>' + esc(textoBoton) + '</button>' +
+    '<p class="mix-nota">' + esc(CONFIG.avisoStock) + '</p>';
+}
+
+function pintarMix() {
+  pintarMixCats();
+  pintarMixLista();
+  pintarMixBarra();
+  pintarMixResumen();
 }
 
 function vistaCombos() {
@@ -671,6 +794,7 @@ function render() {
   app.innerHTML = html;
   document.title = titulo;
   if (vista === 'catalogo') pintarGrillaCatalogo();
+  if (vista === 'mix' && estado.mix.tam) pintarMix();
 
   $$('.tabbar a').forEach(a => {
     const suya = a.getAttribute('href') === '#/' + (vista === 'inicio' ? '' : vista);
@@ -771,37 +895,67 @@ document.addEventListener('click', ev => {
   }
 
   /* --- mix --- */
-  const mixCard = t.closest('[data-mix]');
-  if (mixCard) {
-    const id = mixCard.dataset.mix;
+  const mixTam = t.closest('[data-mixtam]');
+  if (mixTam) {
     const st = estado.mix;
-    if (st.ids.includes(id)) st.ids = st.ids.filter(x => x !== id);
-    else if (st.ids.length < MIX.maxIngredientes) st.ids.push(id);
-    else { toast('Podés elegir hasta ' + MIX.maxIngredientes + ' ingredientes'); return; }
-    st.nombre = ($('#mix-nombre') || {}).value || st.nombre;
-    render();
+    if (st.tam !== mixTam.dataset.mixtam) { st.tam = mixTam.dataset.mixtam; st.ing = {}; }
+    $$('[data-mixtam]').forEach(b => b.setAttribute('aria-pressed', b === mixTam));
+    $('#mix-armado').classList.remove('oculto');
+    pintarMix();
+    setTimeout(() => {
+      const paso2 = $('#mix-armado');
+      if (paso2) window.scrollTo({ top: paso2.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' });
+    }, 80);
     return;
   }
-  const mixPres = t.closest('[data-mixpres]');
-  if (mixPres) {
-    estado.mix.pres = mixPres.dataset.mixpres;
-    estado.mix.nombre = ($('#mix-nombre') || {}).value || estado.mix.nombre;
-    render();
+  const mixCat = t.closest('[data-mixcat]');
+  if (mixCat) {
+    estado.mix.cat = mixCat.dataset.mixcat;
+    pintarMixCats();
+    pintarMixLista();
+    return;
+  }
+  const mixMas = t.closest('[data-mixmas]');
+  if (mixMas) {
+    const st = estado.mix;
+    const id = mixMas.dataset.mixmas;
+    const c = cuentaMix(st.ing);
+    const libre = mixGramosTam() - c.gramos;
+    if (libre < MIX.pasoGramos) { toast('El mix ya está completo'); return; }
+    const distintos = Object.values(st.ing).filter(g => g > 0).length;
+    if (!st.ing[id] && MIX.maxIngredientes && distintos >= MIX.maxIngredientes) {
+      toast('Podés combinar hasta ' + MIX.maxIngredientes + ' ingredientes');
+      return;
+    }
+    st.ing[id] = (st.ing[id] || 0) + Math.min(MIX.pasoGramos, libre);
+    pintarMixLista(); pintarMixBarra(); pintarMixResumen();
+    return;
+  }
+  const mixMenos = t.closest('[data-mixmenos]');
+  if (mixMenos) {
+    const st = estado.mix;
+    const id = mixMenos.dataset.mixmenos;
+    const actual = st.ing[id] || 0;
+    if (actual <= MIX.pasoGramos) delete st.ing[id];
+    else st.ing[id] = actual - MIX.pasoGramos;
+    pintarMixLista(); pintarMixBarra(); pintarMixResumen();
     return;
   }
   if (t.closest('#add-mix')) {
     const st = estado.mix;
-    if (st.ids.length < MIX.minIngredientes) { toast('Elegí al menos ' + MIX.minIngredientes + ' ingredientes'); return; }
+    const c = cuentaMix(st.ing);
+    const tam = mixGramosTam();
+    if (c.gramos !== tam || c.filas.length < MIX.minIngredientes) return;
     const nombreLibre = ($('#mix-nombre') || {}).value || '';
-    const nombres = st.ids.map(id => (prodPorId(id) || {}).nombre).join(', ');
+    const principal = prodPorId(c.filas[0].id);
     agregar({
-      key: 'mix:' + st.ids.slice().sort().join('-') + ':' + st.pres,
-      tipo: 'mix', id: 'mix', nombre: nombreLibre.trim() || 'Mi mix',
-      detalle: presNombre(st.pres) + ' · ' + nombres,
-      precio: precioMix(st.ids, st.pres), cant: 1,
-      img: imgDemo('#a97e46', '#e0c48c')
+      key: 'mix:' + st.tam + ':' + c.filas.map(f => f.id + '-' + f.gramos).sort().join('_'),
+      tipo: 'mix', id: 'mix', nombre: nombreLibre.trim() || 'Mi mix de ' + gLabel(tam),
+      detalle: gLabel(tam) + ' · ' + c.filas.map(f => f.nombre + ' ' + gLabel(f.gramos)).join(', '),
+      precio: c.total, cant: 1,
+      img: principal ? (principal.mixImg || imgDe(principal)) : imgDemo('#a97e46', '#e0c48c')
     });
-    estado.mix = { ids: [], pres: MIX.presentacionDefecto, nombre: '' };
+    estado.mix = { tam: null, ing: {}, cat: 'todos', q: '', nombre: '' };
     render();
     return;
   }
@@ -864,6 +1018,7 @@ document.addEventListener('input', ev => {
     pintarGrillaCatalogo();
   }
   if (ev.target.id === 'mix-nombre') estado.mix.nombre = ev.target.value;
+  if (ev.target.id === 'mix-buscar') { estado.mix.q = ev.target.value; pintarMixLista(); }
   const sel = ev.target.closest('[data-sel]');
   if (sel) {
     const p = prodPorId(sel.dataset.sel);

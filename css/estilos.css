@@ -918,3 +918,162 @@ body::before{
   }
   .mix-card__fig img{object-position:center bottom}
 }
+
+
+/* ============================================================
+   Ajustes pedidos: botón del hero más chico y categorías centradas
+   ============================================================ */
+
+/* --- 1. el botón del hero no debe tapar la foto --- */
+.btn--hero{
+  min-height:44px;
+  padding:11px 18px;
+  font-size:12.5px;
+  letter-spacing:.07em;
+}
+.btn--hero svg{width:14px;height:14px}
+@media (max-width:639px){
+  .btn--hero{min-height:40px;padding:9px 15px;font-size:11.5px;letter-spacing:.06em}
+  .btn--hero svg{width:13px;height:13px}
+}
+
+/* --- 2. categorías: foto centrada dentro de la tarjeta --- */
+.cat-card{
+  align-items:center;
+  text-align:center;
+  gap:10px;
+}
+.cat-card__nom{max-width:none}
+.cat-card__fig{
+  position:static;
+  align-self:center;
+  margin:0;
+  width:96px;height:96px;
+  object-fit:cover;
+  object-position:center;
+  border-radius:50%;
+  background:var(--foto-crema);
+}
+.cat-card__ver{justify-content:center}
+
+@media (max-width:639px){
+  .cat-card{height:auto;min-height:0;padding:14px 10px 12px}
+  .cat-card__nom{max-width:none;font-size:14px}
+  .cat-card__fig{position:static;right:auto;bottom:auto;width:82px;height:82px;border-radius:50%;object-fit:cover}
+}
+@media (min-width:640px){
+  .cat-card{min-height:0;padding:20px 16px 18px}
+  .cat-card__fig{width:112px;height:112px}
+}
+@media (min-width:960px){
+  .cat-card{padding:24px 18px 20px}
+  .cat-card__fig{width:130px;height:130px}
+}
+
+/* ============================================================
+   Creador de mix en tres pasos (misma lógica que el de Paladear)
+   ============================================================ */
+.mix-paso{margin-top:26px}
+.mix-paso__lbl{
+  display:flex;align-items:center;gap:10px;margin:0 0 12px;
+  font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--gris-txt);
+}
+.mix-paso__lbl span{
+  background:var(--russet);color:var(--champan-claro);
+  border-radius:999px;padding:4px 10px;font-size:11px;letter-spacing:.06em;
+}
+
+/* paso 1 — tamaño */
+.mix-tams{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mix-tam{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:var(--crema-card);border:1px solid var(--linea);border-radius:var(--r-md);
+  padding:14px 8px;min-height:70px;color:var(--marron-txt);
+}
+.mix-tam strong{font-family:var(--serif);font-size:20px;font-weight:500;line-height:1.1}
+.mix-tam span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gris-txt)}
+.mix-tam[aria-pressed="true"]{background:var(--oliva);border-color:var(--oliva);color:#fff}
+.mix-tam[aria-pressed="true"] span{color:rgba(255,255,255,.85)}
+
+/* paso 2 — lista de ingredientes */
+.buscador--mix{margin-bottom:10px}
+#mix-cats{margin-bottom:4px}
+.mix-lista{
+  max-height:min(52vh,420px);overflow-y:auto;-webkit-overflow-scrolling:touch;
+  border:1px solid var(--linea);border-radius:var(--r-lg);background:var(--crema-card);
+  padding:4px 10px;
+}
+.mix-fila{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 0;border-bottom:1px solid var(--linea);
+}
+.mix-fila:last-child{border-bottom:0}
+.mix-fila__fig{
+  width:52px;height:52px;flex:0 0 auto;border-radius:50%;
+  object-fit:cover;background:var(--foto-crema);
+}
+.mix-fila__txt{flex:1;min-width:0}
+.mix-fila__nom{font-family:var(--serif);font-size:16px;line-height:1.2;margin:0}
+.mix-fila__precio{font-size:12px;color:var(--gris-txt);margin:2px 0 0}
+.mix-fila--sel .mix-fila__nom{color:var(--oliva-osc)}
+.mix-fila .stepper{flex:0 0 auto;background:var(--champan-claro)}
+.mix-fila .stepper span{min-width:52px;font-size:13px}
+.mix-fila .stepper button:disabled{opacity:.35;cursor:not-allowed}
+.mix-lista__vacio{padding:26px 10px;text-align:center;color:var(--gris-txt);font-size:14px}
+
+/* barra de llenado */
+.mix-barra{
+  position:sticky;top:calc(var(--header-h) + 6px);z-index:20;
+  background:var(--champan-claro);border:1px solid var(--linea);
+  border-radius:var(--r-md);padding:12px 14px;margin-top:14px;
+  box-shadow:0 6px 16px rgba(63,36,22,.07);
+}
+.mix-barra__top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:14px}
+.mix-barra__top strong{font-family:var(--serif);font-size:19px;font-weight:500}
+.mix-barra__riel{height:8px;border-radius:999px;background:var(--oliva-claro);overflow:hidden;margin:8px 0 6px}
+.mix-barra__fill{height:100%;background:var(--russet);border-radius:999px;transition:width .25s ease}
+.mix-barra__fill--listo{background:var(--oliva)}
+.mix-barra__hint{margin:0;font-size:12px;color:var(--gris-txt)}
+
+/* paso 3 — resumen */
+.mix-resumen{
+  background:var(--russet);color:var(--champan-claro);
+  border-radius:var(--r-lg);padding:20px 18px;text-align:left;
+}
+.mix-resumen__head{
+  font-family:var(--serif);font-size:22px;margin:0 0 12px;
+}
+.mix-ings{list-style:none;margin:0 0 4px;padding:0;font-size:14px}
+.mix-ings li{
+  display:flex;justify-content:space-between;gap:12px;
+  padding:7px 0;border-bottom:1px solid rgba(244,234,217,.22);
+}
+.mix-ings__vacio{font-size:14px;opacity:.8;margin:0 0 6px}
+.mix-resumen .form-campo{margin:16px 0 10px}
+.mix-resumen .form-campo label{color:var(--champan-claro);opacity:.85}
+.mix-tot{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:4px 0}
+.mix-tot--main{
+  border-top:1px solid rgba(244,234,217,.3);margin-top:8px;padding-top:12px;
+  font-family:var(--serif);font-size:24px;
+}
+.mix-resumen #add-mix{margin-top:14px}
+.mix-resumen #add-mix:disabled{opacity:.55;cursor:not-allowed}
+.mix-nota{font-size:12px;opacity:.8;margin:10px 0 0}
+
+@media (min-width:640px){
+  .mix-tams{max-width:420px}
+  .mix-fila__fig{width:60px;height:60px}
+  .mix-resumen{padding:24px 22px}
+}
+
+/* filas del mix más compactas: entran más ingredientes en pantalla */
+.mix-fila{padding:8px 0;gap:10px}
+.mix-fila__fig{width:46px;height:46px}
+.mix-fila__nom{font-size:15px;line-height:1.15}
+.mix-fila__precio{font-size:11.5px}
+.mix-fila .stepper span{min-width:46px;line-height:36px}
+.mix-fila .stepper button{width:34px;height:36px}
+@media (min-width:640px){
+  .mix-fila__fig{width:52px;height:52px}
+  .mix-fila__nom{font-size:16px}
+}

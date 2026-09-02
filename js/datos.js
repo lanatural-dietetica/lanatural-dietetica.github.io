@@ -295,9 +295,10 @@ const MIX = {
   maxIngredientes: 4,
   presentaciones: ['250g', '500g', '1kg'],
   presentacionDefecto: '500g',
-  recargo: 10, // % sobre el promedio de los ingredientes, por el armado
+  pasoGramos: 50, // de a cuántos gramos suma cada toque del +
+  recargo: 10, // % de recargo por el armado, sobre la suma de los ingredientes
   titulo: 'Creá tu propio mix',
-  bajada: 'Elegí hasta cuatro ingredientes y la cantidad.'
+  bajada: 'Elegí el tamaño, sumá hasta cuatro ingredientes y listo.'
 };
 
 /* ---------- pasos de "Cómo comprar" (editables) ---------- */
