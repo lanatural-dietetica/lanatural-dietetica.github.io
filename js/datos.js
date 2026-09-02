@@ -199,6 +199,20 @@ const PRODUCTOS = [
     img: 'assets/productos/banana-deshidratada.jpg', color: '#e8c766', color2: '#f5dd97'
   },
   {
+    id: 'p15', sku: 'FS-030', slug: 'nuez-pecan', nombre: 'Nuez pecán',
+    categoria: 'frutos', subtitulo: 'Mariposa, sin cáscara', marca: '',
+    tipo: 'granel', costoKg: 22000, margen: 55, descuento: 0,
+    presentaciones: ['100g', '250g', '500g'], presentacionDefecto: '500g',
+    tags: ['sintacc', 'vegano'], estado: 'publicado', disponible: true,
+    destacado: true, orden: 3, mix: true,
+    descripcion: 'Mitades de nuez pecán mariposa, mantecosas y de sabor suave. Para picar, repostería y ensaladas.',
+    preparacion: 'Lista para consumir. Conservar en frasco cerrado, en lugar fresco y sin luz.',
+    origen: 'Entre Ríos, Argentina', ingredientes: 'Nuez pecán pelada.',
+    alergenos: 'Contiene frutos secos. Puede contener trazas de maní.',
+    img: 'assets/productos/nuez-pecan.webp',
+    color: '#8a4a26', color2: '#b8763f'
+  },
+  {
     id: 'p11', sku: 'DE-001', slug: 'salsa-de-tomate', nombre: 'Salsa de tomate',
     categoria: 'despensa', subtitulo: 'Frasco 420 g · sin conservantes', marca: 'Casera',
     tipo: 'envasado', costoUnidad: 1650, margen: 55, descuento: 0,
