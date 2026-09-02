@@ -4,8 +4,8 @@
    ============================================================ */
 
 :root{
-  --russet:#7b3f1d;
-  --russet-osc:#5d2e14;
+  --russet:#7a4423;
+  --russet-osc:#60361c;
   --marron-txt:#3f2416;
   --champan:#f4ead9;
   --champan-claro:#faf4e9;
@@ -688,7 +688,7 @@ body::before{
 
   .header{
     height:60px;
-    background:#7b3f1d;
+    background:#7a4423;
     background-image:none;
     box-shadow:none;
   }
@@ -704,7 +704,7 @@ body::before{
   .marca__bajada{font-size:10px;margin-top:2px}
   .carrito-btn__n{top:0;right:0}
   .panel{background:#faf2e6}
-  .panel__top{background:#7b3f1d;background-image:none}
+  .panel__top{background:#7a4423;background-image:none}
   .menu-demo{
     margin:18px 0 4px;padding:10px 12px;border-radius:8px;
     color:#f9f0e2;background:#6f7a52;font-size:12px;line-height:1.35;
@@ -715,7 +715,7 @@ body::before{
     font-size:12px;box-shadow:none;
   }
   .btn--oliva{background:#6f7a52}
-  .btn--russet{background:#7b3f1d}
+  .btn--russet{background:#7a4423}
 
   .hero{height:352px;min-height:0;padding:0;background:#f4ead9}
   .hero .contenedor{position:relative;display:block;height:100%;padding:0 0 0 30px}
@@ -750,7 +750,7 @@ body::before{
   .cat-card__ver{position:relative;z-index:2;font-size:9px;letter-spacing:.07em}
   .cat-card__ver svg{width:13px;height:13px}
 
-  .franja{min-height:32px;padding:6px 0;background:#7b3f1d;background-image:none;font-size:12px}
+  .franja{min-height:32px;padding:6px 0;background:#7a4423;background-image:none;font-size:12px}
   .franja .contenedor{padding-inline:12px}
   .franja svg{width:21px;height:21px}
 
@@ -831,7 +831,7 @@ body::before{
   .mix-card__check{width:30px;height:30px}
   .mix-card__fig{height:112px;aspect-ratio:auto;margin:0 -4px -7px;background:transparent}
   .mix-card__fig img{width:100%;height:100%;object-fit:cover;object-position:center;mix-blend-mode:normal}
-  .mix-resumen{margin-top:22px;padding:22px 18px;border-radius:17px;background:#7b3f1d;background-image:none;box-shadow:0 8px 20px rgba(91,45,20,.16)}
+  .mix-resumen{margin-top:22px;padding:22px 18px;border-radius:17px;background:#7a4423;background-image:none;box-shadow:0 8px 20px rgba(91,45,20,.16)}
   .mix-resumen .titulo-filete{margin-bottom:2px}
   .mix-resumen .titulo-filete h2{font-size:27px;color:#f4ead9}
   .mix-resumen .opts{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -883,7 +883,7 @@ body::before{
   .pasos__cierre{margin-top:13px;font-size:12px}
   .como-extra{display:none}
 
-  .pie{margin-top:0;background:#7b3f1d;background-image:none}
+  .pie{margin-top:0;background:#7a4423;background-image:none}
   .tabbar{padding:5px 4px calc(5px + env(safe-area-inset-bottom));background:#faf4e9;backdrop-filter:none}
   .tabbar a{min-height:46px;font-size:9px}
 }
