@@ -913,7 +913,7 @@ body::before{
   body[data-vista="catalogo"] .prod__nom{min-height:2.2em;text-wrap:balance}
   .cat-card__fig{background:var(--foto-crema)}
   .mix-card__fig{
-    position:absolute;right:10px;bottom:0;left:10px;height:118px;margin:0;
+    position:absolute;right:10px;bottom:8px;left:10px;height:104px;margin:0;
   }
   .mix-card__fig img{object-position:center bottom}
 }
