@@ -58,7 +58,7 @@ const CATEGORIAS = [
   { id: 'legumbres',  nombre: 'Granos y legumbres',slug: 'granos-y-legumbres',orden: 3, visible: true, img: 'assets/productos/garbanzos.jpg', color: '#d8b271' },
   { id: 'sintacc',    nombre: 'Sin TACC',          slug: 'sin-tacc',          orden: 4, visible: true, img: 'assets/productos/quinoa.jpg', color: '#e0d3ab' },
   { id: 'dulces',     nombre: 'Dulces y cacao',    slug: 'dulces-y-cacao',    orden: 5, visible: true, img: 'assets/productos/chocolate-amargo.jpg', color: '#4a2c1c' },
-  { id: 'despensa',   nombre: 'Despensa',          slug: 'despensa',          orden: 6, visible: true, img: 'assets/productos/harina-integral.jpg', color: '#a9563a' }
+  { id: 'despensa',   nombre: 'Despensa',          slug: 'despensa',          orden: 6, visible: true, img: 'assets/productos/harina-integral.jpg?v=20260902g', color: '#a9563a' }
 ];
 
 /* ---------- etiquetas ---------- */
@@ -205,7 +205,7 @@ const PRODUCTOS = [
     descripcion: 'Salsa natural de tomate en frasco de vidrio, elaborada sin conservantes.',
     preparacion: 'Una vez abierto, conservar refrigerado hasta 4 días.',
     origen: 'Mendoza, Argentina', ingredientes: 'Tomate, sal, aceite de girasol, albahaca.', alergenos: 'No contiene alérgenos declarados.',
-    img: 'assets/productos/salsa-de-tomate.jpg', color: '#b8352a', color2: '#d1523f'
+    img: 'assets/productos/salsa-de-tomate.jpg?v=20260902g', color: '#b8352a', color2: '#d1523f'
   },
   {
     id: 'p12', sku: 'DU-010', slug: 'miel-de-flores', nombre: 'Miel de flores',
@@ -229,7 +229,7 @@ const PRODUCTOS = [
     descripcion: 'Harina integral fina de molienda reciente, para panificados y masas.',
     preparacion: 'Conservar en lugar fresco y seco.',
     origen: 'Córdoba, Argentina', ingredientes: 'Harina integral de trigo.', alergenos: 'Contiene gluten.',
-    img: 'assets/productos/harina-integral.jpg', color: '#c8b28a', color2: '#dfceb0'
+    img: 'assets/productos/harina-integral.jpg?v=20260902g', color: '#c8b28a', color2: '#dfceb0'
   },
   {
     id: 'p14', sku: 'IN-005', slug: 'tisana-de-hierbas', nombre: 'Tisana de hierbas',

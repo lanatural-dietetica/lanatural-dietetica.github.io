@@ -258,10 +258,10 @@ function vistaHome() {
         '<img class="cat-card__fig" src="assets/productos/pasas-de-uva.jpg" alt="" width="418" height="418" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Empezar ' + ICO.flecha + '</span></a>' +
       '<a class="cat-card" href="#/combos"><span class="cat-card__nom">Combos</span>' +
-        '<img class="cat-card__fig" src="assets/productos/salsa-de-tomate.jpg" alt="" width="627" height="627" loading="lazy" decoding="async">' +
+        '<img class="cat-card__fig" src="assets/productos/salsa-de-tomate.jpg?v=20260902g" alt="" width="627" height="627" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Ver combos ' + ICO.flecha + '</span></a>' +
       '<a class="cat-card" href="#/como-comprar"><span class="cat-card__nom">Cómo comprar</span>' +
-        '<img class="cat-card__fig" src="assets/productos/harina-integral.jpg" alt="" width="627" height="627" loading="lazy" decoding="async">' +
+        '<img class="cat-card__fig" src="assets/productos/harina-integral.jpg?v=20260902g" alt="" width="627" height="627" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Leer ' + ICO.flecha + '</span></a>' +
       '<a class="cat-card" href="#/catalogo?cat=sintacc"><span class="cat-card__nom">Sin TACC</span>' +
         '<img class="cat-card__fig" src="assets/productos/quinoa.jpg" alt="" width="418" height="418" loading="lazy" decoding="async">' +
