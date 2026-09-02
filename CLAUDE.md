@@ -39,3 +39,21 @@ Nunca se escribe un precio a mano. Se carga costo, margen y descuento:
 - Español de Argentina y formato de moneda argentino.
 - Sin afirmaciones medicinales ni promesas de cura en productos naturales.
 - Datos de demostración siempre marcados como tales (`DEMO = true` en `js/datos.js`).
+
+## Estado visual actual — 2026-09-02
+- Prioridad vigente: terminar la fidelidad visual mobile contra las seis maquetas de
+  `../referencia/`; la adaptación desktop se refina después.
+- Hero mobile: título `Elegí lo natural.`, en dos líneas, superpuesto a la foto sin
+  invadir los productos.
+- Las fotos de productos se muestran completas (`object-fit: contain`) sobre el
+  crema fotográfico compartido `#f5e6d4`, también usado en categorías, mix y combos.
+- Se repararon `salsa-de-tomate.jpg` y `harina-integral.jpg`: antes contenían una
+  composición de varias fotos. Sus URLs llevan versión para evitar caché viejo.
+- Las tarjetas de productos con presentación única conservan el mismo ritmo vertical
+  que las que tienen selector.
+- En mobile, `Cómo comprar` está solo en la hamburguesa; la barra inferior tiene
+  Inicio, Catálogo, Mi mix y Combos.
+- No volver a agregar círculos, manchas ni decoraciones de fondo ausentes en las
+  maquetas.
+- Tester y repo: `https://paladear.github.io/dietetica-test/` y
+  `https://github.com/paladear/dietetica-test`.
