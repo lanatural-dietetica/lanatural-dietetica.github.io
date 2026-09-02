@@ -948,10 +948,10 @@ body::before{
   position:static;
   align-self:center;
   margin:0;
-  width:96px;height:96px;
-  object-fit:cover;
+  width:104px;height:104px;
+  object-fit:contain;
   object-position:center;
-  border-radius:50%;
+  border-radius:10px;
   background:var(--foto-crema);
 }
 .cat-card__ver{justify-content:center}
@@ -959,7 +959,7 @@ body::before{
 @media (max-width:639px){
   .cat-card{height:auto;min-height:0;padding:14px 10px 12px}
   .cat-card__nom{max-width:none;font-size:14px}
-  .cat-card__fig{position:static;right:auto;bottom:auto;width:82px;height:82px;border-radius:50%;object-fit:cover}
+  .cat-card__fig{position:static;right:auto;bottom:auto;width:88px;height:88px;border-radius:10px;object-fit:contain}
 }
 @media (min-width:640px){
   .cat-card{min-height:0;padding:20px 16px 18px}
@@ -1009,8 +1009,8 @@ body::before{
 }
 .mix-fila:last-child{border-bottom:0}
 .mix-fila__fig{
-  width:52px;height:52px;flex:0 0 auto;border-radius:50%;
-  object-fit:cover;background:var(--foto-crema);
+  width:52px;height:52px;flex:0 0 auto;border-radius:10px;
+  object-fit:contain;background:var(--foto-crema);
 }
 .mix-fila__txt{flex:1;min-width:0}
 .mix-fila__nom{font-family:var(--serif);font-size:16px;line-height:1.2;margin:0}
