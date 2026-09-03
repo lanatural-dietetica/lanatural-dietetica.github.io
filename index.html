@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Karla:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/estilos.css?v=20260903k">
+<link rel="stylesheet" href="css/estilos.css?v=20260903m">
 </head>
 <body>
 
@@ -42,6 +42,38 @@
     </button>
   </div>
 </header>
+
+<div class="header-compacta" id="header-compacta" aria-hidden="true">
+  <div class="header-compacta__in">
+    <button class="header-compacta__buscar" type="button" data-abrir-busqueda aria-label="Buscar productos">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <span>Buscar productos</span>
+    </button>
+    <button class="header-compacta__cats" id="btn-categorias-compactas" type="button" aria-label="Ver categorías" aria-controls="panel-categorias">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+  </div>
+</div>
+
+<section class="busqueda-pantalla" id="busqueda-pantalla" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="busqueda-titulo">
+  <div class="busqueda-top">
+    <div class="busqueda-top__in">
+      <button class="busqueda-volver" id="busqueda-volver" type="button" aria-label="Cerrar buscador">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="busqueda-campo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <label class="visually-hidden" id="busqueda-titulo" for="busqueda-input">Buscar productos</label>
+        <input id="busqueda-input" type="search" placeholder="¿Qué estás buscando?" autocomplete="off" enterkeyhint="search">
+        <button id="busqueda-limpiar" type="button" aria-label="Limpiar búsqueda">×</button>
+      </div>
+    </div>
+  </div>
+  <div class="busqueda-contenido">
+    <p class="busqueda-estado" id="busqueda-estado">Buscá por nombre de producto o categoría.</p>
+    <div id="busqueda-resultados" aria-live="polite"></div>
+  </div>
+</section>
 
 <main id="app"></main>
 
@@ -104,6 +136,18 @@
   </div>
 </aside>
 
+<aside class="panel panel--izq" id="panel-categorias" aria-hidden="true" aria-label="Categorías">
+  <div class="panel__top">
+    <span class="panel__titulo">Categorías</span>
+    <button class="icon-btn" data-cerrar aria-label="Cerrar categorías">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="panel__cuerpo">
+    <nav class="menu-nav" id="menu-cats-compact"></nav>
+  </div>
+</aside>
+
 <aside class="panel panel--der" id="panel-carrito" aria-hidden="true" aria-label="Carrito">
   <div class="panel__top">
     <button class="icon-btn" id="co-volver" hidden aria-label="Volver">
@@ -120,6 +164,6 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="js/datos.js?v=20260903g"></script>
-<script src="js/app.js?v=20260903k"></script>
+<script src="js/app.js?v=20260903m"></script>
 </body>
 </html>

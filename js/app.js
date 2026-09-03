@@ -21,10 +21,12 @@ const prodPorId = id => PRODUCTOS.find(p => p.id === id);
 const prodPorSlug = s => PRODUCTOS.find(p => p.slug === s);
 const catPorId = id => CATEGORIAS.find(c => c.id === id);
 const etiqueta = id => (ETIQUETAS.find(e => e.id === id) || {}).nombre || id;
+const porNombre = (a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es');
+const categoriasVisibles = () => CATEGORIAS.filter(c => c.visible).sort(porNombre);
 
 const publicados = () => PRODUCTOS
   .filter(p => p.estado === 'publicado')
-  .sort((a, b) => (a.orden || 99) - (b.orden || 99));
+  .sort(porNombre);
 
 const imgDe = o => o.img || imgDemo(o.color || '#c8a97e', o.color2 || '#e3cba6');
 
@@ -96,7 +98,7 @@ const LS_ULTIMO  = 'dietetica_ultimo_v1';
 const estado = {
   carrito: leer(LS_CARRITO, []),
   favs:    leer(LS_FAVS, []),
-  catalogo: { q: '', cat: 'todos', orden: 'destacados', soloDisponibles: false },
+  catalogo: { q: '', cat: 'todos', orden: 'nombre', soloDisponibles: false },
   mix: { tam: null, ing: {}, cat: 'todos', q: '', nombre: '' },
   ficha: { pres: null, cant: 1, tab: 'descripcion' },
   cards: {},  // { idProducto: { pres, cant } } — lo elegido en cada tarjeta del catálogo
@@ -153,6 +155,29 @@ function agruparCarrito() {
     b.unidades = b.lineas.reduce((s, l) => s + l.cant, 0);
   });
   return bloques;
+}
+
+function cantidadLineaCarrito(i) {
+  if (i.tipo === 'producto') {
+    const p = prodPorId(i.id);
+    if (p && p.tipo === 'granel') {
+      const gramos = ((pres(i.presentacionId) || {}).gramos || 0) * i.cant;
+      return gLabel(gramos);
+    }
+    return i.cant + (i.cant === 1 ? ' unidad' : ' unidades');
+  }
+  return i.cant + (i.cant === 1 ? ' unidad' : ' unidades');
+}
+
+function cantidadBloqueCarrito(b) {
+  if (b.tipo === 'producto') {
+    const p = prodPorId(b.lineas[0].id);
+    if (p && p.tipo === 'granel') {
+      const gramos = b.lineas.reduce((s, i) => s + ((pres(i.presentacionId) || {}).gramos || 0) * i.cant, 0);
+      return gLabel(gramos) + ' en total';
+    }
+  }
+  return b.unidades + (b.unidades === 1 ? ' unidad en total' : ' unidades en total');
 }
 
 function quitarBloque(clave) {
@@ -328,10 +353,112 @@ const grilla = arr => '<div class="grilla">' + arr.map(tarjetaProducto).join('')
 
 const vacio = (t, s) => '<div class="vacio"><h3>' + esc(t) + '</h3><p>' + esc(s) + '</p></div>';
 
+/* ---------------- búsqueda predictiva ---------------- */
+function normalizarBusqueda(s) {
+  return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+function puntajeBusqueda(texto, consulta) {
+  const t = normalizarBusqueda(texto);
+  if (!t || !consulta) return 0;
+  if (t.startsWith(consulta)) return 3;
+  if (t.split(/\s+/).some(p => p.startsWith(consulta))) return 2;
+  return t.includes(consulta) ? 1 : 0;
+}
+
+function pintarBusqueda(valor) {
+  const cont = $('#busqueda-resultados');
+  const estadoVacio = $('#busqueda-estado');
+  if (!cont || !estadoVacio) return;
+  const texto = String(valor || '').trim();
+  const q = normalizarBusqueda(texto);
+
+  if (q.length < 2) {
+    cont.innerHTML = '';
+    estadoVacio.textContent = texto ? 'Escribí una letra más para ver sugerencias.' : 'Buscá por nombre de producto o categoría.';
+    estadoVacio.hidden = false;
+    return;
+  }
+
+  const cats = categoriasVisibles().map(c => ({
+    item: c,
+    score: puntajeBusqueda(c.nombre, q)
+  })).filter(x => x.score > 0)
+    .sort((a, b) => b.score - a.score || porNombre(a.item, b.item)).slice(0, 3);
+
+  const productos = publicados().map(p => {
+    const cat = catPorId(p.categoria);
+    const score = puntajeBusqueda(p.nombre, q) * 4 +
+      puntajeBusqueda(p.subtitulo || '', q) * 2 +
+      puntajeBusqueda(cat ? cat.nombre : '', q) +
+      puntajeBusqueda((p.tags || []).map(etiqueta).join(' '), q);
+    return { item: p, score: score };
+  }).filter(x => x.score > 0)
+    .sort((a, b) => b.score - a.score || porNombre(a.item, b.item)).slice(0, 8);
+
+  if (!cats.length && !productos.length) {
+    cont.innerHTML = '';
+    estadoVacio.textContent = 'No encontramos “' + texto + '”. Probá con otra palabra.';
+    estadoVacio.hidden = false;
+    return;
+  }
+
+  estadoVacio.hidden = true;
+  cont.innerHTML =
+    (cats.length
+      ? '<section class="busqueda-grupo"><h2>Categorías</h2><div class="busqueda-categorias">' +
+        cats.map(x => '<button type="button" class="busqueda-categoria" data-buscar-cat="' + x.item.id + '">' +
+          '<span>' + esc(x.item.nombre) + '</span>' + ICO.flecha + '</button>').join('') +
+        '</div></section>'
+      : '') +
+    (productos.length
+      ? '<section class="busqueda-grupo"><h2>Productos</h2><div class="busqueda-lista">' +
+        productos.map(x => {
+          const p = x.item;
+          const cat = catPorId(p.categoria);
+          return '<button type="button" class="busqueda-resultado" data-buscar-producto="' + esc(p.slug) + '">' +
+            '<span class="busqueda-resultado__fig"><img src="' + imgDe(p) + '" alt="" width="72" height="72" loading="lazy"></span>' +
+            '<span class="busqueda-resultado__txt"><strong>' + esc(p.nombre) + '</strong>' +
+              '<small>' + esc(cat ? cat.nombre : '') + '</small>' +
+              '<em>' + (p.disponible ? money(precioDesde(p)) : 'Sin stock') + '</em></span>' +
+            ICO.flecha +
+          '</button>';
+        }).join('') +
+        '</div></section>'
+      : '');
+}
+
+function abrirBusqueda() {
+  cerrarPaneles();
+  const panel = $('#busqueda-pantalla');
+  const input = $('#busqueda-input');
+  if (!panel || !input) return;
+  panel.classList.add('abierta');
+  panel.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('busqueda-abierta');
+  document.body.style.overflow = 'hidden';
+  pintarBusqueda(input.value);
+  setTimeout(() => input.focus(), 40);
+}
+
+function cerrarBusqueda() {
+  const panel = $('#busqueda-pantalla');
+  const input = $('#busqueda-input');
+  if (panel) {
+    panel.classList.remove('abierta');
+    panel.setAttribute('aria-hidden', 'true');
+  }
+  if (input) input.value = '';
+  document.body.classList.remove('busqueda-abierta');
+  document.body.style.overflow = '';
+  pintarBusqueda('');
+  alScrollear();
+}
+
 /* ---------------- vistas ---------------- */
 function vistaHome() {
   const destacados = publicados().filter(p => p.destacado).slice(0, 6);
-  const cats = CATEGORIAS.filter(c => c.visible).sort((a, b) => a.orden - b.orden).slice(0, 4);
+  const cats = categoriasVisibles().slice(0, 4);
 
   return '' +
   '<section class="hero">' +
@@ -430,15 +557,14 @@ function pintarGrillaCatalogo() {
 function vistaCatalogo() {
   const f = estado.catalogo;
   const chips = [{ id: 'todos', nombre: 'Todos' }]
-    .concat(CATEGORIAS.filter(c => c.visible).sort((a, b) => a.orden - b.orden));
+    .concat(categoriasVisibles());
 
   return '' +
   '<section class="seccion catalogo"><div class="contenedor">' +
     '<div class="titulo-filete"><h2>Nuestra selección</h2></div>' +
-    '<div class="buscador">' + ICO.lupa +
-      '<label class="visually-hidden" for="q">Buscar productos</label>' +
-      '<input id="q" type="search" placeholder="Buscar productos" value="' + esc(f.q) + '" autocomplete="off">' +
-    '</div>' +
+    '<button class="buscador-abrir" type="button" data-abrir-busqueda>' + ICO.lupa +
+      '<span>Buscar productos</span><small>Escribí un nombre o categoría</small>' +
+    '</button>' +
     '<div class="chips" role="group" aria-label="Categorías">' +
       chips.map(c => '<button class="chip" data-chip="' + c.id + '" aria-pressed="' + (f.cat === c.id) + '">' + esc(c.nombre) + '</button>').join('') +
     '</div>' +
@@ -446,8 +572,8 @@ function vistaCatalogo() {
       '<button id="btn-disp" aria-pressed="' + f.soloDisponibles + '">' + (f.soloDisponibles ? 'Solo disponibles ✓' : 'Disponibles') + '</button>' +
       '<label class="visually-hidden" for="orden">Ordenar por</label>' +
       '<select id="orden">' +
-        '<option value="destacados"' + (f.orden === 'destacados' ? ' selected' : '') + '>Destacados</option>' +
         '<option value="nombre"' + (f.orden === 'nombre' ? ' selected' : '') + '>Nombre A-Z</option>' +
+        '<option value="destacados"' + (f.orden === 'destacados' ? ' selected' : '') + '>Destacados</option>' +
         '<option value="precio-asc"' + (f.orden === 'precio-asc' ? ' selected' : '') + '>Precio: menor</option>' +
         '<option value="precio-desc"' + (f.orden === 'precio-desc' ? ' selected' : '') + '>Precio: mayor</option>' +
       '</select>' +
@@ -536,7 +662,11 @@ function mixProductos() {
 }
 function mixCategorias() {
   const usadas = [...new Set(mixProductos().map(p => p.categoria))];
-  return CATEGORIAS.filter(c => usadas.includes(c.id)).sort((a, b) => a.orden - b.orden);
+  return CATEGORIAS.filter(c => usadas.includes(c.id)).sort((a, b) => {
+    if (a.id === 'frutos') return -1;
+    if (b.id === 'frutos') return 1;
+    return porNombre(a, b);
+  });
 }
 const mixGramosTam = () => {
   const p = pres(estado.mix.tam);
@@ -577,7 +707,7 @@ function vistaMix() {
 
       '<div class="mix-barra" id="mix-barra"></div>' +
 
-      '<div class="mix-paso">' +
+      '<div class="mix-paso" id="mix-paso-final">' +
         '<p class="mix-paso__lbl"><span>Paso 3</span> Agregá al carrito</p>' +
         '<div class="mix-resumen" id="mix-resumen"></div>' +
       '</div>' +
@@ -612,12 +742,9 @@ function pintarMixLista() {
 
   const usados  = cuentaMix(st.ing).gramos;
   const libre   = mixGramosTam() - usados;
-  const distintos = Object.values(st.ing).filter(g => g > 0).length;
-
   cont.innerHTML = arr.map(p => {
     const g = st.ing[p.id] || 0;
-    const tope = MIX.maxIngredientes && distintos >= MIX.maxIngredientes && !g;
-    const noEntra = libre < MIX.pasoGramos || tope;
+    const noEntra = libre < MIX.pasoGramos;
     return '<div class="mix-fila' + (g ? ' mix-fila--sel' : '') + '">' +
       '<img class="mix-fila__fig" src="' + (p.mixImg || imgDe(p)) + '" alt="" width="120" height="120" loading="lazy" decoding="async">' +
       '<div class="mix-fila__txt">' +
@@ -823,10 +950,13 @@ function pasoProductos() {
         '<div class="item__fig"><img src="' + b.img + '" alt="" width="70" height="70" loading="lazy"></div>' +
         '<div class="item__cuerpo">' +
           '<p class="item__nom">' + esc(b.nombre) + '</p>' +
-          b.lineas.map(i =>
-            '<div class="item__var">' +
+          '<p class="item__acum">Llevás ' + esc(cantidadBloqueCarrito(b)) + '</p>' +
+          b.lineas.map(i => {
+            const totalLinea = cantidadLineaCarrito(i);
+            return '<div class="item__var">' +
               '<span class="item__var-lbl">' + esc(i.detalle || '') +
-                '<em>' + (porKg || money(i.precio) + ' c/u') + '</em></span>' +
+                '<em>' + (porKg || money(i.precio) + ' c/u') + '</em>' +
+                '<small class="item__var-total">' + i.cant + ' × ' + esc(i.detalle || 'unidad') + ' = ' + esc(totalLinea) + '</small></span>' +
               '<span class="stepper stepper--mini">' +
                 '<button data-mas="' + i.key + '" data-delta="-1" aria-label="Quitar uno de ' + esc(i.detalle || i.nombre) + '">−</button>' +
                 '<span>' + i.cant + '</span>' +
@@ -834,7 +964,8 @@ function pasoProductos() {
               '</span>' +
               '<strong class="item__monto">' + money(i.precio * i.cant) + '</strong>' +
               '<button class="item__papelera" data-quitar="' + esc(i.key) + '" aria-label="Quitar ' + esc(i.detalle || i.nombre) + '">' + ICO.basura + '</button>' +
-            '</div>').join('') +
+            '</div>';
+          }).join('') +
           (b.lineas.length > 1
             ? '<div class="item__sub"><span>Subtotal</span><strong>' + money(b.subtotal) + '</strong></div>'
             : '') +
@@ -944,8 +1075,9 @@ function armarMensaje(datos) {
 
 /* ---------------- paneles ---------------- */
 function abrirPanel(cual) {
-  const p = cual === 'menu' ? $('#panel-menu') : $('#panel-carrito');
-  if (cual !== 'menu') { estado.checkout.paso = 0; pintarCarrito(); }
+  const p = cual === 'menu' ? $('#panel-menu') : (cual === 'categorias' ? $('#panel-categorias') : $('#panel-carrito'));
+  if (cual === 'carrito') { estado.checkout.paso = 0; pintarCarrito(); }
+  if (!p) return;
   p.classList.add('abierto');
   p.setAttribute('aria-hidden', 'false');
   $('#overlay').classList.add('abierto');
@@ -1094,14 +1226,38 @@ document.addEventListener('click', ev => {
   const conOnda = t.closest('.btn-onda, .btn--oliva, .btn--russet, .prod__add');
   if (conOnda && !conOnda.disabled) onda(conOnda, ev);
 
+  if (t.closest('#btn-buscar') || t.closest('[data-abrir-busqueda]')) { abrirBusqueda(); return; }
+  if (t.closest('#busqueda-volver')) { cerrarBusqueda(); return; }
+  if (t.closest('#busqueda-limpiar')) {
+    const input = $('#busqueda-input');
+    if (input) { input.value = ''; pintarBusqueda(''); input.focus(); }
+    return;
+  }
+  const productoBuscado = t.closest('[data-buscar-producto]');
+  if (productoBuscado) {
+    const destino = '#/producto/' + productoBuscado.dataset.buscarProducto;
+    cerrarBusqueda();
+    if (location.hash === destino) render(); else location.hash = destino;
+    return;
+  }
+  const categoriaBuscada = t.closest('[data-buscar-cat]');
+  if (categoriaBuscada) {
+    estado.catalogo.cat = categoriaBuscada.dataset.buscarCat;
+    estado.catalogo.orden = 'nombre';
+    const destino = '#/catalogo?cat=' + categoriaBuscada.dataset.buscarCat;
+    cerrarBusqueda();
+    if (location.hash === destino) render(); else location.hash = destino;
+    return;
+  }
+
   const cerrar = t.closest('[data-cerrar]');
   if (cerrar) { cerrarPaneles(); return; }
   if (t.closest('[data-cerrar-carrito]')) { cerrarPaneles(); location.hash = '#/catalogo'; return; }
   if (t.id === 'overlay') { cerrarPaneles(); return; }
 
   if (t.closest('#btn-menu'))    { abrirPanel('menu'); return; }
+  if (t.closest('#btn-categorias-compactas')) { abrirPanel('categorias'); return; }
   if (t.closest('.carrito-btn') || t.closest('#cart-fab')) { abrirPanel('carrito'); return; }
-  if (t.closest('#btn-buscar'))  { location.hash = '#/catalogo'; setTimeout(() => { const q = $('#q'); if (q) q.focus(); }, 60); return; }
 
   const fav = t.closest('[data-fav]');
   if (fav) {
@@ -1233,13 +1389,14 @@ document.addEventListener('click', ev => {
     const c = cuentaMix(st.ing);
     const libre = mixGramosTam() - c.gramos;
     if (libre < MIX.pasoGramos) { toast('El mix ya está completo'); return; }
-    const distintos = Object.values(st.ing).filter(g => g > 0).length;
-    if (!st.ing[id] && MIX.maxIngredientes && distintos >= MIX.maxIngredientes) {
-      toast('Podés combinar hasta ' + MIX.maxIngredientes + ' ingredientes');
-      return;
-    }
     st.ing[id] = (st.ing[id] || 0) + Math.min(MIX.pasoGramos, libre);
     pintarMixLista(); pintarMixBarra(); pintarMixResumen();
+    if (cuentaMix(st.ing).gramos === mixGramosTam()) {
+      setTimeout(() => {
+        const paso3 = $('#mix-paso-final');
+        if (paso3) window.scrollTo({ top: paso3.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' });
+      }, 80);
+    }
     return;
   }
   const mixMenos = t.closest('[data-mixmenos]');
@@ -1350,6 +1507,10 @@ function render2Ficha() {
 }
 
 document.addEventListener('input', ev => {
+  if (ev.target.id === 'busqueda-input') {
+    pintarBusqueda(ev.target.value);
+    return;
+  }
   if (ev.target.id === 'q') {
     estado.catalogo.q = ev.target.value;
     pintarGrillaCatalogo();
@@ -1404,16 +1565,22 @@ document.addEventListener('submit', ev => {
 });
 
 document.addEventListener('keydown', ev => {
-  if (ev.key === 'Escape') cerrarPaneles();
+  if (ev.key !== 'Escape') return;
+  if ($('#busqueda-pantalla') && $('#busqueda-pantalla').classList.contains('abierta')) cerrarBusqueda();
+  else cerrarPaneles();
 });
 
 window.addEventListener('hashchange', render);
 
 /* ---------------- movimiento de la cáscara ---------------- */
-/* el header se achica al bajar y vuelve al subir */
+/* al bajar por el catálogo aparece la barra de búsqueda y categorías */
 function alScrollear() {
   const y = window.scrollY || document.documentElement.scrollTop || 0;
   document.body.classList.toggle('compacto', y > 140);
+  const mostrarBarra = document.body.dataset.vista === 'catalogo' && y > 140 && !document.body.classList.contains('busqueda-abierta');
+  document.body.classList.toggle('compacto-catalogo', mostrarBarra);
+  const barra = $('#header-compacta');
+  if (barra) barra.setAttribute('aria-hidden', String(!mostrarBarra));
 }
 window.addEventListener('scroll', alScrollear, { passive: true });
 
@@ -1444,8 +1611,10 @@ function pintarCascara() {
   $('#marca-nombre').textContent = CONFIG.marca;
   $('#marca-bajada').textContent = CONFIG.bajada;
 
-  $('#menu-cats').innerHTML = CATEGORIAS.filter(c => c.visible).sort((a, b) => a.orden - b.orden)
+  const linksCategorias = categoriasVisibles()
     .map(c => '<a href="#/catalogo?cat=' + c.id + '" data-cerrar>' + esc(c.nombre) + '</a>').join('');
+  $('#menu-cats').innerHTML = linksCategorias;
+  $('#menu-cats-compact').innerHTML = '<a href="#/catalogo" data-cerrar>Todos los productos</a>' + linksCategorias;
 
   $('#menu-datos').innerHTML =
     '<p>' + esc(CONFIG.direccion) + '</p>' +

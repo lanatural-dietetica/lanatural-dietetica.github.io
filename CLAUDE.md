@@ -182,3 +182,20 @@ Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <no
   sombreaba el rectángulo opaco y hacía parecer que el fondo era de otro color.
 - También se compactaron en desktop las cards de producto, combos, el creador de mix y la
   pantalla Cómo comprar. No replicar estas escalas en mobile.
+
+## Catálogo, búsqueda, carrito y mix — 2026-09-03
+- Los productos y las categorías se presentan en orden alfabético. En el mix, el orden de
+  categorías es una excepción deliberada: `Todos`, `Frutos y semillas` y luego el resto
+  alfabético.
+- El buscador ya no es un filtro pequeño dentro del catálogo: abre una pantalla propia,
+  predice categorías y productos desde dos letras y conserva el campo fijo al desplazar.
+- Al bajar por el catálogo aparece `#header-compacta`, con buscador y una hamburguesa que
+  abre únicamente categorías. Mantener esa barra separada del menú general.
+- El carrito conserva las distintas presentaciones porque son más cómodas para compras
+  grandes. Al editar muestra el peso total del producto y la cuenta por variante
+  (`3 × 250 g = 750 g`); no reemplazar esto por incrementos únicos de la medida mínima.
+- El mix no tiene límite de ingredientes: el único límite es el peso elegido. Al elegir el
+  tamaño baja al paso 2 y, al completar el peso, baja al resumen del paso 3.
+- El hero desktop conserva la foto panorámica, pero la amplía un 14% desde la derecha para
+  acercar los productos al mensaje. El texto entra más hacia el centro y es un poco más
+  chico. Estos ajustes siguen dentro de `@media (min-width:960px)` y no modifican mobile.

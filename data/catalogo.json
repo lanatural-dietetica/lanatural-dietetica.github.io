@@ -936,7 +936,7 @@
   "mix": {
     "activo": true,
     "minIngredientes": 2,
-    "maxIngredientes": 4,
+    "maxIngredientes": 0,
     "presentaciones": [
       "250g",
       "500g",
@@ -946,7 +946,7 @@
     "pasoGramos": 50,
     "recargo": 10,
     "titulo": "Creá tu propio mix",
-    "bajada": "Elegí el tamaño, sumá hasta cuatro ingredientes y listo."
+    "bajada": "Elegí el tamaño y combiná todos los ingredientes que quieras."
   },
   "pasos": [
     {
