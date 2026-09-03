@@ -250,10 +250,15 @@ const imgDe = p => p.img || 'data:image/svg+xml,' + encodeURIComponent(
 /* El nombre se guarda siempre parejo: primera letra en mayúscula y el resto en
    minúscula, escriba como escriba. Las siglas se respetan. */
 const SIGLAS = ['TACC'];   // se escriben enteras en mayúscula
+// conectores: van en minúscula salvo que abran el nombre
+const CONECTORES = ['de','del','la','las','el','los','y','e','o','u','con','en','a','al','para','sin','por'];
 function nombreLindo(txt) {
   let t = (txt || '').trim().replace(/\s+/g, ' ').toLowerCase();
   // primera letra de cada palabra en mayúscula, también después de guión o barra
   t = t.replace(/(^|[\s\-\/(])([a-záéíóúüñ])/g, (m, antes, letra) => antes + letra.toUpperCase());
+  // y los conectores vuelven a minúscula, menos el primero
+  t = t.split(' ').map((palabra, i) =>
+    i > 0 && CONECTORES.includes(palabra.toLowerCase()) ? palabra.toLowerCase() : palabra).join(' ');
   SIGLAS.forEach(sigla => {
     t = t.replace(new RegExp('\\b' + sigla + '\\b', 'gi'), sigla);
   });
