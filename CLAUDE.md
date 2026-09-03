@@ -55,8 +55,9 @@ Nunca se escribe un precio a mano. Se carga costo, margen y descuento:
   Inicio, Catálogo, Mi mix y Combos.
 - No volver a agregar círculos, manchas ni decoraciones de fondo ausentes en las
   maquetas.
-- Tester y repo: `https://paladear.github.io/dietetica-test/` y
-  `https://github.com/paladear/dietetica-test`.
+- Sitio y repo definitivos: `https://lanatural-dietetica.github.io/online/` y
+  `https://github.com/lanatural-dietetica/online`, en la cuenta de la clienta.
+  El viejo `paladear/dietetica-test` quedó como prueba (remote `prueba` en la carpeta local).
 
 ## Decisiones de Claude — 2026-09-02
 - Hero: la foto es `assets/hero-lanatural.webp` (con `.jpg` de respaldo en un

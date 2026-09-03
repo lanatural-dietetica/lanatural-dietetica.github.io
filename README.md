@@ -3,9 +3,9 @@
 Tienda estática mobile-first para una dietética de Mendoza. El pedido termina en
 **WhatsApp**: no hay pago online.
 
-**Demo:** https://paladear.github.io/dietetica-test/
+**Tienda:** https://lanatural-dietetica.github.io/online/
 
-> **DIETÉTICA es un nombre provisional.** Las maquetas originales decían "MUNA",
+> **Nota:** Las maquetas originales decían "MUNA",
 > que era ficticio. Cuando esté el nombre real se cambia en `js/datos.js` → `CONFIG.marca`.
 
 ## Archivos
