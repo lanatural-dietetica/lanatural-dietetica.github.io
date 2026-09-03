@@ -152,24 +152,24 @@
     {
       "id": "p01",
       "sku": "FS-001",
-      "slug": "lentejas-rosadas",
-      "nombre": "Lentejas rosadas",
+      "slug": "lentejas-turca",
+      "nombre": "Lentejas Turca",
       "categoria": "legumbres",
-      "subtitulo": "Origen: Canadá",
+      "subtitulo": "Origen: Turquia",
       "marca": "",
       "tipo": "granel",
       "costoKg": 2100,
       "margen": 62,
-      "descuento": 0,
+      "descuento": 10,
       "presentaciones": [
-        "250g",
+        "100g",
         "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
       "tags": [
-        "sintacc",
-        "vegano"
+        "vegano",
+        "organico"
       ],
       "estado": "publicado",
       "disponible": true,
