@@ -152,5 +152,10 @@ Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <no
   emparejado con `#FAE6D0` y WebP (de 3 MB a ~65 KB). Si la foto ya viene con el fondo
   correcto, se saltea ese paso para no hacerla esperar. Se guardan en
   `assets/productos/<slug>.webp` y el campo `img` lleva `?v=` para saltar el caché.
-- Falta (etapas siguientes): alta de productos con etiquetas y medidas, combos, y
-  configuración del negocio.
+- **Alta y edición completa**: botón "+ Nuevo" en la lista; el editor maneja nombre, bajada,
+  categoría, marca, granel/envasado, medidas (hasta 3, con la más grande como predeterminada),
+  costo/ganancia/descuento, etiquetas, destacado, si entra en el mix, los textos de la ficha
+  (descripción, preparación, origen, ingredientes, alérgenos) y el estado. El slug se genera
+  solo desde el nombre y se controla que no se repita. No deja borrar un producto que esté
+  dentro de un combo.
+- Falta (etapas siguientes): combos y configuración del negocio.

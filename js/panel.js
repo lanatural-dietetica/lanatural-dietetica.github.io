@@ -207,7 +207,53 @@ function ponerEstado(p, cual) {
 const ETIQUETA_ESTADO = { publicado: 'En venta', sinstock: 'Sin stock', oculto: 'Oculto' };
 
 const imgDe = p => p.img || 'data:image/svg+xml,' + encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="%23fae6d0"/></svg>');
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">' +
+  '<rect width="40" height="40" fill="#fae6d0"/>' +
+  '<path d="M9 25a11 11 0 0 1 22 0z" fill="#efe0c8"/></svg>');
+
+/* ---------------- alta y borrado ---------------- */
+const aSlug = t => (t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+function slugLibre(base, idActual) {
+  let slug = base || 'producto', n = 2;
+  const usados = estado.catalogo.productos.filter(p => p.id !== idActual).map(p => p.slug);
+  while (usados.includes(slug)) slug = base + '-' + (n++);
+  return slug;
+}
+
+function productoNuevo() {
+  const prods = estado.catalogo.productos;
+  const num = prods.reduce((m, p) => Math.max(m, parseInt(String(p.id).replace(/\D/g, ''), 10) || 0), 0) + 1;
+  const cat = (estado.catalogo.categorias[0] || {}).id || '';
+  const p = {
+    id: 'p' + String(num).padStart(2, '0'),
+    sku: '', slug: '', nombre: '', categoria: cat, subtitulo: '', marca: '',
+    tipo: 'granel', costoKg: 0, margen: estado.catalogo.config.margenPorDefecto || 60, descuento: 0,
+    presentaciones: ['250g', '500g', '1kg'], presentacionDefecto: '1kg',
+    tags: [], estado: 'borrador', disponible: false,
+    destacado: false, orden: prods.length + 1, mix: false,
+    descripcion: '', preparacion: '', origen: '', ingredientes: '', alergenos: '',
+    color: '#c8a97e', color2: '#e3cba6'
+  };
+  prods.push(p);
+  return p;
+}
+
+/* la medida que viene elegida es siempre la más grande */
+function acomodarMedidas(p) {
+  if (p.tipo === 'envasado') { p.presentaciones = ['u']; p.presentacionDefecto = 'u'; return; }
+  const orden = id => gramosDe(id);
+  p.presentaciones = p.presentaciones.filter(id => id !== 'u').sort((a, b) => orden(a) - orden(b));
+  if (!p.presentaciones.length) p.presentaciones = ['250g'];
+  p.presentacionDefecto = p.presentaciones[p.presentaciones.length - 1];
+}
+
+function usadoEnCombos(id) {
+  return (estado.catalogo.combos || [])
+    .filter(c => (c.items || []).some(i => i.productoId === id))
+    .map(c => c.nombre);
+}
 
 /* ---------------- vistas ---------------- */
 function vistaLista() {
@@ -223,8 +269,11 @@ function vistaLista() {
       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>' +
       '<input id="q" type="search" placeholder="Buscar producto" value="' + esc(estado.q) + '" autocomplete="off">' +
     '</div>' +
-    '<p class="panel-resumen">' + arr.length + (arr.length === 1 ? ' producto' : ' productos') +
-      (sinStock ? ' · ' + sinStock + ' sin stock' : '') + '</p>' +
+    '<div class="lista-cab">' +
+      '<p class="panel-resumen">' + arr.length + (arr.length === 1 ? ' producto' : ' productos') +
+        (sinStock ? ' · ' + sinStock + ' sin stock' : '') + '</p>' +
+      '<button class="btn-nuevo" id="btn-nuevo">+ Nuevo</button>' +
+    '</div>' +
     (arr.length ? arr.map(p => {
       const c = cuentaDe(p);
       const e = estadoDe(p);
@@ -242,12 +291,25 @@ function vistaLista() {
 function vistaEditor(p) {
   const c = cuentaDe(p);
   const e = estadoDe(p);
+  const cats = estado.catalogo.categorias || [];
+  const etiquetas = estado.catalogo.etiquetas || [];
+  const medidas = (estado.catalogo.presentaciones || []).filter(x => x.id !== 'u');
+
+  const campoTexto = (id, etiqueta, valor, ayuda, largo) =>
+    '<div class="campo campo--ancho campo--texto">' +
+      '<label for="' + id + '">' + etiqueta + '</label>' +
+      (largo
+        ? '<textarea id="' + id + '" rows="3">' + esc(valor || '') + '</textarea>'
+        : '<input id="' + id + '" type="text" value="' + esc(valor || '') + '">') +
+      (ayuda ? '<p class="campo__ayuda">' + ayuda + '</p>' : '') +
+    '</div>';
+
   return '' +
   '<div class="editor">' +
     '<div class="editor__cab">' +
       '<img class="editor__fig" src="' + imgDe(p) + '" alt="">' +
       '<div>' +
-        '<p class="editor__nom">' + esc(p.nombre) + '</p>' +
+        '<p class="editor__nom">' + (esc(p.nombre) || 'Producto nuevo') + '</p>' +
         '<p class="editor__sub">' + (p.tipo === 'granel' ? 'A granel · se cobra por kilo' : 'Envasado · se cobra por unidad') + '</p>' +
       '</div>' +
     '</div>' +
@@ -262,6 +324,37 @@ function vistaEditor(p) {
         '</div>' +
       '</div>' +
       '<input type="file" id="archivo-foto" accept="image/*" class="oculto">' +
+    '</div>' +
+
+    '<div class="bloque">' +
+      '<p class="bloque__lbl">Datos</p>' +
+      '<div class="campos campos--uno">' +
+        campoTexto('f-nombre', 'Nombre', p.nombre, '') +
+        campoTexto('f-subtitulo', 'Bajada', p.subtitulo, 'Va abajo del nombre. Ej: Mariposa, sin cáscara.') +
+        '<div class="campo campo--ancho campo--texto">' +
+          '<label for="f-categoria">Categoría</label>' +
+          '<select id="f-categoria">' +
+            cats.map(x => '<option value="' + x.id + '"' + (x.id === p.categoria ? ' selected' : '') + '>' + esc(x.nombre) + '</option>').join('') +
+          '</select>' +
+        '</div>' +
+        campoTexto('f-marca', 'Marca', p.marca, 'Sólo para envasados de otra marca. Vacío si es fraccionado.') +
+      '</div>' +
+    '</div>' +
+
+    '<div class="bloque">' +
+      '<p class="bloque__lbl">Cómo se vende</p>' +
+      '<div class="estados estados--dos">' +
+        '<button class="estado-btn" data-tipo="granel" aria-pressed="' + (p.tipo === 'granel') + '">A granel</button>' +
+        '<button class="estado-btn" data-tipo="envasado" aria-pressed="' + (p.tipo === 'envasado') + '">Envasado</button>' +
+      '</div>' +
+      (p.tipo === 'granel'
+        ? '<p class="campo__ayuda">Elegí hasta tres medidas. La más grande es la que aparece elegida en la tienda.</p>' +
+          '<div class="chips-panel">' +
+            medidas.map(m =>
+              '<button class="chip-panel" data-medida="' + m.id + '" aria-pressed="' + (p.presentaciones.includes(m.id)) + '">' +
+              esc(m.nombre) + '</button>').join('') +
+          '</div>'
+        : '<p class="campo__ayuda">Se vende por unidad, no lleva medidas.</p>') +
     '</div>' +
 
     '<div class="bloque">' +
@@ -280,8 +373,33 @@ function vistaEditor(p) {
           '<input id="f-desc" type="number" inputmode="numeric" min="0" max="90" step="1" value="' + c.desc + '">' +
         '</div>' +
       '</div>' +
-      '<p class="campo__ayuda">Poné el costo y cuánto querés ganar. El precio se calcula solo.</p>' +
       '<div class="cuenta" id="cuenta"></div>' +
+    '</div>' +
+
+    '<div class="bloque">' +
+      '<p class="bloque__lbl">Etiquetas</p>' +
+      '<div class="chips-panel">' +
+        etiquetas.map(t =>
+          '<button class="chip-panel" data-tag="' + t.id + '" aria-pressed="' + ((p.tags || []).includes(t.id)) + '">' +
+          esc(t.nombre) + '</button>').join('') +
+      '</div>' +
+      '<div class="interruptores">' +
+        '<button class="interruptor" data-flag="destacado" aria-pressed="' + !!p.destacado + '">' +
+          '<span>Destacado</span><small>Aparece en el inicio</small></button>' +
+        '<button class="interruptor" data-flag="mix" aria-pressed="' + !!p.mix + '">' +
+          '<span>Entra en Armá tu mix</span><small>' + (p.tipo === 'granel' ? 'Sólo para productos a granel' : 'No disponible en envasados') + '</small></button>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="bloque">' +
+      '<p class="bloque__lbl">Detalle del producto</p>' +
+      '<div class="campos campos--uno">' +
+        campoTexto('f-descripcion', 'Descripción', p.descripcion, '', true) +
+        campoTexto('f-preparacion', 'Preparación', p.preparacion, '', true) +
+        campoTexto('f-origen', 'Origen', p.origen, '') +
+        campoTexto('f-ingredientes', 'Ingredientes', p.ingredientes, '') +
+        campoTexto('f-alergenos', 'Alérgenos', p.alergenos, 'Importante si contiene maní, frutos secos, gluten o sulfitos.') +
+      '</div>' +
     '</div>' +
 
     '<div class="bloque">' +
@@ -295,6 +413,7 @@ function vistaEditor(p) {
     '</div>' +
 
     '<button class="btn btn--oliva btn--bloque" id="guardar">Guardar cambios</button>' +
+    '<button class="btn-borrar" id="borrar">Eliminar este producto</button>' +
   '</div>';
 }
 
@@ -316,6 +435,8 @@ function pintarCuenta() {
 
 /* ---------------- navegación ---------------- */
 function mostrarLista() {
+  const p = estado.editando;
+  if (p && !p.slug) estado.catalogo.productos = estado.catalogo.productos.filter(x => x.id !== p.id);
   estado.editando = null;
   $('#panel-titulo').textContent = 'Productos';
   $('#btn-volver').classList.add('oculto');
@@ -326,7 +447,7 @@ function mostrarEditor(id) {
   const p = (estado.catalogo.productos || []).find(x => x.id === id);
   if (!p) return;
   estado.editando = p;
-  $('#panel-titulo').textContent = p.nombre;
+  $('#panel-titulo').textContent = p.nombre || 'Producto nuevo';
   $('#btn-volver').classList.remove('oculto');
   $('#panel-main').innerHTML = vistaEditor(p);
   pintarCuenta();
@@ -357,9 +478,86 @@ document.addEventListener('click', async ev => {
 
   if (t.closest('#btn-foto')) { $('#archivo-foto').click(); return; }
 
+  if (t.closest('#btn-nuevo')) {
+    const p = productoNuevo();
+    mostrarEditor(p.id);
+    setTimeout(() => { const n = $('#f-nombre'); if (n) n.focus(); }, 80);
+    return;
+  }
+
+  const btnTipo = t.closest('[data-tipo]');
+  if (btnTipo && estado.editando) {
+    const p = estado.editando;
+    p.tipo = btnTipo.dataset.tipo;
+    if (p.tipo === 'envasado') { p.costoUnidad = p.costoUnidad || p.costoKg || 0; p.mix = false; }
+    else { p.costoKg = p.costoKg || p.costoUnidad || 0;
+           if (!p.presentaciones.filter(x => x !== 'u').length) p.presentaciones = ['250g', '500g', '1kg']; }
+    acomodarMedidas(p);
+    mostrarEditor(p.id);
+    return;
+  }
+
+  const btnMedida = t.closest('[data-medida]');
+  if (btnMedida && estado.editando) {
+    const p = estado.editando, id = btnMedida.dataset.medida;
+    if (p.presentaciones.includes(id)) {
+      if (p.presentaciones.length === 1) { aviso('Tiene que quedar al menos una medida.', 'error'); return; }
+      p.presentaciones = p.presentaciones.filter(x => x !== id);
+    } else {
+      if (p.presentaciones.length >= 3) { aviso('Hasta tres medidas por producto.', 'error'); return; }
+      p.presentaciones.push(id);
+    }
+    acomodarMedidas(p);
+    $$('[data-medida]').forEach(b => b.setAttribute('aria-pressed', p.presentaciones.includes(b.dataset.medida)));
+    pintarCuenta();
+    return;
+  }
+
+  const btnTag = t.closest('[data-tag]');
+  if (btnTag && estado.editando) {
+    const p = estado.editando, id = btnTag.dataset.tag;
+    p.tags = p.tags || [];
+    p.tags = p.tags.includes(id) ? p.tags.filter(x => x !== id) : p.tags.concat(id);
+    btnTag.setAttribute('aria-pressed', p.tags.includes(id));
+    return;
+  }
+
+  const btnFlag = t.closest('[data-flag]');
+  if (btnFlag && estado.editando) {
+    const p = estado.editando, k = btnFlag.dataset.flag;
+    if (k === 'mix' && p.tipo !== 'granel') { aviso('El mix es sólo para productos a granel.', 'error'); return; }
+    p[k] = !p[k];
+    btnFlag.setAttribute('aria-pressed', !!p[k]);
+    return;
+  }
+
+  if (t.closest('#borrar')) {
+    const p = estado.editando;
+    if (!p) return;
+    const combos = usadoEnCombos(p.id);
+    if (combos.length) {
+      aviso('No se puede: está dentro de ' + combos.join(' y ') + '.', 'error');
+      return;
+    }
+    if (!confirm('¿Eliminar "' + (p.nombre || 'este producto') + '"? No se puede deshacer.')) return;
+    estado.catalogo.productos = estado.catalogo.productos.filter(x => x.id !== p.id);
+    const boton = $('#borrar');
+    boton.disabled = true;
+    aviso('Eliminando…', 'trabajando');
+    guardarCatalogo('Panel: elimina ' + (p.nombre || p.id))
+      .then(() => { aviso('Producto eliminado.', 'ok'); mostrarLista(); })
+      .catch(e => { aviso('No se pudo eliminar: ' + e.message, 'error'); boton.disabled = false; });
+    return;
+  }
+
   if (t.closest('#guardar')) {
     const p = estado.editando;
     if (!p) return;
+    if (!p.nombre || p.nombre.trim().length < 2) { aviso('Ponele un nombre al producto.', 'error'); $('#f-nombre').focus(); return; }
+    if (!(p.tipo === 'granel' ? p.costoKg : p.costoUnidad)) { aviso('Falta el costo.', 'error'); $('#f-costo').focus(); return; }
+    p.nombre = p.nombre.trim();
+    p.slug = slugLibre(aSlug(p.nombre), p.id);
+    acomodarMedidas(p);
     const boton = $('#guardar');
     boton.disabled = true;
     aviso('Guardando…', 'trabajando');
@@ -378,6 +576,10 @@ document.addEventListener('click', async ev => {
     }
     return;
   }
+});
+
+document.addEventListener('change', ev => {
+  if (ev.target.id === 'f-categoria' && estado.editando) estado.editando.categoria = ev.target.value;
 });
 
 document.addEventListener('change', async ev => {
@@ -426,6 +628,16 @@ document.addEventListener('input', ev => {
   }
   if (id === 'f-margen') { p.margen = Math.min(900, Math.max(0, Number(ev.target.value) || 0)); pintarCuenta(); }
   if (id === 'f-desc')   { p.descuento = Math.min(90, Math.max(0, Number(ev.target.value) || 0)); pintarCuenta(); }
+
+  const textos = {
+    'f-nombre': 'nombre', 'f-subtitulo': 'subtitulo', 'f-marca': 'marca',
+    'f-descripcion': 'descripcion', 'f-preparacion': 'preparacion',
+    'f-origen': 'origen', 'f-ingredientes': 'ingredientes', 'f-alergenos': 'alergenos'
+  };
+  if (textos[id]) {
+    p[textos[id]] = ev.target.value;
+    if (id === 'f-nombre') $('.editor__nom').textContent = ev.target.value || 'Producto nuevo';
+  }
 });
 
 /* ---------------- arranque ---------------- */
