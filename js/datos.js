@@ -56,10 +56,10 @@ const PRESENTACIONES = [
 
 /* ---------- categorías ---------- */
 const CATEGORIAS = [
-  { id: 'frutos',     nombre: 'Frutos y semillas', slug: 'frutos-y-semillas', orden: 1, visible: true, img: 'assets/productos/semillas-de-girasol.jpg', color: '#c98f4e' },
-  { id: 'infusiones', nombre: 'Infusiones',        slug: 'infusiones',        orden: 2, visible: true, img: 'assets/productos/flor-de-jamaica.jpg', color: '#8e3b3b' },
-  { id: 'legumbres',  nombre: 'Granos y legumbres',slug: 'granos-y-legumbres',orden: 3, visible: true, img: 'assets/productos/garbanzos.jpg', color: '#d8b271' },
-  { id: 'sintacc',    nombre: 'Sin TACC',          slug: 'sin-tacc',          orden: 4, visible: true, img: 'assets/productos/quinoa.jpg', color: '#e0d3ab' },
+  { id: 'frutos',     nombre: 'Frutos y semillas', slug: 'frutos-y-semillas', orden: 1, visible: true, img: 'assets/cat-frutos.webp', color: '#c98f4e' },
+  { id: 'infusiones', nombre: 'Infusiones',        slug: 'infusiones',        orden: 2, visible: true, img: 'assets/cat-infusiones.webp', color: '#8e3b3b' },
+  { id: 'legumbres',  nombre: 'Granos y legumbres',slug: 'granos-y-legumbres',orden: 3, visible: true, img: 'assets/cat-legumbres.webp', color: '#d8b271' },
+  { id: 'sintacc',    nombre: 'Sin TACC',          slug: 'sin-tacc',          orden: 4, visible: true, img: 'assets/cat-sintacc.webp', color: '#e0d3ab' },
   { id: 'dulces',     nombre: 'Dulces y cacao',    slug: 'dulces-y-cacao',    orden: 5, visible: true, img: 'assets/productos/chocolate-amargo.jpg', color: '#4a2c1c' },
   { id: 'despensa',   nombre: 'Despensa',          slug: 'despensa',          orden: 6, visible: true, img: 'assets/productos/harina-integral.jpg?v=20260902g', color: '#a9563a' }
 ];

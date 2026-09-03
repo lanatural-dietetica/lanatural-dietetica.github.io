@@ -123,3 +123,12 @@ están publicados pero nadie los ve. Al tocar css/ o js/, bumpear la versión en
   `.webp` y `.jpg`. Uso: `python3 scripts/foto-producto.py <entrada> <nombre>`.
 - Si se vuelve a cambiar `--foto-crema`, hay que reprocesar todas las fotos con ese script,
   porque si no se ve el recuadro de la imagen contra la tarjeta.
+
+## Íconos del inicio — 2026-09-02
+Los generó Juani con el mismo criterio que las fotos de producto (fondo plano #FAE6D0).
+Están en `assets/`, a 400x400 webp, y pesan 167 KB los siete juntos.
+- Categorías (campo `img` en `CATEGORIAS`, `js/datos.js`): `cat-frutos.webp`,
+  `cat-infusiones.webp`, `cat-legumbres.webp`, `cat-sintacc.webp`.
+- Accesos de la sección "También podés" (en `vistaHome()`, `js/app.js`):
+  `acceso-mix.webp`, `acceso-combos.webp`, `acceso-info.webp`.
+Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <nombre> 400 assets`.
