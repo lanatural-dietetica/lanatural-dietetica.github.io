@@ -1603,11 +1603,11 @@ function moverPastilla(conRebote) {
   if (!activo) { pill.style.opacity = '0'; return; }
   const r = activo.getBoundingClientRect();
   const rp = activo.parentElement.getBoundingClientRect();
+  const ancho = pill.offsetWidth || 52;
   pill.style.opacity = '1';
-  pill.style.width = r.width + 'px';
-  pill.style.transform = 'translateX(' + (r.left - rp.left) + 'px)';
+  pill.style.transform = 'translateX(' + (r.left - rp.left + (r.width - ancho) / 2) + 'px)';
   if (conRebote && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const ico = activo.querySelector('svg');
+    const ico = activo.querySelector('img, svg');
     if (ico) {
       ico.classList.remove('rebota');
       void ico.offsetWidth;

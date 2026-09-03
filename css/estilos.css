@@ -1649,3 +1649,21 @@ body.compacto-catalogo .header-compacta{transform:translateY(0);pointer-events:a
   .form-campo select{font-size:16px}
   .barra-orden select{letter-spacing:.02em;text-transform:none}
 }
+
+/* ============================================================
+   Barra inferior con los íconos propios y la pastilla chica
+   ============================================================ */
+.tabbar a img{
+  width:26px;height:26px;object-fit:contain;
+  transition:opacity .2s ease,transform .2s ease;
+  opacity:.62;
+}
+.tabbar a[aria-current="page"] img{opacity:1}
+.tabbar a{color:var(--gris-txt)}
+.tabbar a[aria-current="page"]{color:var(--russet);font-weight:600}
+
+/* la burbuja abraza sólo al ícono */
+.tabbar__pill{
+  top:5px;bottom:auto;height:38px;width:52px;
+  border-radius:14px;background:var(--oliva-claro);
+}
