@@ -1,380 +1,71 @@
 /* ============================================================
-   DIETÉTICA — datos de demostración (seed)
+   La Natural — carga del catálogo
    ------------------------------------------------------------
-   TODO ESTO ES DEMO. Cuando esté la planilla real, este archivo
-   se reemplaza por la carga desde Google Sheets (ver CONFIG.sheet).
-   El precio NUNCA se escribe a mano: sale de costo + margen + descuento.
+   Los datos YA NO viven acá: viven en data/catalogo.json, que es
+   lo que edita el panel de administración. Este archivo sólo los
+   trae y los deja disponibles para app.js.
+
+   Si la descarga falla, se usa la última copia buena guardada en
+   el navegador, así la tienda no queda en blanco.
    ============================================================ */
 
-const DEMO = true; // marca visible en la web mientras sean datos de prueba
+let DEMO = false;
+let CONFIG = {};
+let PRESENTACIONES = [];
+let CATEGORIAS = [];
+let ETIQUETAS = [];
+let PRODUCTOS = [];
+let COMBOS = [];
+let MIX = {};
+let PASOS = [];
 
-const CONFIG = {
-  marca: 'La Natural',
-  bajada: 'dietetica',
-  slogan: 'Elegí lo natural.',
-  slogan2: 'Productos simples para todos los días.',
+const LS_CATALOGO = 'lanatural_catalogo_v1';
 
-  // --- WhatsApp (editable) ---
-  whatsapp: '5492610000000',            // TODO: número real, formato 549 + área sin 0 + número sin 15
-  waApertura: '¡Hola! Quiero hacer este pedido:',
-  waCierre: 'Gracias. Quedo atento/a a la confirmación.',
+function aplicarCatalogo(d) {
+  DEMO           = !!d.demo;
+  CONFIG         = d.config || {};
+  PRESENTACIONES = d.presentaciones || [];
+  CATEGORIAS     = d.categorias || [];
+  ETIQUETAS      = d.etiquetas || [];
+  PRODUCTOS      = d.productos || [];
+  COMBOS         = d.combos || [];
+  MIX            = d.mix || {};
+  PASOS          = d.pasos || [];
+}
 
-  // Cada producto define sus propias medidas (máximo 3) en su campo `presentaciones`,
-  // según el volumen con que se vende. Ver PRODUCTOS más abajo.
+function catalogoValido(d) {
+  return d && Array.isArray(d.productos) && d.productos.length > 0 && d.config;
+}
 
-  // --- reglas de precio ---
-  redondeo: 50,                          // redondea el precio final a múltiplos de $50 (0 = sin redondeo)
-  margenPorDefecto: 60,                  // % de recargo sobre el costo
-  compraMinima: 0,
-
-  // --- operación ---
-  entrega: ['Retiro en el local', 'Envío a domicilio'],
-  avisoStock: 'Stock, precio final y forma de entrega quedan sujetos a confirmación del local.',
-  franja: 'Comprá desde 100 g · Envío o retiro',
-
-  // --- datos del negocio (editables) ---
-  direccion: 'Dirección a completar, Mendoza',
-  horarios: 'Lun a Vie 9 a 20 h · Sáb 9 a 14 h',
-  mediosPago: 'Efectivo, transferencia y débito/crédito en el local.',
-  zonas: 'Envíos en Ciudad y Godoy Cruz. Otras zonas, consultar.',
-  instagram: '',
-  email: '',
-
-  // --- fuente de datos futura (Google Sheets, como en Paladear) ---
-  sheet: { activo: false, url: '' }
-};
-
-/* ---------- presentaciones globales ---------- */
-const PRESENTACIONES = [
-  { id: '50g',  nombre: '50 g',   gramos: 50,   orden: 1, activa: true },
-  { id: '100g', nombre: '100 g',  gramos: 100,  orden: 2, activa: true },
-  { id: '250g', nombre: '250 g',  gramos: 250,  orden: 3, activa: true },
-  { id: '500g', nombre: '500 g',  gramos: 500,  orden: 4, activa: true },
-  { id: '1kg',  nombre: '1 kg',   gramos: 1000, orden: 5, activa: true },
-  { id: 'u',    nombre: 'unidad', gramos: null, orden: 6, activa: true }
-];
-
-/* ---------- categorías ---------- */
-const CATEGORIAS = [
-  { id: 'frutos',     nombre: 'Frutos y semillas', slug: 'frutos-y-semillas', orden: 1, visible: true, img: 'assets/cat-frutos.webp', color: '#c98f4e' },
-  { id: 'infusiones', nombre: 'Infusiones',        slug: 'infusiones',        orden: 2, visible: true, img: 'assets/cat-infusiones.webp', color: '#8e3b3b' },
-  { id: 'legumbres',  nombre: 'Granos y legumbres',slug: 'granos-y-legumbres',orden: 3, visible: true, img: 'assets/cat-legumbres.webp', color: '#d8b271' },
-  { id: 'sintacc',    nombre: 'Sin TACC',          slug: 'sin-tacc',          orden: 4, visible: true, img: 'assets/cat-sintacc.webp', color: '#e0d3ab' },
-  { id: 'dulces',     nombre: 'Dulces y cacao',    slug: 'dulces-y-cacao',    orden: 5, visible: true, img: 'assets/productos/chocolate-amargo.jpg', color: '#4a2c1c' },
-  { id: 'despensa',   nombre: 'Despensa',          slug: 'despensa',          orden: 6, visible: true, img: 'assets/productos/harina-integral.jpg?v=20260902g', color: '#a9563a' }
-];
-
-/* ---------- etiquetas ---------- */
-const ETIQUETAS = [
-  { id: 'sintacc', nombre: 'Sin TACC' },
-  { id: 'vegano',  nombre: 'Vegano' },
-  { id: 'organico',nombre: 'Orgánico' },
-  { id: 'nuevo',   nombre: 'Nuevo' }
-];
-
-/* ---------- productos ----------
-   tipo 'granel'   → costoKg  (el precio de cada presentación sale de los gramos)
-   tipo 'envasado' → costoUnidad (presentación 'u')
---------------------------------- */
-const PRODUCTOS = [
-  {
-    id: 'p01', sku: 'FS-001', slug: 'lentejas-rosadas', nombre: 'Lentejas rosadas',
-    categoria: 'legumbres', subtitulo: 'Origen: Canadá', marca: '',
-    tipo: 'granel', costoKg: 2100, margen: 62, descuento: 0,
-    presentaciones: ['250g', '500g', '1kg'], presentacionDefecto: '1kg',
-    tags: ['sintacc', 'vegano'], estado: 'publicado', disponible: true,
-    destacado: true, orden: 1, mix: false,
-    descripcion: 'Lenteja pelada de cocción rápida, ideal para guisos, hamburguesas y sopas cremosas.',
-    preparacion: 'No requiere remojo. Hervir 12 a 15 minutos con abundante agua.',
-    origen: 'Canadá', ingredientes: 'Lentejas rosadas peladas.', alergenos: 'Puede contener trazas de gluten por fraccionamiento.',
-    img: 'assets/productos/lentejas-rosadas.jpg', color: '#e07a3f', color2: '#f2a86d'
-  },
-  {
-    id: 'p02', sku: 'IN-001', slug: 'flor-de-jamaica', nombre: 'Flor de Jamaica',
-    categoria: 'infusiones', subtitulo: 'Corte premium', marca: '',
-    tipo: 'granel', costoKg: 7800, margen: 60, descuento: 0,
-    presentaciones: ['50g', '100g', '250g'], presentacionDefecto: '250g',
-    tags: ['vegano'], estado: 'publicado', disponible: true,
-    destacado: true, orden: 2, mix: false,
-    descripcion: 'De sabor intenso y ligeramente ácido. Ideal para preparar infusiones frías o calientes.',
-    preparacion: 'Una cucharada por taza. Infusionar 5 minutos en agua bien caliente.',
-    origen: 'Perú', ingredientes: 'Cálices secos de hibiscus.', alergenos: 'No contiene alérgenos declarados.',
-    img: 'assets/productos/flor-de-jamaica.jpg', color: '#8e2f34', color2: '#b6494b'
-  },
-  {
-    id: 'p03', sku: 'LG-002', slug: 'garbanzos', nombre: 'Garbanzos',
-    categoria: 'legumbres', subtitulo: 'Calibre grande', marca: '',
-    tipo: 'granel', costoKg: 2600, margen: 60, descuento: 0,
-    presentaciones: ['250g', '500g', '1kg'], presentacionDefecto: '1kg',
-    tags: ['sintacc', 'vegano'], estado: 'publicado', disponible: true,
-    destacado: true, orden: 3, mix: false,
-    descripcion: 'Garbanzo seleccionado, de piel fina y textura mantecosa. Para hummus, guisos y ensaladas.',
-    preparacion: 'Remojar 8 horas. Hervir 45 a 60 minutos.',
-    origen: 'Salta, Argentina', ingredientes: 'Garbanzos.', alergenos: 'Puede contener trazas de gluten.',
-    img: 'assets/productos/garbanzos.jpg', color: '#d9b476', color2: '#eccb95'
-  },
-  {
-    id: 'p04', sku: 'FS-010', slug: 'damascos-secos', nombre: 'Damascos secos',
-    categoria: 'frutos', subtitulo: 'Sin carozo', marca: '',
-    tipo: 'granel', costoKg: 8900, margen: 58, descuento: 10,
-    presentaciones: ['100g', '250g', '500g'], presentacionDefecto: '500g',
-    tags: ['vegano', 'sintacc'], estado: 'publicado', disponible: true,
-    destacado: true, orden: 4, mix: true,
-    descripcion: 'Damasco deshidratado mendocino, dulce y carnoso. Para snack, repostería y mixes.',
-    preparacion: 'Listo para consumir. Conservar en frasco cerrado.',
-    origen: 'Mendoza, Argentina', ingredientes: 'Damasco deshidratado, conservante SO2.', alergenos: 'Contiene sulfitos.',
-    img: 'assets/productos/damascos-secos.jpg', color: '#e28a34', color2: '#f4ab5c'
-  },
-  {
-    id: 'p05', sku: 'DU-001', slug: 'chocolate-amargo-70', nombre: 'Chocolate amargo 70%',
-    categoria: 'dulces', subtitulo: 'Cacao 70%', marca: '',
-    tipo: 'granel', costoKg: 12500, margen: 55, descuento: 0,
-    presentaciones: ['100g', '250g', '500g'], presentacionDefecto: '500g',
-    tags: ['sintacc'], estado: 'publicado', disponible: true,
-    destacado: false, orden: 5, mix: true,
-    descripcion: 'Chocolate en trozos con 70% de cacao. Amargo, sin relleno y apto para repostería.',
-    preparacion: 'Conservar en lugar fresco y seco, lejos de la luz.',
-    origen: 'Argentina', ingredientes: 'Pasta de cacao, azúcar, manteca de cacao, lecitina de soja.',
-    alergenos: 'Contiene soja. Puede contener leche y frutos secos.',
-    img: 'assets/productos/chocolate-amargo.jpg', mixImg: 'assets/productos/chocolate-trozos.jpg', color: '#3b2318', color2: '#5a3524'
-  },
-  {
-    id: 'p06', sku: 'ST-001', slug: 'quinoa', nombre: 'Quinoa',
-    categoria: 'sintacc', subtitulo: 'Grano blanco', marca: '',
-    tipo: 'granel', costoKg: 9400, margen: 60, descuento: 0,
-    presentaciones: ['250g', '500g', '1kg'], presentacionDefecto: '1kg',
-    tags: ['sintacc', 'vegano', 'organico'], estado: 'publicado', disponible: true,
-    destacado: true, orden: 6, mix: false,
-    descripcion: 'Grano andino de alto valor nutricional, liviano y de cocción rápida.',
-    preparacion: 'Enjuagar bien. Hervir 15 minutos, 2 partes de agua por 1 de quinoa.',
-    origen: 'Jujuy, Argentina', ingredientes: 'Quinoa blanca.', alergenos: 'Sin TACC.',
-    img: 'assets/productos/quinoa.jpg', color: '#e4d5a8', color2: '#f0e5c6'
-  },
-  {
-    id: 'p07', sku: 'FS-020', slug: 'pasas-de-uva', nombre: 'Pasas de uva',
-    categoria: 'frutos', subtitulo: 'Sin semilla', marca: '',
-    tipo: 'granel', costoKg: 4200, margen: 60, descuento: 0,
-    presentaciones: ['250g', '500g', '1kg'], presentacionDefecto: '1kg',
-    tags: ['vegano', 'sintacc'], estado: 'publicado', disponible: true,
-    destacado: false, orden: 7, mix: true,
-    descripcion: 'Pasa de uva mendocina, blanda y dulce. Clásica para mixes y panificados.',
-    preparacion: 'Lista para consumir.',
-    origen: 'Mendoza, Argentina', ingredientes: 'Uva deshidratada.', alergenos: 'Contiene sulfitos.',
-    img: 'assets/productos/pasas-de-uva.jpg', color: '#4a2a30', color2: '#6b3b42'
-  },
-  {
-    id: 'p08', sku: 'FS-021', slug: 'coco-en-escamas', nombre: 'Coco en escamas',
-    categoria: 'frutos', subtitulo: 'Sin azúcar agregada', marca: '',
-    tipo: 'granel', costoKg: 6800, margen: 60, descuento: 0,
-    presentaciones: ['100g', '250g', '500g'], presentacionDefecto: '500g',
-    tags: ['vegano', 'sintacc'], estado: 'publicado', disponible: true,
-    destacado: false, orden: 8, mix: true,
-    descripcion: 'Escamas de coco deshidratado, crocantes y sin endulzar.',
-    preparacion: 'Lista para consumir. Ideal para granolas y postres.',
-    origen: 'Filipinas', ingredientes: 'Coco deshidratado.', alergenos: 'Puede contener trazas de frutos secos.',
-    img: 'assets/productos/coco-en-escamas.jpg', color: '#f0ece3', color2: '#ffffff'
-  },
-  {
-    id: 'p09', sku: 'FS-022', slug: 'semillas-de-girasol', nombre: 'Semillas de girasol',
-    categoria: 'frutos', subtitulo: 'Peladas', marca: '',
-    tipo: 'granel', costoKg: 3200, margen: 62, descuento: 0,
-    presentaciones: ['250g', '500g', '1kg'], presentacionDefecto: '1kg',
-    tags: ['vegano', 'sintacc'], estado: 'publicado', disponible: true,
-    destacado: false, orden: 9, mix: true,
-    descripcion: 'Semilla de girasol pelada, suave y con buen tostado natural.',
-    preparacion: 'Se puede tostar 5 minutos en sartén para realzar el sabor.',
-    origen: 'Buenos Aires, Argentina', ingredientes: 'Semillas de girasol.', alergenos: 'Puede contener trazas de frutos secos.',
-    img: 'assets/productos/semillas-de-girasol.jpg', color: '#b9a377', color2: '#d5c39a'
-  },
-  {
-    id: 'p10', sku: 'FS-023', slug: 'banana-deshidratada', nombre: 'Banana deshidratada',
-    categoria: 'frutos', subtitulo: 'En rodajas', marca: '',
-    tipo: 'granel', costoKg: 7400, margen: 58, descuento: 0,
-    presentaciones: ['100g', '250g', '500g'], presentacionDefecto: '500g',
-    tags: ['vegano'], estado: 'publicado', disponible: true,
-    destacado: false, orden: 10, mix: true,
-    descripcion: 'Rodajas de banana deshidratada, dulces y crocantes.',
-    preparacion: 'Lista para consumir.',
-    origen: 'Ecuador', ingredientes: 'Banana, aceite vegetal.', alergenos: 'Puede contener trazas de maní.',
-    img: 'assets/productos/banana-deshidratada.jpg', color: '#e8c766', color2: '#f5dd97'
-  },
-  {
-    id: 'p15', sku: 'FS-030', slug: 'nuez-pecan', nombre: 'Nuez pecán',
-    categoria: 'frutos', subtitulo: 'Mariposa, sin cáscara', marca: '',
-    tipo: 'granel', costoKg: 22000, margen: 55, descuento: 0,
-    presentaciones: ['100g', '250g', '500g'], presentacionDefecto: '500g',
-    tags: ['sintacc', 'vegano'], estado: 'publicado', disponible: true,
-    destacado: true, orden: 3, mix: true,
-    descripcion: 'Mitades de nuez pecán mariposa, mantecosas y de sabor suave. Para picar, repostería y ensaladas.',
-    preparacion: 'Lista para consumir. Conservar en frasco cerrado, en lugar fresco y sin luz.',
-    origen: 'Entre Ríos, Argentina', ingredientes: 'Nuez pecán pelada.',
-    alergenos: 'Contiene frutos secos. Puede contener trazas de maní.',
-    img: 'assets/productos/nuez-pecan.webp',
-    color: '#8a4a26', color2: '#b8763f'
-  },
-  {
-    id: 'p16', sku: 'FS-031', slug: 'semillas-de-zapallo', nombre: 'Semillas de zapallo',
-    categoria: 'frutos', subtitulo: 'Peladas, crudas', marca: '',
-    tipo: 'granel', costoKg: 9500, margen: 58, descuento: 0,
-    presentaciones: ['250g', '500g', '1kg'], presentacionDefecto: '1kg',
-    tags: ['sintacc', 'vegano'], estado: 'publicado', disponible: true,
-    destacado: true, orden: 4, mix: true,
-    descripcion: 'Semilla de zapallo pelada, verde y crocante. Para ensaladas, panificados, granolas y mixes.',
-    preparacion: 'Se puede tostar 5 minutos en sartén para realzar el sabor. Conservar en frasco cerrado.',
-    origen: 'China', ingredientes: 'Semillas de zapallo peladas.',
-    alergenos: 'Puede contener trazas de frutos secos y maní.',
-    img: 'assets/productos/semillas-de-zapallo.webp',
-    color: '#6d7a3c', color2: '#95a35c'
-  },
-  {
-    id: 'p17', sku: 'DE-010', slug: 'pasta-de-mani-stevia', nombre: 'Pasta de maní con stevia',
-    categoria: 'despensa', subtitulo: 'Frasco 370 g · sin azúcar agregada', marca: 'Entrenuts',
-    tipo: 'envasado', costoUnidad: 4200, margen: 48, descuento: 0,
-    presentaciones: ['u'], presentacionDefecto: 'u',
-    tags: ['sintacc', 'vegano'], estado: 'publicado', disponible: true,
-    destacado: true, orden: 12, mix: false,
-    descripcion: 'Producto untable a base de pasta de maní, endulzado con glucósidos de esteviol y sin azúcar agregada.',
-    preparacion: 'Puede separarse el aceite natural del maní: mezclar antes de usar. Una vez abierto, conservar en lugar fresco.',
-    origen: 'Argentina', ingredientes: 'Maní, glucósidos de esteviol.',
-    alergenos: 'Contiene maní. Contiene edulcorantes: no recomendable en niños/as (Ministerio de Salud).',
-    img: 'assets/productos/pasta-de-mani-stevia.webp',
-    color: '#b98237', color2: '#d8a862'
-  },
-  {
-    id: 'p11', sku: 'DE-001', slug: 'salsa-de-tomate', nombre: 'Salsa de tomate',
-    categoria: 'despensa', subtitulo: 'Frasco 420 g · sin conservantes', marca: 'Casera',
-    tipo: 'envasado', costoUnidad: 1650, margen: 55, descuento: 0,
-    presentaciones: ['u'], presentacionDefecto: 'u',
-    tags: ['vegano', 'sintacc'], estado: 'publicado', disponible: true,
-    destacado: false, orden: 11, mix: false,
-    descripcion: 'Salsa natural de tomate en frasco de vidrio, elaborada sin conservantes.',
-    preparacion: 'Una vez abierto, conservar refrigerado hasta 4 días.',
-    origen: 'Mendoza, Argentina', ingredientes: 'Tomate, sal, aceite de girasol, albahaca.', alergenos: 'No contiene alérgenos declarados.',
-    img: 'assets/productos/salsa-de-tomate.jpg?v=20260902g', color: '#b8352a', color2: '#d1523f'
-  },
-  {
-    id: 'p12', sku: 'DU-010', slug: 'miel-de-flores', nombre: 'Miel de flores',
-    categoria: 'dulces', subtitulo: 'Frasco 500 g · multifloral', marca: 'Apiario local',
-    tipo: 'envasado', costoUnidad: 3400, margen: 55, descuento: 0,
-    presentaciones: ['u'], presentacionDefecto: 'u',
-    tags: ['sintacc'], estado: 'publicado', disponible: true,
-    destacado: true, orden: 12, mix: false,
-    descripcion: 'Miel pura multifloral de productores de la zona, sin agregados.',
-    preparacion: 'Si cristaliza, entibiar a baño María. No apta para menores de 1 año.',
-    origen: 'Mendoza, Argentina', ingredientes: 'Miel 100%.', alergenos: 'No apta para menores de 1 año.',
-    img: 'assets/productos/miel-de-flores.jpg', color: '#d99a1f', color2: '#efbc4d'
-  },
-  {
-    id: 'p13', sku: 'DE-005', slug: 'harina-integral-de-trigo', nombre: 'Harina integral de trigo',
-    categoria: 'despensa', subtitulo: 'Bolsa 1 kg', marca: '',
-    tipo: 'envasado', costoUnidad: 1250, margen: 55, descuento: 0,
-    presentaciones: ['u'], presentacionDefecto: 'u',
-    tags: ['vegano'], estado: 'publicado', disponible: true,
-    destacado: false, orden: 13, mix: false,
-    descripcion: 'Harina integral fina de molienda reciente, para panificados y masas.',
-    preparacion: 'Conservar en lugar fresco y seco.',
-    origen: 'Córdoba, Argentina', ingredientes: 'Harina integral de trigo.', alergenos: 'Contiene gluten.',
-    img: 'assets/productos/harina-integral.jpg?v=20260902g', color: '#c8b28a', color2: '#dfceb0'
-  },
-  {
-    id: 'p14', sku: 'IN-005', slug: 'tisana-de-hierbas', nombre: 'Tisana de hierbas',
-    categoria: 'infusiones', subtitulo: 'Mezcla de la casa', marca: '',
-    tipo: 'granel', costoKg: 8600, margen: 60, descuento: 15,
-    presentaciones: ['50g', '100g', '250g'], presentacionDefecto: '250g',
-    tags: ['vegano', 'nuevo'], estado: 'publicado', disponible: false,
-    destacado: false, orden: 14, mix: false,
-    descripcion: 'Mezcla suave de manzanilla, cedrón, menta y flores. Sin teína.',
-    preparacion: 'Una cucharada por taza, 4 minutos de infusión.',
-    origen: 'Argentina', ingredientes: 'Manzanilla, cedrón, menta, caléndula.', alergenos: 'No contiene alérgenos declarados.',
-    img: 'assets/productos/tisana-de-hierbas.jpg', color: '#7d8a55', color2: '#a3ae7c'
+async function cargarCatalogo() {
+  try {
+    const r = await fetch('data/catalogo.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    if (!catalogoValido(d)) throw new Error('catálogo incompleto');
+    aplicarCatalogo(d);
+    try { localStorage.setItem(LS_CATALOGO, JSON.stringify(d)); } catch (e) {}
+    return true;
+  } catch (e) {
+    try {
+      const copia = JSON.parse(localStorage.getItem(LS_CATALOGO));
+      if (catalogoValido(copia)) { aplicarCatalogo(copia); return true; }
+    } catch (e2) {}
+    return false;
   }
-];
+}
 
-/* ---------- combos ---------- */
-const COMBOS = [
-  {
-    id: 'c01', slug: 'despensa-esencial', nombre: 'Despensa esencial',
-    descripcion: 'Lentejas, garbanzos, quinoa y salsa de tomate.',
-    items: [
-      { productoId: 'p01', presentacionId: '500g', cant: 1 },
-      { productoId: 'p03', presentacionId: '500g', cant: 1 },
-      { productoId: 'p06', presentacionId: '250g', cant: 1 },
-      { productoId: 'p11', presentacionId: 'u',    cant: 1 }
-    ],
-    descuento: 10, precioEspecial: null, activo: true, destacado: true, orden: 1,
-    img: 'assets/combo-despensa.jpg',
-    color: '#c07a45', color2: '#e0a674'
-  },
-  {
-    id: 'c02', slug: 'pausa-de-la-tarde', nombre: 'Pausa de la tarde',
-    descripcion: 'Chocolate amargo, damascos, tisana y miel.',
-    items: [
-      { productoId: 'p05', presentacionId: '100g', cant: 1 },
-      { productoId: 'p04', presentacionId: '250g', cant: 1 },
-      { productoId: 'p14', presentacionId: '100g', cant: 1 },
-      { productoId: 'p12', presentacionId: 'u',    cant: 1 }
-    ],
-    descuento: 8, precioEspecial: null, activo: true, destacado: false, orden: 2,
-    img: 'assets/combo-pausa.jpg',
-    color: '#7a4327', color2: '#a86a44'
-  },
-  {
-    id: 'c03', slug: 'cocina-cotidiana', nombre: 'Cocina cotidiana',
-    descripcion: 'Garbanzos, girasol, harina integral y salsa.',
-    items: [
-      { productoId: 'p03', presentacionId: '1kg',  cant: 1 },
-      { productoId: 'p09', presentacionId: '500g', cant: 1 },
-      { productoId: 'p13', presentacionId: 'u',    cant: 1 },
-      { productoId: 'p11', presentacionId: 'u',    cant: 2 }
-    ],
-    descuento: 5, precioEspecial: null, activo: true, destacado: false, orden: 3,
-    img: 'assets/combo-cocina.jpg',
-    color: '#b09150', color2: '#d3b981'
-  }
-];
-
-/* ---------- reglas de "Armá tu mix" ---------- */
-const MIX = {
-  activo: true,
-  minIngredientes: 2,
-  maxIngredientes: 4,
-  presentaciones: ['250g', '500g', '1kg'],
-  presentacionDefecto: '500g',
-  pasoGramos: 50, // de a cuántos gramos suma cada toque del +
-  recargo: 10, // % de recargo por el armado, sobre la suma de los ingredientes
-  titulo: 'Creá tu propio mix',
-  bajada: 'Elegí el tamaño, sumá hasta cuatro ingredientes y listo.'
-};
-
-/* ---------- pasos de "Cómo comprar" (editables) ---------- */
-const PASOS = [
-  { n: '01', titulo: 'Elegí tu producto',      texto: 'Explorá las categorías o usá el buscador.' },
-  { n: '02', titulo: 'Seleccioná la cantidad', texto: 'Desde 50 g hasta 1 kg, según el producto.' },
-  { n: '03', titulo: 'Recibí o retirá',        texto: 'Elegí envío o retiro en el local.' }
-];
-
-/* ------------------------------------------------------------
-   Imagen de demostración: SVG liviano generado en el navegador.
-   Cuando haya fotos reales, cada producto usa su campo `img`.
------------------------------------------------------------- */
+/* Imagen de relleno para lo que todavía no tiene foto: un SVG liviano
+   generado en el navegador, sin descargas. */
 function imgDemo(c1, c2) {
   const svg =
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">' +
-      '<defs><radialGradient id="f" cx="35%" cy="20%"><stop stop-color="#fffaf0"/><stop offset="1" stop-color="#e8dbc5"/></radialGradient>' +
-      '<filter id="s"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#6b4b32" flood-opacity=".2"/></filter>' +
-      '<clipPath id="c"><ellipse cx="200" cy="201" rx="112" ry="29"/></clipPath></defs>' +
-      '<rect width="400" height="400" fill="#f3e8d7"/>' +
-      '<ellipse cx="200" cy="334" rx="148" ry="22" fill="#d9c7aa" opacity=".55"/>' +
-      '<g filter="url(#s)"><path d="M70 202c5 88 54 132 130 132s125-44 130-132z" fill="url(#f)" stroke="#d7c4a7" stroke-width="3"/>' +
-      '<ellipse cx="200" cy="202" rx="130" ry="36" fill="#faf3e7" stroke="#d7c4a7" stroke-width="3"/>' +
-      '<ellipse cx="200" cy="201" rx="112" ry="29" fill="' + c1 + '"/>' +
-      '<g clip-path="url(#c)" fill="' + c2 + '" opacity=".9">' +
-      '<ellipse cx="118" cy="194" rx="15" ry="8"/><ellipse cx="145" cy="207" rx="13" ry="7"/><ellipse cx="168" cy="188" rx="16" ry="8"/>' +
-      '<ellipse cx="191" cy="204" rx="14" ry="7"/><ellipse cx="216" cy="187" rx="15" ry="8"/><ellipse cx="241" cy="204" rx="16" ry="8"/>' +
-      '<ellipse cx="271" cy="191" rx="14" ry="7"/><ellipse cx="292" cy="208" rx="13" ry="7"/><ellipse cx="154" cy="196" rx="9" ry="5"/>' +
-      '<ellipse cx="228" cy="211" rx="9" ry="5"/><ellipse cx="260" cy="186" rx="10" ry="5"/></g></g>' +
-      '<ellipse cx="92" cy="291" rx="11" ry="8" fill="' + c1 + '" transform="rotate(18 92 291)"/>' +
-      '<ellipse cx="119" cy="307" rx="8" ry="6" fill="' + c2 + '" transform="rotate(-16 119 307)"/>' +
+      '<rect width="400" height="400" fill="#fae6d0"/>' +
+      '<ellipse cx="200" cy="330" rx="150" ry="22" fill="#e9d5b8" opacity=".7"/>' +
+      '<path d="M70 205a130 130 0 0 0 260 0z" fill="#fbf6ec"/>' +
+      '<ellipse cx="200" cy="205" rx="130" ry="34" fill="#fbf6ec" stroke="#e0d2ba" stroke-width="3"/>' +
+      '<ellipse cx="200" cy="200" rx="112" ry="27" fill="' + c1 + '"/>' +
+      '<ellipse cx="168" cy="188" rx="42" ry="14" fill="' + c2 + '" opacity=".75"/>' +
     '</svg>';
   return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }

@@ -1463,5 +1463,17 @@ function pintarCascara() {
   pintarContadorCarrito();
 }
 
-pintarCascara();
-render();
+/* la tienda arranca cuando el catálogo terminó de cargar */
+(async () => {
+  const ok = await cargarCatalogo();
+  if (!ok) {
+    $('#app').innerHTML =
+      '<section class="seccion"><div class="contenedor">' +
+      vacio('No pudimos cargar el catálogo', 'Revisá tu conexión y volvé a intentar.') +
+      '<p style="text-align:center;margin-top:16px"><button class="btn btn--oliva" onclick="location.reload()">Reintentar</button></p>' +
+      '</div></section>';
+    return;
+  }
+  pintarCascara();
+  render();
+})();

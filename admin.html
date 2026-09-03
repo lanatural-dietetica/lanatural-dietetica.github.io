@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Panel · La Natural</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7a4423">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%237a4423'/%3E%3Cpath d='M8 19a8 8 0 0 1 16 0z' fill='%23f4ead9'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/estilos.css?v=20260903a">
+<link rel="stylesheet" href="css/panel.css?v=20260903a">
+</head>
+<body class="panel-body">
+
+<!-- ── Acceso ─────────────────────────────────────────── -->
+<section class="acceso" id="acceso">
+  <div class="acceso__caja">
+    <h1>Panel de <em>La Natural</em></h1>
+    <p class="acceso__txt">Pegá tu clave de acceso. Queda guardada en este celular: la pedimos una sola vez.</p>
+    <form id="form-acceso">
+      <div class="form-campo">
+        <label for="clave">Clave</label>
+        <input id="clave" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_...">
+      </div>
+      <p class="error-msg oculto" id="err-acceso"></p>
+      <button class="btn btn--oliva btn--bloque" type="submit">Entrar</button>
+    </form>
+    <p class="acceso__pie">Si perdiste la clave, pedile una nueva a quien te armó la tienda.</p>
+  </div>
+</section>
+
+<!-- ── Panel ──────────────────────────────────────────── -->
+<div id="panel" class="oculto">
+
+  <header class="panel-top">
+    <button class="panel-top__volver oculto" id="btn-volver" aria-label="Volver">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="panel-top__titulo" id="panel-titulo">Productos</span>
+    <button class="panel-top__salir" id="btn-salir">Salir</button>
+  </header>
+
+  <main class="panel-main" id="panel-main"></main>
+
+  <div class="aviso-guardado" id="aviso" role="status" aria-live="polite"></div>
+</div>
+
+<script src="js/panel.js?v=20260903a"></script>
+</body>
+</html>

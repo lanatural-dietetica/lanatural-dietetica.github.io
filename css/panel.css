@@ -1,0 +1,141 @@
+/* ============================================================
+   Panel de administración — misma identidad que la tienda,
+   pero pensado para usar con una mano, desde el celular.
+   ============================================================ */
+
+.panel-body{background:var(--champan);padding-bottom:40px}
+
+/* ---------- acceso ---------- */
+.acceso{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 18px}
+.acceso__caja{
+  width:100%;max-width:400px;background:var(--crema-card);
+  border:1px solid var(--linea);border-radius:var(--r-lg);
+  padding:28px 22px;box-shadow:0 12px 32px rgba(63,36,22,.10);
+}
+.acceso h1{font-size:26px;line-height:1.15;margin-bottom:10px}
+.acceso h1 em{font-style:normal;color:var(--russet)}
+.acceso__txt{font-size:14px;color:var(--gris-txt);margin:0 0 20px;line-height:1.5}
+.acceso__pie{font-size:12px;color:var(--gris-txt);margin:16px 0 0;text-align:center}
+.acceso input{font-family:var(--sans)}
+
+/* ---------- cáscara ---------- */
+.panel-top{
+  position:sticky;top:0;z-index:30;
+  background:var(--russet);color:var(--champan-claro);
+  display:flex;align-items:center;gap:8px;
+  padding:12px 14px;min-height:58px;
+  box-shadow:0 2px 12px rgba(63,36,22,.18);
+}
+.panel-top__titulo{
+  flex:1;font-family:var(--serif);font-size:19px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.panel-top__volver,.panel-top__salir{
+  background:none;border:0;color:inherit;padding:8px;
+  display:flex;align-items:center;justify-content:center;min-height:40px;border-radius:8px;
+}
+.panel-top__salir{font-size:13px;letter-spacing:.04em;padding:8px 10px}
+.panel-top__volver:hover,.panel-top__salir:hover{background:rgba(255,255,255,.12)}
+.panel-main{max-width:640px;margin:0 auto;padding:16px 14px}
+
+/* ---------- lista de productos ---------- */
+.panel-buscador{position:relative;display:flex;align-items:center;margin-bottom:14px}
+.panel-buscador svg{position:absolute;left:13px;color:var(--gris-txt)}
+.panel-buscador input{
+  width:100%;font:inherit;font-size:15px;color:var(--marron-txt);
+  padding:12px 14px 12px 42px;border:1px solid var(--linea);
+  border-radius:var(--r-md);background:var(--crema-card);
+}
+.panel-resumen{font-size:13px;color:var(--gris-txt);margin:0 0 10px}
+
+.fila{
+  display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+  background:var(--crema-card);border:1px solid var(--linea);
+  border-radius:var(--r-md);padding:10px;margin-bottom:8px;
+  color:var(--marron-txt);transition:border-color .18s ease,background .18s ease;
+}
+.fila:hover{border-color:var(--oliva)}
+.fila__fig{
+  width:52px;height:52px;flex:0 0 auto;border-radius:9px;
+  object-fit:contain;background:var(--foto-crema);
+}
+.fila__txt{flex:1;min-width:0}
+.fila__nom{font-family:var(--serif);font-size:16px;line-height:1.2;margin:0}
+.fila__precio{font-size:12.5px;color:var(--gris-txt);margin:3px 0 0}
+.fila__estado{
+  flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;letter-spacing:.04em;text-transform:uppercase;
+  padding:5px 9px;border-radius:999px;white-space:nowrap;
+}
+.fila__estado::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.estado--publicado{background:var(--oliva-claro);color:var(--oliva-osc)}
+.estado--sinstock{background:#f6e2c9;color:#96551c}
+.estado--oculto{background:#eee7dd;color:#7d6a58}
+
+/* ---------- ficha de edición ---------- */
+.editor{background:var(--crema-card);border:1px solid var(--linea);border-radius:var(--r-lg);padding:18px 16px}
+.editor__cab{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.editor__fig{width:72px;height:72px;flex:0 0 auto;border-radius:12px;object-fit:contain;background:var(--foto-crema)}
+.editor__nom{font-family:var(--serif);font-size:21px;line-height:1.15;margin:0}
+.editor__sub{font-size:13px;color:var(--gris-txt);margin:3px 0 0}
+
+.bloque{margin-bottom:20px}
+.bloque__lbl{
+  font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--gris-txt);margin:0 0 10px;
+}
+.campos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.campo label{display:block;font-size:12px;letter-spacing:.04em;color:var(--gris-txt);margin-bottom:5px}
+.campo input{
+  width:100%;font:inherit;font-size:17px;font-weight:600;color:var(--marron-txt);
+  padding:12px;border:1.5px solid var(--linea);border-radius:var(--r-sm);
+  background:var(--champan-claro);text-align:right;
+}
+.campo input:focus{border-color:var(--oliva);outline:none}
+.campo--ancho{grid-column:1 / -1}
+.campo__ayuda{font-size:11.5px;color:var(--gris-txt);margin:5px 0 0}
+
+/* cuenta del precio */
+.cuenta{
+  background:var(--champan-claro);border:1px dashed var(--linea);
+  border-radius:var(--r-md);padding:14px;margin-top:14px;
+}
+.cuenta__fila{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:4px 0;font-size:14px}
+.cuenta__fila span:first-child{color:var(--gris-txt)}
+.cuenta__total{
+  border-top:1px solid var(--linea);margin-top:8px;padding-top:10px;
+}
+.cuenta__total span:last-child{font-family:var(--serif);font-size:26px}
+.cuenta__medidas{margin-top:10px;font-size:13px;color:var(--gris-txt);line-height:1.7}
+.cuenta__medidas b{color:var(--marron-txt);font-weight:600}
+
+/* estados */
+.estados{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.estado-btn{
+  border:1.5px solid var(--linea);background:var(--champan-claro);
+  border-radius:var(--r-sm);padding:11px 4px;font-size:12.5px;
+  color:var(--marron-txt);min-height:46px;line-height:1.2;
+}
+.estado-btn[aria-pressed="true"]{background:var(--oliva);border-color:var(--oliva);color:#fff}
+
+.editor .btn{margin-top:4px}
+
+/* ---------- aviso de guardado ---------- */
+.aviso-guardado{
+  position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);
+  background:var(--marron-txt);color:var(--champan-claro);
+  padding:13px 20px;border-radius:999px;font-size:14px;z-index:60;
+  opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;
+  max-width:92vw;text-align:center;box-shadow:0 8px 24px rgba(63,36,22,.25);
+}
+.aviso-guardado.visible{opacity:1;transform:translate(-50%,0)}
+.aviso-guardado.error{background:var(--rojo)}
+.aviso-guardado.ok{background:var(--oliva-osc)}
+
+.cargando{text-align:center;padding:50px 20px;color:var(--gris-txt)}
+
+@media (min-width:640px){
+  .panel-main{padding:22px 16px}
+  .fila__fig{width:58px;height:58px}
+  .campos{grid-template-columns:repeat(3,1fr)}
+}
