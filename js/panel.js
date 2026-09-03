@@ -247,13 +247,13 @@ const imgDe = p => p.img || 'data:image/svg+xml,' + encodeURIComponent(
 /* ---------------- alta y borrado ---------------- */
 /* El nombre se guarda siempre parejo: primera letra en mayúscula y el resto en
    minúscula, escriba como escriba. Las siglas se respetan. */
-const SIGLAS = ['TACC'];                    // se escriben todas en mayúscula
-const PROPIOS = ['Jamaica', 'Mendoza'];     // nombres propios que conservan su mayúscula
+const SIGLAS = ['TACC'];   // se escriben enteras en mayúscula
 function nombreLindo(txt) {
   let t = (txt || '').trim().replace(/\s+/g, ' ').toLowerCase();
-  t = t.charAt(0).toUpperCase() + t.slice(1);
-  SIGLAS.concat(PROPIOS).forEach(palabra => {
-    t = t.replace(new RegExp('\\b' + palabra + '\\b', 'gi'), palabra);
+  // primera letra de cada palabra en mayúscula, también después de guión o barra
+  t = t.replace(/(^|[\s\-\/(])([a-záéíóúüñ])/g, (m, antes, letra) => antes + letra.toUpperCase());
+  SIGLAS.forEach(sigla => {
+    t = t.replace(new RegExp('\\b' + sigla + '\\b', 'gi'), sigla);
   });
   return t;
 }
