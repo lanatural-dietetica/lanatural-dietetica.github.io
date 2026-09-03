@@ -625,14 +625,14 @@
       "tipo": "envasado",
       "costoUnidad": 1650,
       "margen": 55,
-      "descuento": 0,
+      "descuento": 20,
       "presentaciones": [
         "u"
       ],
       "presentacionDefecto": "u",
       "tags": [
         "vegano",
-        "sintacc"
+        "nuevo"
       ],
       "estado": "publicado",
       "disponible": true,
