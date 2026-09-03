@@ -133,3 +133,20 @@ Están en `assets/`, a 400x400 webp, y pesan 167 KB los siete juntos.
 - Accesos de la sección "También podés" (en `vistaHome()`, `js/app.js`):
   `acceso-mix.webp`, `acceso-combos.webp`, `acceso-info.webp`.
 Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <nombre> 400 assets`.
+
+## Panel de administración — 2026-09-03
+- Vive en `admin.html` + `css/panel.css` + `js/panel.js`, en el mismo repo y con la misma
+  identidad visual que la tienda. URL: `https://lanatural-dietetica.github.io/admin.html`.
+- **No hay servidor ni base de datos.** El panel lee y escribe `data/catalogo.json` con la API
+  de GitHub. La clave (token fine-grained con permiso Contents) la pega la clienta una sola vez
+  y queda en el localStorage de su celular (`lanatural_clave_panel`). Nunca va en el código.
+- **El catálogo ya no vive en `js/datos.js`**: ese archivo ahora sólo carga
+  `data/catalogo.json` y deja una copia en el navegador por si falla la descarga.
+  Para cambiar productos o precios se edita el JSON (a mano o desde el panel), NO el JS.
+- Guardar hace un commit en `main`, así que hay historial de precios gratis y la tienda
+  se actualiza en un minuto (GitHub Pages).
+- Los precios se calculan igual que en la tienda: costo → ganancia → descuento → redondeo.
+- Estados: En venta (`estado:'publicado'`, `disponible:true`), Sin stock (`publicado` +
+  `disponible:false`) y Oculto (`estado:'borrador'`).
+- Falta (etapas siguientes): fotos desde el celular con compresión automática, alta de
+  productos con etiquetas y medidas, combos, y configuración del negocio.
