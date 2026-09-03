@@ -139,3 +139,13 @@
   .fila__fig{width:58px;height:58px}
   .campos{grid-template-columns:repeat(3,1fr)}
 }
+
+/* ---------- foto del producto ---------- */
+.foto-caja{display:flex;align-items:center;gap:14px}
+.foto-caja__img{
+  width:88px;height:88px;flex:0 0 auto;border-radius:12px;
+  object-fit:contain;background:var(--foto-crema);border:1px solid var(--linea);
+}
+.foto-caja__lado{flex:1;min-width:0}
+.foto-caja__lado .btn{width:100%;min-height:42px;font-size:12.5px}
+.foto-caja__lado .campo__ayuda{margin-top:7px}

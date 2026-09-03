@@ -148,5 +148,9 @@ Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <no
 - Los precios se calculan igual que en la tienda: costo → ganancia → descuento → redondeo.
 - Estados: En venta (`estado:'publicado'`, `disponible:true`), Sin stock (`publicado` +
   `disponible:false`) y Oculto (`estado:'borrador'`).
-- Falta (etapas siguientes): fotos desde el celular con compresión automática, alta de
-  productos con etiquetas y medidas, combos, y configuración del negocio.
+- **Fotos**: el panel las achica en el propio celular antes de subirlas — 800x800, fondo
+  emparejado con `#FAE6D0` y WebP (de 3 MB a ~65 KB). Si la foto ya viene con el fondo
+  correcto, se saltea ese paso para no hacerla esperar. Se guardan en
+  `assets/productos/<slug>.webp` y el campo `img` lleva `?v=` para saltar el caché.
+- Falta (etapas siguientes): alta de productos con etiquetas y medidas, combos, y
+  configuración del negocio.

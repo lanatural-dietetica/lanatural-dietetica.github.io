@@ -70,6 +70,100 @@ async function guardarCatalogo(mensaje) {
   estado.sha = d.content.sha;
 }
 
+/* ---------------- fotos ----------------
+   Se achican en el propio celular antes de subirlas: 800x800, fondo
+   emparejado con el de las tarjetas y WebP. Una foto de 3 MB queda en 60 KB.
+--------------------------------------------------------------- */
+const FOTO = { lado: 800, calidad: 0.84, fondo: [250, 230, 208] };  // #FAE6D0
+
+const pesoLindo = b => b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.round(b / 1024) + ' KB';
+
+async function abrirImagen(file) {
+  if (window.createImageBitmap) {
+    try { return await createImageBitmap(file, { imageOrientation: 'from-image' }); } catch (e) {}
+  }
+  return new Promise((ok, mal) => {
+    const img = new Image();
+    img.onload = () => ok(img);
+    img.onerror = () => mal(new Error('No pudimos leer la imagen'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+/* deja el fondo en el color exacto de las tarjetas, sin tocar el bowl ni dejar halo */
+function emparejarFondo(ctx, lado) {
+  const d = ctx.getImageData(0, 0, lado, lado);
+  const px = d.data;
+  const borde = 10, salto = 3, muestras = [[], [], []];
+  const tomar = (x, y) => {
+    const i = (y * lado + x) * 4;
+    muestras[0].push(px[i]); muestras[1].push(px[i + 1]); muestras[2].push(px[i + 2]);
+  };
+  for (let y = 0; y < borde; y += salto)
+    for (let x = 0; x < lado; x += salto) { tomar(x, y); tomar(x, lado - 1 - y); }
+  for (let x = 0; x < borde; x += salto)
+    for (let y = borde; y < lado - borde; y += salto) { tomar(x, y); tomar(lado - 1 - x, y); }
+  const mediana = a => { a.sort((x, y) => x - y); return a[Math.floor(a.length / 2)]; };
+  const fondo = [mediana(muestras[0]), mediana(muestras[1]), mediana(muestras[2])];
+  const delta = [FOTO.fondo[0] - fondo[0], FOTO.fondo[1] - fondo[1], FOTO.fondo[2] - fondo[2]];
+
+  // si la foto ya vino con el fondo correcto, no hay nada que corregir
+  if (Math.max(Math.abs(delta[0]), Math.abs(delta[1]), Math.abs(delta[2])) <= 2) return;
+  const CERCA = 22, LEJOS = 80, CERCA2 = CERCA * CERCA, LEJOS2 = LEJOS * LEJOS;
+
+  for (let i = 0; i < px.length; i += 4) {
+    const dr = px[i] - fondo[0], dg = px[i + 1] - fondo[1], db = px[i + 2] - fondo[2];
+    const d2 = dr * dr + dg * dg + db * db;
+    if (d2 >= LEJOS2) continue;
+    const peso = d2 <= CERCA2 ? 1 : (LEJOS - Math.sqrt(d2)) / (LEJOS - CERCA);
+    px[i]     = Math.max(0, Math.min(255, px[i]     + delta[0] * peso));
+    px[i + 1] = Math.max(0, Math.min(255, px[i + 1] + delta[1] * peso));
+    px[i + 2] = Math.max(0, Math.min(255, px[i + 2] + delta[2] * peso));
+  }
+  ctx.putImageData(d, 0, 0);
+}
+
+async function prepararFoto(file) {
+  const img = await abrirImagen(file);
+  const lado = FOTO.lado;
+  const lienzo = document.createElement('canvas');
+  lienzo.width = lienzo.height = lado;
+  const ctx = lienzo.getContext('2d', { willReadFrequently: true });
+
+  // fondo de base, para que una foto que no sea cuadrada no quede con bordes vacíos
+  ctx.fillStyle = 'rgb(' + FOTO.fondo.join(',') + ')';
+  ctx.fillRect(0, 0, lado, lado);
+
+  // la foto entera, sin recortar, centrada
+  const escala = Math.min(lado / img.width, lado / img.height);
+  const w = img.width * escala, h = img.height * escala;
+  ctx.drawImage(img, (lado - w) / 2, (lado - h) / 2, w, h);
+
+  emparejarFondo(ctx, lado);
+
+  const blob = await new Promise(ok => lienzo.toBlob(ok, 'image/webp', FOTO.calidad));
+  return { blob, vistaPrevia: URL.createObjectURL(blob), antes: file.size, despues: blob.size };
+}
+
+async function subirFoto(slug, blob) {
+  const ruta = 'assets/productos/' + slug + '.webp';
+  let sha = null;
+  try { sha = (await api('/contents/' + ruta + '?ref=main')).sha; } catch (e) {}   // si no existe, se crea
+  const base64 = await new Promise(ok => {
+    const fr = new FileReader();
+    fr.onload = () => ok(fr.result.split(',')[1]);
+    fr.readAsDataURL(blob);
+  });
+  await api('/contents/' + ruta, {
+    method: 'PUT',
+    body: JSON.stringify({
+      message: 'Panel: foto de ' + slug,
+      content: base64, branch: 'main', ...(sha ? { sha } : {})
+    })
+  });
+  return ruta + '?v=' + Date.now().toString(36);
+}
+
 /* ---------------- precios ---------------- */
 const cfg = () => estado.catalogo.config || {};
 function redondear(n) {
@@ -156,6 +250,18 @@ function vistaEditor(p) {
         '<p class="editor__nom">' + esc(p.nombre) + '</p>' +
         '<p class="editor__sub">' + (p.tipo === 'granel' ? 'A granel · se cobra por kilo' : 'Envasado · se cobra por unidad') + '</p>' +
       '</div>' +
+    '</div>' +
+
+    '<div class="bloque">' +
+      '<p class="bloque__lbl">Foto</p>' +
+      '<div class="foto-caja">' +
+        '<img class="foto-caja__img" id="foto-actual" src="' + imgDe(p) + '" alt="">' +
+        '<div class="foto-caja__lado">' +
+          '<button class="btn btn--fantasma" id="btn-foto">Cambiar foto</button>' +
+          '<p class="campo__ayuda" id="foto-dato">Se achica sola antes de subirla.</p>' +
+        '</div>' +
+      '</div>' +
+      '<input type="file" id="archivo-foto" accept="image/*" class="oculto">' +
     '</div>' +
 
     '<div class="bloque">' +
@@ -249,6 +355,8 @@ document.addEventListener('click', async ev => {
     return;
   }
 
+  if (t.closest('#btn-foto')) { $('#archivo-foto').click(); return; }
+
   if (t.closest('#guardar')) {
     const p = estado.editando;
     if (!p) return;
@@ -269,6 +377,33 @@ document.addEventListener('click', async ev => {
       boton.disabled = false;
     }
     return;
+  }
+});
+
+document.addEventListener('change', async ev => {
+  if (ev.target.id !== 'archivo-foto') return;
+  const file = ev.target.files && ev.target.files[0];
+  const p = estado.editando;
+  if (!file || !p) return;
+  if (!/^image\//.test(file.type)) { aviso('Ese archivo no es una imagen.', 'error'); return; }
+
+  const boton = $('#btn-foto');
+  boton.disabled = true;
+  aviso('Achicando la foto…', 'trabajando');
+  try {
+    const r = await prepararFoto(file);
+    $('#foto-actual').src = r.vistaPrevia;
+    $('#foto-dato').textContent = 'De ' + pesoLindo(r.antes) + ' a ' + pesoLindo(r.despues) + '. Subiendo…';
+    const ruta = await subirFoto(p.slug, r.blob);
+    p.img = ruta;
+    $('#foto-dato').textContent = 'Lista: de ' + pesoLindo(r.antes) + ' a ' + pesoLindo(r.despues) + '. Tocá Guardar para que se vea en la tienda.';
+    aviso('Foto subida. Ahora tocá Guardar cambios.', 'ok');
+  } catch (e) {
+    $('#foto-dato').textContent = 'No pudimos subir la foto.';
+    aviso('No se pudo subir la foto: ' + e.message, 'error');
+  } finally {
+    boton.disabled = false;
+    ev.target.value = '';
   }
 });
 
