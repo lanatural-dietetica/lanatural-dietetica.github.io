@@ -37,9 +37,14 @@ function catalogoValido(d) {
   return d && Array.isArray(d.productos) && d.productos.length > 0 && d.config;
 }
 
+const RAW = 'https://raw.githubusercontent.com/lanatural-dietetica/lanatural-dietetica.github.io/main/data/catalogo.json';
+
 async function cargarCatalogo() {
+  // ?fresco=1 lo usa el panel para ver el cambio recién guardado sin esperar la publicación
+  const fresco = new URLSearchParams(location.search).has('fresco');
   try {
-    const r = await fetch('data/catalogo.json?t=' + Date.now(), { cache: 'no-store' });
+    const url = (fresco ? RAW : 'data/catalogo.json') + '?t=' + Date.now();
+    const r = await fetch(url, { cache: 'no-store' });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const d = await r.json();
     if (!catalogoValido(d)) throw new Error('catálogo incompleto');

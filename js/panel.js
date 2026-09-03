@@ -62,6 +62,7 @@ async function traerCatalogo() {
 
 async function guardarCatalogo(mensaje) {
   estado.catalogo.actualizado = new Date().toISOString().slice(0, 10);
+  estado.catalogo.sello = Date.now();
   const cuerpo = JSON.stringify(estado.catalogo, null, 2) + '\n';
   const d = await api('/contents/' + RUTA, {
     method: 'PUT',
@@ -75,6 +76,19 @@ async function guardarCatalogo(mensaje) {
    emparejado con el de las tarjetas y WebP. Una foto de 3 MB queda en 60 KB.
 --------------------------------------------------------------- */
 const FOTO = { lado: 800, calidad: 0.84, fondo: [250, 230, 208] };  // #FAE6D0
+
+/* Safari viejo no sabe comprimir en WebP y devuelve un PNG enorme sin avisar.
+   Así que primero preguntamos qué formato soporta de verdad. */
+let FORMATO = null;
+function formatoDeSalida() {
+  if (FORMATO) return FORMATO;
+  const c = document.createElement('canvas');
+  c.width = c.height = 2;
+  FORMATO = c.toDataURL('image/webp').indexOf('data:image/webp') === 0
+    ? { tipo: 'image/webp', ext: 'webp', calidad: FOTO.calidad }
+    : { tipo: 'image/jpeg', ext: 'jpg', calidad: 0.86 };
+  return FORMATO;
+}
 
 const pesoLindo = b => b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.round(b / 1024) + ' KB';
 
@@ -141,12 +155,13 @@ async function prepararFoto(file) {
 
   emparejarFondo(ctx, lado);
 
-  const blob = await new Promise(ok => lienzo.toBlob(ok, 'image/webp', FOTO.calidad));
-  return { blob, vistaPrevia: URL.createObjectURL(blob), antes: file.size, despues: blob.size };
+  const f = formatoDeSalida();
+  const blob = await new Promise(ok => lienzo.toBlob(ok, f.tipo, f.calidad));
+  return { blob, ext: f.ext, vistaPrevia: URL.createObjectURL(blob), antes: file.size, despues: blob.size };
 }
 
-async function subirFoto(slug, blob) {
-  const ruta = 'assets/productos/' + slug + '.webp';
+async function subirFoto(slug, blob, ext) {
+  const ruta = 'assets/productos/' + slug + '.' + (ext || 'webp');
   let sha = null;
   try { sha = (await api('/contents/' + ruta + '?ref=main')).sha; } catch (e) {}   // si no existe, se crea
   const base64 = await new Promise(ok => {
@@ -162,6 +177,24 @@ async function subirFoto(slug, blob) {
     })
   });
   return ruta + '?v=' + Date.now().toString(36);
+}
+
+/* La tienda se publica sola, pero tarda un rato. En vez de dejarla adivinando,
+   preguntamos cada tres segundos hasta ver el cambio publicado. */
+async function esperarPublicado(sello, alAvisar) {
+  const hasta = Date.now() + 150000;
+  while (Date.now() < hasta) {
+    await new Promise(r => setTimeout(r, 3000));
+    try {
+      const r = await fetch('data/catalogo.json?t=' + Date.now(), { cache: 'no-store' });
+      if (r.ok) {
+        const d = await r.json();
+        if (d.sello === sello) return true;
+      }
+    } catch (e) {}
+    if (alAvisar) alAvisar();
+  }
+  return false;
 }
 
 /* ---------------- precios ---------------- */
@@ -272,7 +305,10 @@ function vistaLista() {
     '<div class="lista-cab">' +
       '<p class="panel-resumen">' + arr.length + (arr.length === 1 ? ' producto' : ' productos') +
         (sinStock ? ' · ' + sinStock + ' sin stock' : '') + '</p>' +
-      '<button class="btn-nuevo" id="btn-nuevo">+ Nuevo</button>' +
+      '<span class="lista-acciones">' +
+        '<a class="btn-ver" href="./?fresco=1" target="_blank" rel="noopener">Ver tienda</a>' +
+        '<button class="btn-nuevo" id="btn-nuevo">+ Nuevo</button>' +
+      '</span>' +
     '</div>' +
     (arr.length ? arr.map(p => {
       const c = cuentaDe(p);
@@ -469,8 +505,13 @@ async function guardarProducto() {
   aviso('Guardando…', 'trabajando');
   try {
     await guardarCatalogo('Panel: ' + p.nombre);
-    aviso('Guardado. En un minuto se ve en la tienda.', 'ok');
+    const sello = estado.catalogo.sello;
+    aviso('Guardado. Publicando en la tienda…', 'trabajando');
     mostrarLista();
+    esperarPublicado(sello).then(ok => {
+      aviso(ok ? 'Listo, ya se ve en la tienda.' : 'Guardado. Está tardando en publicarse, mirá en un minuto.',
+            ok ? 'ok' : 'error');
+    });
   } catch (e) {
     aviso(e.codigo === 409
       ? 'Alguien más guardó recién. Recargá la página y probá otra vez.'
@@ -584,6 +625,14 @@ document.addEventListener('change', async ev => {
   if (!file || !p) return;
   if (!/^image\//.test(file.type)) { aviso('Ese archivo no es una imagen.', 'error'); return; }
 
+  if (!p.nombre || p.nombre.trim().length < 2) {
+    aviso('Primero ponele el nombre al producto, después la foto.', 'error');
+    const n = $('#f-nombre'); if (n) n.focus();
+    ev.target.value = '';
+    return;
+  }
+  if (!p.slug) p.slug = slugLibre(aSlug(p.nombre), p.id);
+
   const boton = $('#btn-foto');
   boton.disabled = true;
   aviso('Achicando la foto…', 'trabajando');
@@ -591,10 +640,12 @@ document.addEventListener('change', async ev => {
     const r = await prepararFoto(file);
     $('#foto-actual').src = r.vistaPrevia;
     $('#foto-dato').textContent = 'De ' + pesoLindo(r.antes) + ' a ' + pesoLindo(r.despues) + '. Subiendo…';
-    const ruta = await subirFoto(p.slug, r.blob);
+    const ruta = await subirFoto(p.slug, r.blob, r.ext);
     p.img = ruta;
     $('#foto-dato').textContent = 'Lista: de ' + pesoLindo(r.antes) + ' a ' + pesoLindo(r.despues) + '. Tocá Guardar para que se vea en la tienda.';
-    aviso('Foto subida. Ahora tocá Guardar cambios.', 'ok');
+    aviso(r.despues > 300 * 1024
+      ? 'Foto subida, pero quedó pesada (' + pesoLindo(r.despues) + '). Ahora tocá Guardar.'
+      : 'Foto subida. Ahora tocá Guardar cambios.', 'ok');
   } catch (e) {
     $('#foto-dato').textContent = 'No pudimos subir la foto.';
     aviso('No se pudo subir la foto: ' + e.message, 'error');

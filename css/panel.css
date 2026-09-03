@@ -213,3 +213,11 @@
 }
 .panel-top__guardar:hover{background:var(--oliva-osc)}
 .panel-top__guardar:disabled{opacity:.6}
+
+.lista-acciones{display:flex;align-items:center;gap:8px}
+.btn-ver{
+  display:inline-flex;align-items:center;border:1.5px solid var(--linea);
+  background:var(--crema-card);color:var(--marron-txt);
+  border-radius:999px;padding:8px 14px;font-size:13px;min-height:38px;
+}
+.btn-ver:hover{border-color:var(--oliva)}
