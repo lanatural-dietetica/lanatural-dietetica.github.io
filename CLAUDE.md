@@ -113,3 +113,13 @@ están publicados pero nadie los ve. Al tocar css/ o js/, bumpear la versión en
 - En el carrito, cada fila lleva la medida, el precio por kilo abajo en gris, la cantidad,
   el monto a la derecha en negrita y la papelera; el subtotal por producto aparece cuando
   hay más de una medida. Es el formato de Paladear.
+
+## Fondo de las fotos — 2026-09-02
+- El color oficial es **#FAE6D0** (`--foto-crema` en `css/estilos.css`). Antes era #f5e6d4;
+  se cambió para que coincida con lo que devuelve el generador de imágenes, que nunca
+  respeta el hex exacto que se le pide.
+- Toda foto nueva se prepara con `scripts/foto-producto.py`, que mide el fondo real en el
+  marco, lo lleva a #FAE6D0 sin tocar el bowl ni dejar halo, redimensiona a 800x800 y guarda
+  `.webp` y `.jpg`. Uso: `python3 scripts/foto-producto.py <entrada> <nombre>`.
+- Si se vuelve a cambiar `--foto-crema`, hay que reprocesar todas las fotos con ese script,
+  porque si no se ve el recuadro de la imagen contra la tarjeta.

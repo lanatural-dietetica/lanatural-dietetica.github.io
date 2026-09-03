@@ -213,6 +213,34 @@ const PRODUCTOS = [
     color: '#8a4a26', color2: '#b8763f'
   },
   {
+    id: 'p16', sku: 'FS-031', slug: 'semillas-de-zapallo', nombre: 'Semillas de zapallo',
+    categoria: 'frutos', subtitulo: 'Peladas, crudas', marca: '',
+    tipo: 'granel', costoKg: 9500, margen: 58, descuento: 0,
+    presentaciones: ['250g', '500g', '1kg'], presentacionDefecto: '1kg',
+    tags: ['sintacc', 'vegano'], estado: 'publicado', disponible: true,
+    destacado: true, orden: 4, mix: true,
+    descripcion: 'Semilla de zapallo pelada, verde y crocante. Para ensaladas, panificados, granolas y mixes.',
+    preparacion: 'Se puede tostar 5 minutos en sartén para realzar el sabor. Conservar en frasco cerrado.',
+    origen: 'China', ingredientes: 'Semillas de zapallo peladas.',
+    alergenos: 'Puede contener trazas de frutos secos y maní.',
+    img: 'assets/productos/semillas-de-zapallo.webp',
+    color: '#6d7a3c', color2: '#95a35c'
+  },
+  {
+    id: 'p17', sku: 'DE-010', slug: 'pasta-de-mani-stevia', nombre: 'Pasta de maní con stevia',
+    categoria: 'despensa', subtitulo: 'Frasco 370 g · sin azúcar agregada', marca: 'Entrenuts',
+    tipo: 'envasado', costoUnidad: 4200, margen: 48, descuento: 0,
+    presentaciones: ['u'], presentacionDefecto: 'u',
+    tags: ['sintacc', 'vegano'], estado: 'publicado', disponible: true,
+    destacado: true, orden: 12, mix: false,
+    descripcion: 'Producto untable a base de pasta de maní, endulzado con glucósidos de esteviol y sin azúcar agregada.',
+    preparacion: 'Puede separarse el aceite natural del maní: mezclar antes de usar. Una vez abierto, conservar en lugar fresco.',
+    origen: 'Argentina', ingredientes: 'Maní, glucósidos de esteviol.',
+    alergenos: 'Contiene maní. Contiene edulcorantes: no recomendable en niños/as (Ministerio de Salud).',
+    img: 'assets/productos/pasta-de-mani-stevia.webp',
+    color: '#b98237', color2: '#d8a862'
+  },
+  {
     id: 'p11', sku: 'DE-001', slug: 'salsa-de-tomate', nombre: 'Salsa de tomate',
     categoria: 'despensa', subtitulo: 'Frasco 420 g · sin conservantes', marca: 'Casera',
     tipo: 'envasado', costoUnidad: 1650, margen: 55, descuento: 0,
