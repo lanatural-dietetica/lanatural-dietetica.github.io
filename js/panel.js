@@ -231,7 +231,7 @@ function productoNuevo() {
     sku: '', slug: '', nombre: '', categoria: cat, subtitulo: '', marca: '',
     tipo: 'granel', costoKg: 0, margen: estado.catalogo.config.margenPorDefecto || 60, descuento: 0,
     presentaciones: ['250g', '500g', '1kg'], presentacionDefecto: '1kg',
-    tags: [], estado: 'borrador', disponible: false,
+    tags: [], estado: 'publicado', disponible: true,
     destacado: false, orden: prods.length + 1, mix: false,
     descripcion: '', preparacion: '', origen: '', ingredientes: '', alergenos: '',
     color: '#c8a97e', color2: '#e3cba6'
@@ -440,6 +440,7 @@ function mostrarLista() {
   estado.editando = null;
   $('#panel-titulo').textContent = 'Productos';
   $('#btn-volver').classList.add('oculto');
+  $('#btn-guardar-top').classList.add('oculto');
   $('#panel-main').innerHTML = vistaLista();
 }
 
@@ -449,8 +450,34 @@ function mostrarEditor(id) {
   estado.editando = p;
   $('#panel-titulo').textContent = p.nombre || 'Producto nuevo';
   $('#btn-volver').classList.remove('oculto');
+  $('#btn-guardar-top').classList.remove('oculto');
   $('#panel-main').innerHTML = vistaEditor(p);
   pintarCuenta();
+}
+
+async function guardarProducto() {
+  const p = estado.editando;
+  if (!p) return;
+  if (!p.nombre || p.nombre.trim().length < 2) { aviso('Ponele un nombre al producto.', 'error'); const n = $('#f-nombre'); if (n) n.focus(); return; }
+  if (!(p.tipo === 'granel' ? p.costoKg : p.costoUnidad)) { aviso('Falta el costo.', 'error'); const c = $('#f-costo'); if (c) c.focus(); return; }
+  p.nombre = p.nombre.trim();
+  p.slug = slugLibre(aSlug(p.nombre), p.id);
+  acomodarMedidas(p);
+
+  const botones = [$('#guardar'), $('#btn-guardar-top')].filter(Boolean);
+  botones.forEach(b => { b.disabled = true; });
+  aviso('Guardando…', 'trabajando');
+  try {
+    await guardarCatalogo('Panel: ' + p.nombre);
+    aviso('Guardado. En un minuto se ve en la tienda.', 'ok');
+    mostrarLista();
+  } catch (e) {
+    aviso(e.codigo === 409
+      ? 'Alguien más guardó recién. Recargá la página y probá otra vez.'
+      : 'No se pudo guardar: ' + e.message, 'error');
+  } finally {
+    botones.forEach(b => { b.disabled = false; });
+  }
 }
 
 /* ---------------- eventos ---------------- */
@@ -461,13 +488,6 @@ document.addEventListener('click', async ev => {
   if (fila) { mostrarEditor(fila.dataset.editar); return; }
 
   if (t.closest('#btn-volver')) { mostrarLista(); return; }
-
-  if (t.closest('#btn-salir')) {
-    if (!confirm('¿Salir del panel? La próxima vez vas a tener que poner la clave otra vez.')) return;
-    try { localStorage.removeItem(LS_TOKEN); } catch (e) {}
-    location.reload();
-    return;
-  }
 
   const btnEstado = t.closest('[data-estado]');
   if (btnEstado && estado.editando) {
@@ -550,32 +570,7 @@ document.addEventListener('click', async ev => {
     return;
   }
 
-  if (t.closest('#guardar')) {
-    const p = estado.editando;
-    if (!p) return;
-    if (!p.nombre || p.nombre.trim().length < 2) { aviso('Ponele un nombre al producto.', 'error'); $('#f-nombre').focus(); return; }
-    if (!(p.tipo === 'granel' ? p.costoKg : p.costoUnidad)) { aviso('Falta el costo.', 'error'); $('#f-costo').focus(); return; }
-    p.nombre = p.nombre.trim();
-    p.slug = slugLibre(aSlug(p.nombre), p.id);
-    acomodarMedidas(p);
-    const boton = $('#guardar');
-    boton.disabled = true;
-    aviso('Guardando…', 'trabajando');
-    try {
-      await guardarCatalogo('Panel: ' + p.nombre);
-      aviso('Guardado. En un minuto se ve en la tienda.', 'ok');
-      mostrarLista();
-    } catch (e) {
-      if (e.codigo === 409) {
-        aviso('Alguien más guardó recién. Recargá la página y probá otra vez.', 'error');
-      } else {
-        aviso('No se pudo guardar: ' + e.message, 'error');
-      }
-    } finally {
-      boton.disabled = false;
-    }
-    return;
-  }
+  if (t.closest('#guardar') || t.closest('#btn-guardar-top')) { guardarProducto(); return; }
 });
 
 document.addEventListener('change', ev => {

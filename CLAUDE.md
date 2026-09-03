@@ -157,5 +157,8 @@ Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <no
   costo/ganancia/descuento, etiquetas, destacado, si entra en el mix, los textos de la ficha
   (descripción, preparación, origen, ingredientes, alérgenos) y el estado. El slug se genera
   solo desde el nombre y se controla que no se repita. No deja borrar un producto que esté
-  dentro de un combo.
+  dentro de un combo. **El producto nuevo nace En venta**, no oculto (pedido de Juani).
+- Arriba a la derecha hay **Guardar** (aparece sólo dentro de un producto). No hay botón de
+  salir a propósito: la clave se pide una sola vez y queda en el celular. Si la clave dejara
+  de servir, el panel la borra solo y vuelve a pedirla.
 - Falta (etapas siguientes): combos y configuración del negocio.
