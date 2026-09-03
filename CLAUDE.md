@@ -56,7 +56,7 @@ Nunca se escribe un precio a mano. Se carga costo, margen y descuento:
 - No volver a agregar círculos, manchas ni decoraciones de fondo ausentes en las
   maquetas.
 - Sitio y repo definitivos: `https://lanatural-dietetica.github.io/` y
-  `https://github.com/lanatural-dietetica/online`, en la cuenta de la clienta.
+  `https://github.com/lanatural-dietetica/lanatural-dietetica.github.io`, en la cuenta de la clienta.
   El viejo `paladear/dietetica-test` quedó como prueba (remote `prueba` en la carpeta local).
 
 ## Decisiones de Claude — 2026-09-02
@@ -167,3 +167,16 @@ Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <no
   salir a propósito: la clave se pide una sola vez y queda en el celular. Si la clave dejara
   de servir, el panel la borra solo y vuelve a pedirla.
 - Falta (etapas siguientes): combos y configuración del negocio.
+
+## Ajuste visual de escritorio — 2026-09-03
+- La composición mobile validada contra las maquetas no se toca. Los ajustes nuevos viven
+  dentro de `@media (min-width:960px)` al final de `css/estilos.css`.
+- En desktop, el hero usa una grilla de texto + foto completa 4:3. No volver a usar la foto
+  como fondo `cover` de una franja ancha porque corta los bowls y la vuelve desproporcionada.
+- El título se mantiene como `Elegí lo natural.` y la bajada pasó a
+  `Lo rico de cuidarte, todos los días.` en `data/catalogo.json`.
+- Las tarjetas de categoría son más compactas y usan `#FAE7D0` sólo en desktop para coincidir
+  con el promedio visual de sus imágenes. La imagen lleva `filter:none`; el drop-shadow previo
+  sombreaba el rectángulo opaco y hacía parecer que el fondo era de otro color.
+- También se compactaron en desktop las cards de producto, combos, el creador de mix y la
+  pantalla Cómo comprar. No replicar estas escalas en mobile.
