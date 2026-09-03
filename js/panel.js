@@ -20,7 +20,7 @@ const esc = (s = '') => String(s)
 const fmt = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
 const money = n => '$ ' + fmt.format(Math.round(n || 0));
 
-const estado = { token: '', catalogo: null, sha: '', q: '', editando: null };
+const estado = { token: '', catalogo: null, sha: '', q: '', rubro: 'todos', editando: null };
 
 /* ---------------- avisos ---------------- */
 let avisoTimer;
@@ -245,6 +245,19 @@ const imgDe = p => p.img || 'data:image/svg+xml,' + encodeURIComponent(
   '<path d="M9 25a11 11 0 0 1 22 0z" fill="#efe0c8"/></svg>');
 
 /* ---------------- alta y borrado ---------------- */
+/* El nombre se guarda siempre parejo: primera letra en mayúscula y el resto en
+   minúscula, escriba como escriba. Las siglas se respetan. */
+const SIGLAS = ['TACC'];                    // se escriben todas en mayúscula
+const PROPIOS = ['Jamaica', 'Mendoza'];     // nombres propios que conservan su mayúscula
+function nombreLindo(txt) {
+  let t = (txt || '').trim().replace(/\s+/g, ' ').toLowerCase();
+  t = t.charAt(0).toUpperCase() + t.slice(1);
+  SIGLAS.concat(PROPIOS).forEach(palabra => {
+    t = t.replace(new RegExp('\\b' + palabra + '\\b', 'gi'), palabra);
+  });
+  return t;
+}
+
 const aSlug = t => (t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
@@ -289,18 +302,57 @@ function usadoEnCombos(id) {
 }
 
 /* ---------------- vistas ---------------- */
+function filaProducto(p) {
+  const c = cuentaDe(p);
+  const e = estadoDe(p);
+  return '<button class="fila" data-editar="' + p.id + '">' +
+    '<img class="fila__fig" src="' + imgDe(p) + '" alt="" loading="lazy">' +
+    '<span class="fila__txt">' +
+      '<p class="fila__nom">' + esc(p.nombre || 'Sin nombre') + '</p>' +
+      '<p class="fila__precio">' + money(c.final) + (p.tipo === 'granel' ? ' / kg' : ' / unidad') + '</p>' +
+    '</span>' +
+    '<span class="fila__estado estado--' + e + '">' + ETIQUETA_ESTADO[e] + '</span>' +
+  '</button>';
+}
+
 function vistaLista() {
   const q = estado.q.trim().toLowerCase();
-  const arr = (estado.catalogo.productos || [])
-    .filter(p => !q || p.nombre.toLowerCase().includes(q))
-    .sort((a, b) => (a.orden || 99) - (b.orden || 99));
+  const cats = estado.catalogo.categorias || [];
+  const porNombre = (a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es', { sensitivity: 'base' });
+
+  let arr = (estado.catalogo.productos || []).slice();
+  if (estado.rubro !== 'todos') arr = arr.filter(p => p.categoria === estado.rubro);
+  if (q) arr = arr.filter(p => (p.nombre || '').toLowerCase().includes(q));
+  arr.sort(porNombre);
 
   const sinStock = (estado.catalogo.productos || []).filter(p => estadoDe(p) === 'sinstock').length;
+  const rubros = [{ id: 'todos', nombre: 'Todos' }].concat(cats.slice().sort((a, b) => (a.orden || 99) - (b.orden || 99)));
+
+  // agrupado por rubro sólo cuando se están viendo todos y no hay búsqueda
+  let cuerpo;
+  if (!arr.length) {
+    cuerpo = '<p class="cargando">No hay productos que coincidan.</p>';
+  } else if (estado.rubro === 'todos' && !q) {
+    cuerpo = cats.slice().sort((a, b) => (a.orden || 99) - (b.orden || 99)).map(cat => {
+      const dentro = arr.filter(p => p.categoria === cat.id);
+      if (!dentro.length) return '';
+      return '<p class="grupo-lbl">' + esc(cat.nombre) + ' <span>' + dentro.length + '</span></p>' +
+             dentro.map(filaProducto).join('');
+    }).join('');
+    const huerfanos = arr.filter(p => !cats.some(c => c.id === p.categoria));
+    if (huerfanos.length) cuerpo += '<p class="grupo-lbl">Sin categoría <span>' + huerfanos.length + '</span></p>' + huerfanos.map(filaProducto).join('');
+  } else {
+    cuerpo = arr.map(filaProducto).join('');
+  }
 
   return '' +
     '<div class="panel-buscador">' +
       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>' +
       '<input id="q" type="search" placeholder="Buscar producto" value="' + esc(estado.q) + '" autocomplete="off">' +
+    '</div>' +
+    '<div class="chips-rubro">' +
+      rubros.map(r => '<button class="chip-panel" data-rubro="' + r.id + '" aria-pressed="' + (estado.rubro === r.id) + '">' +
+        esc(r.nombre) + '</button>').join('') +
     '</div>' +
     '<div class="lista-cab">' +
       '<p class="panel-resumen">' + arr.length + (arr.length === 1 ? ' producto' : ' productos') +
@@ -310,18 +362,7 @@ function vistaLista() {
         '<button class="btn-nuevo" id="btn-nuevo">+ Nuevo</button>' +
       '</span>' +
     '</div>' +
-    (arr.length ? arr.map(p => {
-      const c = cuentaDe(p);
-      const e = estadoDe(p);
-      return '<button class="fila" data-editar="' + p.id + '">' +
-        '<img class="fila__fig" src="' + imgDe(p) + '" alt="" loading="lazy">' +
-        '<span class="fila__txt">' +
-          '<p class="fila__nom">' + esc(p.nombre) + '</p>' +
-          '<p class="fila__precio">' + money(c.final) + (p.tipo === 'granel' ? ' / kg' : ' / unidad') + '</p>' +
-        '</span>' +
-        '<span class="fila__estado estado--' + e + '">' + ETIQUETA_ESTADO[e] + '</span>' +
-      '</button>';
-    }).join('') : '<p class="cargando">No encontramos ese producto.</p>');
+    cuerpo;
 }
 
 function vistaEditor(p) {
@@ -496,7 +537,7 @@ async function guardarProducto() {
   if (!p) return;
   if (!p.nombre || p.nombre.trim().length < 2) { aviso('Ponele un nombre al producto.', 'error'); const n = $('#f-nombre'); if (n) n.focus(); return; }
   if (!(p.tipo === 'granel' ? p.costoKg : p.costoUnidad)) { aviso('Falta el costo.', 'error'); const c = $('#f-costo'); if (c) c.focus(); return; }
-  p.nombre = p.nombre.trim();
+  p.nombre = nombreLindo(p.nombre);
   p.slug = slugLibre(aSlug(p.nombre), p.id);
   acomodarMedidas(p);
 
@@ -524,6 +565,13 @@ async function guardarProducto() {
 /* ---------------- eventos ---------------- */
 document.addEventListener('click', async ev => {
   const t = ev.target;
+
+  const chipRubro = t.closest('[data-rubro]');
+  if (chipRubro) {
+    estado.rubro = chipRubro.dataset.rubro;
+    $('#panel-main').innerHTML = vistaLista();
+    return;
+  }
 
   const fila = t.closest('[data-editar]');
   if (fila) { mostrarEditor(fila.dataset.editar); return; }

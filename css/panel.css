@@ -221,3 +221,23 @@
   border-radius:999px;padding:8px 14px;font-size:13px;min-height:38px;
 }
 .btn-ver:hover{border-color:var(--oliva)}
+
+/* ---------- filtro por rubro y agrupado ---------- */
+.chips-rubro{
+  display:flex;gap:7px;overflow-x:auto;padding:2px 0 12px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.chips-rubro::-webkit-scrollbar{display:none}
+.chips-rubro .chip-panel{flex:0 0 auto;white-space:nowrap}
+
+.grupo-lbl{
+  display:flex;align-items:center;gap:8px;
+  margin:18px 0 8px;font-size:12px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--gris-txt);
+}
+.grupo-lbl::after{content:"";flex:1;height:1px;background:var(--linea);order:3}
+.grupo-lbl span{
+  order:2;background:var(--oliva-claro);color:var(--oliva-osc);
+  border-radius:999px;padding:2px 8px;font-size:11px;letter-spacing:0;
+}
+.grupo-lbl:first-child{margin-top:4px}
