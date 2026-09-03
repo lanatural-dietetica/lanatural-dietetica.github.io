@@ -196,6 +196,14 @@ Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <no
   (`3 × 250 g = 750 g`); no reemplazar esto por incrementos únicos de la medida mínima.
 - El mix no tiene límite de ingredientes: el único límite es el peso elegido. Al elegir el
   tamaño baja al paso 2 y, al completar el peso, baja al resumen del paso 3.
+- Al sumar o quitar gramos del mix se actualiza cada fila sin reconstruir la lista: así las
+  imágenes no titilan. Toda fila elegida usa un fondo verde oliva claro para distinguirla.
+- El catálogo no tiene filtro de disponibilidad. Su único selector combina orden y filtros:
+  nombre A-Z, precio ascendente/descendente, sólo destacados, sólo Sin TACC y sólo veganos.
+- En mobile todos los campos editables tienen al menos 16 px para que Safari no haga zoom
+  automático al enfocarlos. `html` usa `touch-action:manipulation` para evitar el zoom por
+  doble toque, pero el viewport no bloquea el zoom manual con dos dedos. Esto también aplica
+  al panel de administración.
 - El hero desktop conserva la foto panorámica, pero la amplía un 14% desde la derecha para
   acercar los productos al mensaje. El texto entra más hacia el centro y es un poco más
   chico. Estos ajustes siguen dentro de `@media (min-width:960px)` y no modifican mobile.

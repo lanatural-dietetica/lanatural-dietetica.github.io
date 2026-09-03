@@ -98,7 +98,7 @@ const LS_ULTIMO  = 'dietetica_ultimo_v1';
 const estado = {
   carrito: leer(LS_CARRITO, []),
   favs:    leer(LS_FAVS, []),
-  catalogo: { q: '', cat: 'todos', orden: 'nombre', soloDisponibles: false },
+  catalogo: { q: '', cat: 'todos', orden: 'nombre' },
   mix: { tam: null, ing: {}, cat: 'todos', q: '', nombre: '' },
   ficha: { pres: null, cant: 1, tab: 'descripcion' },
   cards: {},  // { idProducto: { pres, cant } } — lo elegido en cada tarjeta del catálogo
@@ -526,15 +526,17 @@ function filtrarCatalogo() {
   const q = f.q.trim().toLowerCase();
   let arr = publicados();
   if (f.cat !== 'todos') arr = arr.filter(p => p.categoria === f.cat || (p.tags || []).includes(f.cat));
-  if (f.soloDisponibles) arr = arr.filter(p => p.disponible);
   if (q) arr = arr.filter(p =>
     (p.nombre + ' ' + (p.subtitulo || '') + ' ' + (p.descripcion || '') + ' ' + (p.tags || []).join(' '))
       .toLowerCase().includes(q));
 
-  if (f.orden === 'nombre')      arr.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
-  else if (f.orden === 'precio-asc')  arr.sort((a, b) => precioDesde(a) - precioDesde(b));
-  else if (f.orden === 'precio-desc') arr.sort((a, b) => precioDesde(b) - precioDesde(a));
-  else arr.sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0) || (a.orden || 99) - (b.orden || 99));
+  if (f.orden === 'destacados') arr = arr.filter(p => p.destacado);
+  else if (f.orden === 'sintacc') arr = arr.filter(p => (p.tags || []).includes('sintacc'));
+  else if (f.orden === 'vegano') arr = arr.filter(p => (p.tags || []).includes('vegano'));
+
+  if (f.orden === 'precio-asc') arr.sort((a, b) => precioDesde(a) - precioDesde(b) || porNombre(a, b));
+  else if (f.orden === 'precio-desc') arr.sort((a, b) => precioDesde(b) - precioDesde(a) || porNombre(a, b));
+  else arr.sort(porNombre);
   return arr;
 }
 
@@ -569,13 +571,14 @@ function vistaCatalogo() {
       chips.map(c => '<button class="chip" data-chip="' + c.id + '" aria-pressed="' + (f.cat === c.id) + '">' + esc(c.nombre) + '</button>').join('') +
     '</div>' +
     '<div class="barra-orden">' +
-      '<button id="btn-disp" aria-pressed="' + f.soloDisponibles + '">' + (f.soloDisponibles ? 'Solo disponibles ✓' : 'Disponibles') + '</button>' +
-      '<label class="visually-hidden" for="orden">Ordenar por</label>' +
+      '<label class="visually-hidden" for="orden">Ordenar o filtrar productos</label>' +
       '<select id="orden">' +
         '<option value="nombre"' + (f.orden === 'nombre' ? ' selected' : '') + '>Nombre A-Z</option>' +
-        '<option value="destacados"' + (f.orden === 'destacados' ? ' selected' : '') + '>Destacados</option>' +
-        '<option value="precio-asc"' + (f.orden === 'precio-asc' ? ' selected' : '') + '>Precio: menor</option>' +
-        '<option value="precio-desc"' + (f.orden === 'precio-desc' ? ' selected' : '') + '>Precio: mayor</option>' +
+        '<option value="precio-asc"' + (f.orden === 'precio-asc' ? ' selected' : '') + '>Precio: menor a mayor</option>' +
+        '<option value="precio-desc"' + (f.orden === 'precio-desc' ? ' selected' : '') + '>Precio: mayor a menor</option>' +
+        '<option value="destacados"' + (f.orden === 'destacados' ? ' selected' : '') + '>Solo destacados</option>' +
+        '<option value="sintacc"' + (f.orden === 'sintacc' ? ' selected' : '') + '>Solo Sin TACC</option>' +
+        '<option value="vegano"' + (f.orden === 'vegano' ? ' selected' : '') + '>Solo veganos</option>' +
       '</select>' +
     '</div>' +
     '<p id="conteo-catalogo" style="font-size:13px;color:var(--gris-txt);margin:0 0 12px"></p>' +
@@ -745,7 +748,7 @@ function pintarMixLista() {
   cont.innerHTML = arr.map(p => {
     const g = st.ing[p.id] || 0;
     const noEntra = libre < MIX.pasoGramos;
-    return '<div class="mix-fila' + (g ? ' mix-fila--sel' : '') + '">' +
+    return '<div class="mix-fila' + (g ? ' mix-fila--sel' : '') + '" data-mix-fila="' + p.id + '">' +
       '<img class="mix-fila__fig" src="' + (p.mixImg || imgDe(p)) + '" alt="" width="120" height="120" loading="lazy" decoding="async">' +
       '<div class="mix-fila__txt">' +
         '<p class="mix-fila__nom">' + esc(p.nombre) + '</p>' +
@@ -753,11 +756,28 @@ function pintarMixLista() {
       '</div>' +
       '<div class="stepper stepper--mini">' +
         '<button data-mixmenos="' + p.id + '" aria-label="Quitar ' + MIX.pasoGramos + ' gramos de ' + esc(p.nombre) + '"' + (g ? '' : ' disabled') + '>−</button>' +
-        '<span>' + esc(gLabel(g)) + '</span>' +
+        '<span data-mix-cantidad>' + esc(gLabel(g)) + '</span>' +
         '<button data-mixmas="' + p.id + '" aria-label="Sumar ' + MIX.pasoGramos + ' gramos de ' + esc(p.nombre) + '"' + (noEntra ? ' disabled' : '') + '>+</button>' +
       '</div>' +
     '</div>';
   }).join('');
+}
+
+function actualizarMixFilas() {
+  const cont = $('#mix-lista');
+  if (!cont) return;
+  const libre = mixGramosTam() - cuentaMix(estado.mix.ing).gramos;
+  $$('[data-mix-fila]', cont).forEach(fila => {
+    const id = fila.dataset.mixFila;
+    const gramos = estado.mix.ing[id] || 0;
+    fila.classList.toggle('mix-fila--sel', gramos > 0);
+    const cantidad = $('[data-mix-cantidad]', fila);
+    const menos = $('[data-mixmenos]', fila);
+    const mas = $('[data-mixmas]', fila);
+    if (cantidad) cantidad.textContent = gLabel(gramos);
+    if (menos) menos.disabled = !gramos;
+    if (mas) mas.disabled = libre < MIX.pasoGramos;
+  });
 }
 
 function pintarMixBarra() {
@@ -1318,15 +1338,6 @@ document.addEventListener('click', ev => {
     return;
   }
 
-  if (t.closest('#btn-disp')) {
-    const b = $('#btn-disp');
-    estado.catalogo.soloDisponibles = !estado.catalogo.soloDisponibles;
-    b.setAttribute('aria-pressed', estado.catalogo.soloDisponibles);
-    b.textContent = estado.catalogo.soloDisponibles ? 'Solo disponibles ✓' : 'Disponibles';
-    pintarGrillaCatalogo();
-    return;
-  }
-
   /* --- ficha de producto --- */
   const optPres = t.closest('[data-pres]');
   if (optPres) {
@@ -1390,7 +1401,7 @@ document.addEventListener('click', ev => {
     const libre = mixGramosTam() - c.gramos;
     if (libre < MIX.pasoGramos) { toast('El mix ya está completo'); return; }
     st.ing[id] = (st.ing[id] || 0) + Math.min(MIX.pasoGramos, libre);
-    pintarMixLista(); pintarMixBarra(); pintarMixResumen();
+    actualizarMixFilas(); pintarMixBarra(); pintarMixResumen();
     if (cuentaMix(st.ing).gramos === mixGramosTam()) {
       setTimeout(() => {
         const paso3 = $('#mix-paso-final');
@@ -1406,7 +1417,7 @@ document.addEventListener('click', ev => {
     const actual = st.ing[id] || 0;
     if (actual <= MIX.pasoGramos) delete st.ing[id];
     else st.ing[id] = actual - MIX.pasoGramos;
-    pintarMixLista(); pintarMixBarra(); pintarMixResumen();
+    actualizarMixFilas(); pintarMixBarra(); pintarMixResumen();
     return;
   }
   if (t.closest('#add-mix')) {

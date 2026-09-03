@@ -241,3 +241,10 @@
   border-radius:999px;padding:2px 8px;font-size:11px;letter-spacing:0;
 }
 .grupo-lbl:first-child{margin-top:4px}
+
+@media (max-width:639px){
+  .panel-buscador input,
+  .campo--texto input,
+  .campo--texto textarea,
+  .campo--texto select{font-size:16px}
+}

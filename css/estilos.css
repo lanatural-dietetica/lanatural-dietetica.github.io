@@ -30,7 +30,7 @@
 }
 
 *,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
 body{
   margin:0;
   font-family:var(--sans);
@@ -233,7 +233,7 @@ main{min-height:60vh;padding-bottom:40px}
   min-height:42px;
 }
 .chip[aria-pressed="true"]{background:var(--oliva);border-color:var(--oliva);color:#fff}
-.barra-orden{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 16px}
+.barra-orden{display:grid;grid-template-columns:1fr;gap:10px;margin:4px 0 16px}
 .barra-orden select,.barra-orden button{
   width:100%;font:inherit;font-size:13px;letter-spacing:.06em;text-transform:uppercase;
   padding:12px;border:1px solid var(--linea);border-radius:var(--r-md);
@@ -1005,7 +1005,8 @@ body::before{
 }
 .mix-fila{
   display:flex;align-items:center;gap:12px;
-  padding:10px 0;border-bottom:1px solid var(--linea);
+  padding:10px 7px;border-bottom:1px solid var(--linea);border-radius:10px;
+  transition:background-color .2s ease;
 }
 .mix-fila:last-child{border-bottom:0}
 .mix-fila__fig{
@@ -1015,7 +1016,9 @@ body::before{
 .mix-fila__txt{flex:1;min-width:0}
 .mix-fila__nom{font-family:var(--serif);font-size:16px;line-height:1.2;margin:0}
 .mix-fila__precio{font-size:12px;color:var(--gris-txt);margin:2px 0 0}
+.mix-fila--sel{background:var(--oliva-claro);border-bottom-color:transparent}
 .mix-fila--sel .mix-fila__nom{color:var(--oliva-osc)}
+.mix-fila--sel .stepper{background:rgba(250,244,233,.86)}
 .mix-fila .stepper{flex:0 0 auto;background:var(--champan-claro)}
 .mix-fila .stepper span{min-width:52px;font-size:13px}
 .mix-fila .stepper button:disabled{opacity:.35;cursor:not-allowed}
@@ -1067,7 +1070,7 @@ body::before{
 }
 
 /* filas del mix más compactas: entran más ingredientes en pantalla */
-.mix-fila{padding:8px 0;gap:10px}
+.mix-fila{padding:8px 7px;gap:10px}
 .mix-fila__fig{width:46px;height:46px}
 .mix-fila__nom{font-size:15px;line-height:1.15}
 .mix-fila__precio{font-size:11.5px}
@@ -1635,4 +1638,14 @@ body.compacto-catalogo .header-compacta{transform:translateY(0);pointer-events:a
   .busqueda-lista{grid-template-columns:repeat(2,minmax(0,1fr))}
   .busqueda-contenido{padding-top:30px}
   .header-compacta__in{padding-inline:28px}
+}
+
+/* Safari amplía automáticamente campos menores a 16 px. */
+@media (max-width:639px){
+  .buscador input,
+  .barra-orden select,
+  .form-campo input,
+  .form-campo textarea,
+  .form-campo select{font-size:16px}
+  .barra-orden select{letter-spacing:.02em;text-transform:none}
 }
