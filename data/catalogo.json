@@ -785,6 +785,41 @@
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "img": "assets/productos/nuez-mariposa.webp"
+    },
+    {
+      "id": "p19",
+      "sku": "",
+      "slug": "castana-de-caju",
+      "nombre": "Castaña De Caju",
+      "categoria": "frutos",
+      "subtitulo": "",
+      "marca": "",
+      "tipo": "granel",
+      "costoKg": 17000,
+      "margen": 60,
+      "descuento": 0,
+      "presentaciones": [
+        "250g",
+        "500g",
+        "1kg"
+      ],
+      "presentacionDefecto": "1kg",
+      "tags": [
+        "organico",
+        "vegano"
+      ],
+      "estado": "publicado",
+      "disponible": true,
+      "destacado": false,
+      "orden": 19,
+      "mix": true,
+      "descripcion": "",
+      "preparacion": "",
+      "origen": "",
+      "ingredientes": "",
+      "alergenos": "",
+      "color": "#c8a97e",
+      "color2": "#e3cba6"
     }
   ],
   "combos": [
@@ -928,5 +963,6 @@
       "titulo": "Recibí o retirá",
       "texto": "Elegí envío o retiro en el local."
     }
-  ]
+  ],
+  "sello": 1788408731512
 }
