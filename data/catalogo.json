@@ -819,7 +819,8 @@
       "ingredientes": "",
       "alergenos": "",
       "color": "#c8a97e",
-      "color2": "#e3cba6"
+      "color2": "#e3cba6",
+      "img": "assets/productos/castana-de-caju.jpg?v=mtl0eige"
     }
   ],
   "combos": [
@@ -964,5 +965,5 @@
       "texto": "Elegí envío o retiro en el local."
     }
   ],
-  "sello": 1788408731512
+  "sello": 1788408771965
 }
