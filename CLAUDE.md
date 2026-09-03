@@ -171,10 +171,12 @@ Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <no
 ## Ajuste visual de escritorio — 2026-09-03
 - La composición mobile validada contra las maquetas no se toca. Los ajustes nuevos viven
   dentro de `@media (min-width:960px)` al final de `css/estilos.css`.
-- En desktop, el hero usa una grilla de texto + foto completa 4:3. No volver a usar la foto
-  como fondo `cover` de una franja ancha porque corta los bowls y la vuelve desproporcionada.
-- El hero usa `Lo natural te hace mejor.` como título y
-  `Sabores para disfrutar todos los días.` como bajada en `data/catalogo.json`.
+- En desktop, el hero vuelve a llevar el texto superpuesto sobre una foto panorámica creada
+  para ese formato: `assets/hero-lanatural-desktop.webp` (con `.jpg` de respaldo). La escena
+  reserva el lado izquierdo para el texto y mantiene todos los productos completos a la derecha.
+  Mobile conserva `assets/hero-lanatural.webp` y su composición validada.
+- El hero usa `Elegí lo natural.` como título y `Sabores para disfrutar.` como bajada en
+  `data/catalogo.json`.
 - Las tarjetas de categoría son más compactas y usan `#FAE7D0` sólo en desktop para coincidir
   con el promedio visual de sus imágenes. La imagen lleva `filter:none`; el drop-shadow previo
   sombreaba el rectángulo opaco y hacía parecer que el fondo era de otro color.

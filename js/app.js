@@ -343,6 +343,8 @@ function vistaHome() {
       '</div>' +
       '<div class="hero__arte">' +
         '<picture>' +
+          '<source media="(min-width: 960px)" srcset="assets/hero-lanatural-desktop.webp" type="image/webp">' +
+          '<source media="(min-width: 960px)" srcset="assets/hero-lanatural-desktop.jpg" type="image/jpeg">' +
           '<source srcset="assets/hero-lanatural.webp" type="image/webp">' +
           '<img src="assets/hero-lanatural.jpg" alt="Legumbres, damascos, flor de jamaica, chocolate y canela sobre una mesada" width="1448" height="1086" fetchpriority="high" decoding="async">' +
         '</picture>' +
