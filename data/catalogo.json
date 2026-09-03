@@ -749,6 +749,42 @@
       "img": "assets/productos/tisana-de-hierbas.jpg",
       "color": "#7d8a55",
       "color2": "#a3ae7c"
+    },
+    {
+      "id": "p18",
+      "sku": "",
+      "slug": "nuez-mariposa",
+      "nombre": "Nuez Mariposa",
+      "categoria": "frutos",
+      "subtitulo": "Extra Light",
+      "marca": "",
+      "tipo": "granel",
+      "costoKg": 19000,
+      "margen": 60,
+      "descuento": 0,
+      "presentaciones": [
+        "250g",
+        "500g",
+        "1kg"
+      ],
+      "presentacionDefecto": "1kg",
+      "tags": [
+        "organico",
+        "vegano"
+      ],
+      "estado": "publicado",
+      "disponible": true,
+      "destacado": true,
+      "orden": 18,
+      "mix": true,
+      "descripcion": "",
+      "preparacion": "",
+      "origen": "Mendoza, Argentina ",
+      "ingredientes": "",
+      "alergenos": "",
+      "color": "#c8a97e",
+      "color2": "#e3cba6",
+      "img": "assets/productos/.webp?v=mtkzqmky"
     }
   ],
   "combos": [
