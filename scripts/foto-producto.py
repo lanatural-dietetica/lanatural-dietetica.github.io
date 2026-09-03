@@ -31,6 +31,7 @@ def preparar(entrada, nombre, TAM=800, carpeta='assets/productos'):
     dist = np.sqrt(((a - fondo) ** 2).sum(axis=-1))
     peso = np.clip((LEJOS - dist) / (LEJOS - CERCA), 0.0, 1.0)[..., None]
     corregida = np.clip(a + delta * peso, 0, 255).astype(np.uint8)
+    corregida[dist <= CERCA] = FONDO_OFICIAL.astype(np.uint8)
 
     out = Image.fromarray(corregida).resize((TAM, TAM), Image.LANCZOS)
     out.save('%s/%s.webp' % (carpeta, nombre), 'WEBP', quality=84, method=6)

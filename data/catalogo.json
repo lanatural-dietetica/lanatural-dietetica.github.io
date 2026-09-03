@@ -117,7 +117,7 @@
       "slug": "dulces-y-cacao",
       "orden": 5,
       "visible": true,
-      "img": "assets/productos/chocolate-amargo.jpg",
+      "img": "assets/productos/chocolate-amargo-70.webp?v=20260903a",
       "color": "#4a2c1c"
     },
     {
@@ -181,7 +181,7 @@
       "origen": "Canadá",
       "ingredientes": "Lentejas rosadas peladas.",
       "alergenos": "Puede contener trazas de gluten por fraccionamiento.",
-      "img": "assets/productos/lentejas-rosadas.jpg",
+      "img": "assets/productos/lentejas-turca.webp?v=20260903a",
       "color": "#e07a3f",
       "color2": "#f2a86d"
     },
@@ -216,7 +216,7 @@
       "origen": "Perú",
       "ingredientes": "Cálices secos de hibiscus.",
       "alergenos": "No contiene alérgenos declarados.",
-      "img": "assets/productos/flor-de-jamaica.jpg",
+      "img": "assets/productos/flor-de-jamaica.webp?v=20260903a",
       "color": "#8e2f34",
       "color2": "#b6494b"
     },
@@ -252,7 +252,7 @@
       "origen": "Salta, Argentina",
       "ingredientes": "Garbanzos.",
       "alergenos": "Puede contener trazas de gluten.",
-      "img": "assets/productos/garbanzos.jpg",
+      "img": "assets/productos/garbanzos.webp?v=20260903a",
       "color": "#d9b476",
       "color2": "#eccb95"
     },
@@ -288,7 +288,7 @@
       "origen": "Mendoza, Argentina",
       "ingredientes": "Damasco deshidratado, conservante SO2.",
       "alergenos": "Contiene sulfitos.",
-      "img": "assets/productos/damascos-secos.jpg",
+      "img": "assets/productos/damascos-secos.webp?v=20260903a",
       "color": "#e28a34",
       "color2": "#f4ab5c"
     },
@@ -323,7 +323,7 @@
       "origen": "Argentina",
       "ingredientes": "Pasta de cacao, azúcar, manteca de cacao, lecitina de soja.",
       "alergenos": "Contiene soja. Puede contener leche y frutos secos.",
-      "img": "assets/productos/chocolate-amargo.jpg",
+      "img": "assets/productos/chocolate-amargo-70.webp?v=20260903a",
       "mixImg": "assets/productos/chocolate-trozos.jpg",
       "color": "#3b2318",
       "color2": "#5a3524"
@@ -361,7 +361,7 @@
       "origen": "Jujuy, Argentina",
       "ingredientes": "Quinoa blanca.",
       "alergenos": "Sin TACC.",
-      "img": "assets/productos/quinoa.jpg",
+      "img": "assets/productos/quinoa.webp?v=20260903a",
       "color": "#e4d5a8",
       "color2": "#f0e5c6"
     },
@@ -397,7 +397,7 @@
       "origen": "Mendoza, Argentina",
       "ingredientes": "Uva deshidratada.",
       "alergenos": "Contiene sulfitos.",
-      "img": "assets/productos/pasas-de-uva.jpg",
+      "img": "assets/productos/pasas-de-uva.webp?v=20260903a",
       "color": "#4a2a30",
       "color2": "#6b3b42"
     },
@@ -433,7 +433,7 @@
       "origen": "Filipinas",
       "ingredientes": "Coco deshidratado.",
       "alergenos": "Puede contener trazas de frutos secos.",
-      "img": "assets/productos/coco-en-escamas.jpg",
+      "img": "assets/productos/coco-en-escamas.webp?v=20260903a",
       "color": "#f0ece3",
       "color2": "#ffffff"
     },
@@ -469,7 +469,7 @@
       "origen": "Buenos Aires, Argentina",
       "ingredientes": "Semillas de girasol.",
       "alergenos": "Puede contener trazas de frutos secos.",
-      "img": "assets/productos/semillas-de-girasol.jpg",
+      "img": "assets/productos/semillas-de-girasol.webp?v=20260903a",
       "color": "#b9a377",
       "color2": "#d5c39a"
     },
@@ -504,7 +504,7 @@
       "origen": "Ecuador",
       "ingredientes": "Banana, aceite vegetal.",
       "alergenos": "Puede contener trazas de maní.",
-      "img": "assets/productos/banana-deshidratada.jpg",
+      "img": "assets/productos/banana-deshidratada.webp?v=20260903a",
       "color": "#e8c766",
       "color2": "#f5dd97"
     },
@@ -540,7 +540,7 @@
       "origen": "Entre Ríos, Argentina",
       "ingredientes": "Nuez pecán pelada.",
       "alergenos": "Contiene frutos secos. Puede contener trazas de maní.",
-      "img": "assets/productos/nuez-pecan.webp",
+      "img": "assets/productos/nuez-pecan.webp?v=20260903a",
       "color": "#8a4a26",
       "color2": "#b8763f"
     },
@@ -746,7 +746,7 @@
       "origen": "Argentina",
       "ingredientes": "Manzanilla, cedrón, menta, caléndula.",
       "alergenos": "No contiene alérgenos declarados.",
-      "img": "assets/productos/tisana-de-hierbas.jpg",
+      "img": "assets/productos/tisana-de-hierbas.webp?v=20260903a",
       "color": "#7d8a55",
       "color2": "#a3ae7c"
     },
@@ -784,7 +784,7 @@
       "alergenos": "",
       "color": "#c8a97e",
       "color2": "#e3cba6",
-      "img": "assets/productos/nuez-mariposa.webp"
+      "img": "assets/productos/nuez-mariposa.webp?v=20260903a"
     },
     {
       "id": "p19",
@@ -820,7 +820,7 @@
       "alergenos": "",
       "color": "#c8a97e",
       "color2": "#e3cba6",
-      "img": "assets/productos/castana-de-caju.jpg?v=mtl0eige"
+      "img": "assets/productos/castana-de-caju.webp?v=20260903a"
     }
   ],
   "combos": [

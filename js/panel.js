@@ -121,15 +121,17 @@ function emparejarFondo(ctx, lado) {
   const fondo = [mediana(muestras[0]), mediana(muestras[1]), mediana(muestras[2])];
   const delta = [FOTO.fondo[0] - fondo[0], FOTO.fondo[1] - fondo[1], FOTO.fondo[2] - fondo[2]];
 
-  // si la foto ya vino con el fondo correcto, no hay nada que corregir
-  if (Math.max(Math.abs(delta[0]), Math.abs(delta[1]), Math.abs(delta[2])) <= 2) return;
   const CERCA = 22, LEJOS = 80, CERCA2 = CERCA * CERCA, LEJOS2 = LEJOS * LEJOS;
 
   for (let i = 0; i < px.length; i += 4) {
     const dr = px[i] - fondo[0], dg = px[i + 1] - fondo[1], db = px[i + 2] - fondo[2];
     const d2 = dr * dr + dg * dg + db * db;
     if (d2 >= LEJOS2) continue;
-    const peso = d2 <= CERCA2 ? 1 : (LEJOS - Math.sqrt(d2)) / (LEJOS - CERCA);
+    if (d2 <= CERCA2) {
+      px[i] = FOTO.fondo[0]; px[i + 1] = FOTO.fondo[1]; px[i + 2] = FOTO.fondo[2];
+      continue;
+    }
+    const peso = (LEJOS - Math.sqrt(d2)) / (LEJOS - CERCA);
     px[i]     = Math.max(0, Math.min(255, px[i]     + delta[0] * peso));
     px[i + 1] = Math.max(0, Math.min(255, px[i + 1] + delta[1] * peso));
     px[i + 2] = Math.max(0, Math.min(255, px[i + 2] + delta[2] * peso));

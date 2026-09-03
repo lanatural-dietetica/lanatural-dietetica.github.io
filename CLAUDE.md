@@ -122,8 +122,13 @@ están publicados pero nadie los ve. Al tocar css/ o js/, bumpear la versión en
 - Toda foto nueva se prepara con `scripts/foto-producto.py`, que mide el fondo real en el
   marco, lo lleva a #FAE6D0 sin tocar el bowl ni dejar halo, redimensiona a 800x800 y guarda
   `.webp` y `.jpg`. Uso: `python3 scripts/foto-producto.py <entrada> <nombre>`.
+- El procesador local y el del panel fijan a #FAE6D0 los píxeles de fondo cercanos al tono
+  del marco, incluso si el promedio ya coincide. Así elimina variaciones y degradados leves.
 - Si se vuelve a cambiar `--foto-crema`, hay que reprocesar todas las fotos con ese script,
   porque si no se ve el recuadro de la imagen contra la tarjeta.
+- El 2026-09-03 se renovaron 14 fotos a granel usando como molde exacto el bowl, encuadre y
+  escala de `semillas-de-zapallo.webp`. Esa foto quedó intacta. También se quitaron los
+  frascos rotulados Paladear de Nuez Mariposa y Castaña de Cajú; ahora ambas usan el bowl.
 
 ## Íconos del inicio — 2026-09-02
 Los generó Juani con el mismo criterio que las fotos de producto (fondo plano #FAE6D0).
