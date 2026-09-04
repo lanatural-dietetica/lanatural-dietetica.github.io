@@ -1856,3 +1856,7 @@ body.compacto .icon-btn__img--carrito{width:23px;height:23px}
   .combo__fig{width:200px}
   .combo__nom{font-size:23px}
 }
+
+/* al pasar de una página de categorías a la otra, que se note la separación */
+.cats-pista{gap:16px}
+.cats-pagina{flex:0 0 100%}

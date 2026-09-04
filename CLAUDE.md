@@ -252,3 +252,11 @@ Si un cambio no se ve, es porque una capa posterior lo está pisando.
 **Antes de dar algo por terminado**: abrir el catálogo, la ficha, el mix, los combos y el
 carrito en celular y en escritorio, y mirar la consola. La auditoría completa está en el
 historial de la conversación del 2026-09-03.
+
+## Categorías — definidas por Juani el 2026-09-04
+Son ocho y **no se agregan más sin pedirlo**: Frutos y semillas, Infusiones, Granos y
+legumbres, Sin TACC, Dulces y cacao, Despensa, Conservas y Suplementos naturales.
+- Las **semillas van con los frutos secos**, no en una categoría propia.
+- Las **harinas y las especias van en Despensa**.
+Entran justas en dos páginas de cuatro en el carrusel del inicio, que lleva 16 px de
+separación entre páginas para que se vea el corte al pasar de una a otra.
