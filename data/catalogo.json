@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "actualizado": "2026-09-03",
+  "actualizado": "2026-09-04",
   "demo": true,
   "config": {
     "marca": "La Natural",
@@ -839,6 +839,40 @@
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "img": "assets/productos/castana-de-caju.webp?v=20260903a"
+    },
+    {
+      "id": "p20",
+      "sku": "",
+      "slug": "harina-de-algarroba",
+      "nombre": "Harina de Algarroba",
+      "categoria": "despensa",
+      "subtitulo": "",
+      "marca": "",
+      "tipo": "granel",
+      "costoKg": 10500,
+      "margen": 60,
+      "descuento": 5,
+      "presentaciones": [
+        "100g",
+        "250g",
+        "1kg"
+      ],
+      "presentacionDefecto": "1kg",
+      "tags": [
+        "organico"
+      ],
+      "estado": "publicado",
+      "disponible": true,
+      "destacado": true,
+      "orden": 20,
+      "mix": false,
+      "descripcion": "",
+      "preparacion": "",
+      "origen": "",
+      "ingredientes": "",
+      "alergenos": "",
+      "color": "#c8a97e",
+      "color2": "#e3cba6"
     }
   ],
   "combos": [
@@ -983,5 +1017,5 @@
       "texto": "Elegí envío o retiro en el local."
     }
   ],
-  "sello": 1788408771965
+  "sello": 1788489704624
 }
