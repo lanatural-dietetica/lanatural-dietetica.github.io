@@ -636,6 +636,7 @@ function vistaCatalogo() {
   return '' +
   '<section class="seccion catalogo"><div class="contenedor">' +
     '<div class="titulo-filete"><h2>Nuestra selección</h2></div>' +
+    '<div class="filtros">' +
     '<button class="buscador-abrir" type="button" data-abrir-busqueda>' + ICO.lupa +
       '<span>Buscar productos</span><small>Escribí un nombre o categoría</small>' +
     '</button>' +
@@ -653,6 +654,7 @@ function vistaCatalogo() {
         '<option value="sintacc"' + (f.orden === 'sintacc' ? ' selected' : '') + '>Solo Sin TACC</option>' +
         '<option value="vegano"' + (f.orden === 'vegano' ? ' selected' : '') + '>Solo veganos</option>' +
       '</select>' +
+    '</div>' +
     '</div>' +
     '<p id="conteo-catalogo" style="font-size:13px;color:var(--gris-txt);margin:0 0 12px"></p>' +
     '<div id="grilla-catalogo"></div>' +

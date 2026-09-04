@@ -351,5 +351,10 @@ Quedan dos casos sin resolver, no los toqué:
   Las tarjetas siguen en `--crema-card` y las fotos en `--foto-crema`, así el producto
   salta en vez de fundirse. El hero sigue en `#f4ead9` a propósito, para que la foto
   del hero no corte contra el fondo.
+- **Bloque de filtros del catálogo**: buscador, chips de categorías y orden viven juntos
+  dentro de `.filtros`, con fondo arena `--arena:#ead9c2`, para separarlos de la grilla.
+  Ojo: `body` está definido **dos veces** sin media query (líneas ~36 y ~503). La segunda
+  gana. Si tocás el fondo de la página hay que cambiar **las dos** o el escritorio queda
+  con el color viejo (ya pasó una vez).
 - **Filtro "Solo ofertas"** en el desplegable del catálogo, al lado de "Solo destacados"
   (filtra `descuento > 0`). Juani lo pidió ahí y no como sección aparte ni vista propia.

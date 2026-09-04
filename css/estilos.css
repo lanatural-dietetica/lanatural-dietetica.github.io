@@ -9,6 +9,7 @@
   --marron-txt:#3f2416;
   --champan:#f4ead9;
   --fondo:#d5dcc6;      /* detrás de las tarjetas: verde oliva claro, para que el producto salte */
+  --arena:#ead9c2;      /* bloque de filtros del catálogo */
   --champan-claro:#faf4e9;
   --crema-card:#fbf6ec;
   --foto-crema:#fae6d0;
@@ -262,6 +263,15 @@ main{min-height:60vh;padding-bottom:40px}
   min-height:42px;
 }
 .chip[aria-pressed="true"]{background:var(--oliva);border-color:var(--oliva);color:#fff}
+
+/* Buscador, categorías y orden juntos en su propio bloque, separado de la grilla. */
+.filtros{
+  background:var(--arena);border:1px solid rgba(122,68,35,.10);
+  border-radius:var(--r-lg);padding:14px 14px 4px;margin:0 0 18px;
+}
+.filtros .buscador-abrir{margin-bottom:10px}
+.filtros .chips{margin-inline:-14px;padding:2px 14px 10px}
+.filtros .barra-orden{margin:0 0 10px}
 .barra-orden{display:grid;grid-template-columns:1fr;gap:10px;margin:4px 0 16px}
 .barra-orden select,.barra-orden button{
   width:100%;font:inherit;font-size:13px;letter-spacing:.06em;text-transform:uppercase;
@@ -491,7 +501,7 @@ main{min-height:60vh;padding-bottom:40px}
    ============================================================ */
 
 body{
-  background-color:var(--champan);
+  background-color:var(--fondo);
   background-image:none;
   max-width:100%;
   overflow-x:hidden;
