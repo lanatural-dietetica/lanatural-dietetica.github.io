@@ -909,7 +909,7 @@
       "activo": true,
       "destacado": true,
       "orden": 1,
-      "img": "assets/combo-despensa.jpg",
+      "img": "assets/combo-despensa.webp",
       "color": "#c07a45",
       "color2": "#e0a674"
     },
@@ -945,7 +945,7 @@
       "activo": true,
       "destacado": false,
       "orden": 2,
-      "img": "assets/combo-pausa.jpg",
+      "img": "assets/combo-pausa.webp",
       "color": "#7a4327",
       "color2": "#a86a44"
     },
@@ -953,27 +953,27 @@
       "id": "c03",
       "slug": "cocina-cotidiana",
       "nombre": "Cocina Cotidiana",
-      "descripcion": "Garbanzos, girasol, harina integral y salsa.",
+      "descripcion": "Garbanzos, semillas de zapallo, algarroba y pasta de maní.",
       "items": [
         {
           "productoId": "p03",
-          "presentacionId": "1kg",
-          "cant": 1
-        },
-        {
-          "productoId": "p09",
           "presentacionId": "500g",
           "cant": 1
         },
         {
-          "productoId": "p13",
-          "presentacionId": "u",
+          "productoId": "p16",
+          "presentacionId": "250g",
           "cant": 1
         },
         {
-          "productoId": "p11",
+          "productoId": "p20",
+          "presentacionId": "250g",
+          "cant": 1
+        },
+        {
+          "productoId": "p17",
           "presentacionId": "u",
-          "cant": 2
+          "cant": 1
         }
       ],
       "descuento": 5,
@@ -981,7 +981,7 @@
       "activo": true,
       "destacado": false,
       "orden": 3,
-      "img": "assets/combo-cocina.jpg",
+      "img": "assets/combo-cocina.webp",
       "color": "#b09150",
       "color2": "#d3b981"
     }
