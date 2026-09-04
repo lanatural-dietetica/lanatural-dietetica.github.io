@@ -1,0 +1,17 @@
+{
+  "name": "La Natural · Dietética",
+  "short_name": "La Natural",
+  "description": "Dietética en Mendoza: frutos secos, semillas, legumbres, especias e infusiones. Pedí por WhatsApp.",
+  "lang": "es-AR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4ead9",
+  "theme_color": "#7a4423",
+  "icons": [
+    { "src": "assets/logo/icono-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/logo/icono-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/logo/icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

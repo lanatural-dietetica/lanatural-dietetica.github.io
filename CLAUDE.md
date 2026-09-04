@@ -260,3 +260,46 @@ legumbres, Sin TACC, Dulces y cacao, Despensa, Conservas y Suplementos naturales
 - Las **harinas y las especias van en Despensa**.
 Entran justas en dos páginas de cuatro en el carrusel del inicio, que lleva 16 px de
 separación entre páginas para que se vea el corte al pasar de una a otra.
+
+## Logotipo — 2026-09-04 (cambios hechos por Claude)
+Los logos salieron del PDF que pasó Juani (4 variantes). Están en `assets/logo/`,
+ya recortados, en el color de la marca y con fondo transparente:
+
+| Archivo | Qué es | Dónde se usa |
+|---|---|---|
+| `wordmark-crema.webp` | "LA Natural" | header de la tienda |
+| `wordmark-taupe.webp` | ídem, en marrón | pantalla de acceso del panel |
+| `sello-crema.webp` | sello circular con "NATURAL" alrededor | pie de página |
+| `sello-taupe.webp` | ídem, en marrón | libre |
+| `monograma-*.webp` | sólo el óvalo con la "LA" | libre (sirve para tamaños chicos) |
+| `vertical-taupe.webp` | monograma + "Natural" | libre |
+| `og.png` | 1200×630 para compartir | metatags `og:image` |
+| `icono-192/512.png`, `apple-touch-icon.png`, `favicon-32/64.png` | ícono cuadrado | favicon, manifest, celular |
+
+- El color de la tinta del logo es **taupe `#7a6a5a`**: no es el marrón del sitio.
+  Sobre fondos oscuros va en champán `#f4ead9`.
+- El `<h1>` de marca del header sigue existiendo como texto oculto
+  (`#marca-nombre` con `.visually-hidden`) para SEO y lectores de pantalla:
+  **no lo borres**, `app.js` lo escribe desde `CONFIG.marca`.
+- Tamaños del logo del header: `.marca__logo` con altura por breakpoint
+  (23 px mobile, 24 base, 28 ≥640, 30/32 desktop, 19 en header compacto).
+
+## Salir en internet (SEO) — 2026-09-04 (cambios hechos por Claude)
+- `index.html` lleva title/description propios, canonical absoluto, Open Graph y
+  Twitter Card apuntando a `assets/logo/og.png`.
+- `site.webmanifest` (instalable en el celular), `robots.txt` (bloquea `admin.html`)
+  y `sitemap.xml`. La URL del sitio es `https://lanatural-dietetica.github.io/`:
+  si algún día se compra un dominio, hay que cambiarla en esos tres archivos y en
+  los metatags.
+- `fichaGoogle()` en `app.js` arma el JSON-LD de `GroceryStore` con lo que hay en
+  `CONFIG`. **No inventa datos**: si el WhatsApp sigue siendo el de ejemplo o la
+  dirección dice "completar", esos campos no salen.
+
+## WhatsApp — 2026-09-04 (cambios hechos por Claude)
+- Todos los links pasan por `waLink(texto)`, que limpia el número (acepta espacios,
+  guiones y `+`). No armar URLs de `wa.me` a mano.
+- `waValido()` decide si se muestran los links: pide 12 dígitos o más y descarta el
+  número de ejemplo. Mientras `CONFIG.whatsapp` sea `5492610000000` no aparece el
+  link ni en el pie ni en el menú, a propósito.
+- **Falta el número real de la clienta.** Cuando esté, se carga en
+  `data/catalogo.json` → `config.whatsapp`, en formato `549261...` sin `+` ni espacios.

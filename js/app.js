@@ -1246,7 +1246,7 @@ function render() {
     titulo = 'Cómo comprar · ' + CONFIG.marca;
   } else {
     html = vistaHome();
-    titulo = CONFIG.marca + ' · ' + CONFIG.bajada;
+    titulo = CONFIG.marca + ' · ' + (CONFIG.rubro || 'Dietética en Mendoza');
   }
 
   document.body.dataset.vista = vista;
@@ -1680,7 +1680,7 @@ document.addEventListener('submit', ev => {
   guardarPerfil(datos);
   guardar(LS_ULTIMO, estado.carrito.slice());
 
-  const url = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(armarMensaje(datos));
+  const url = waLink(armarMensaje(datos));
   window.open(url, '_blank', 'noopener');
   toast('Pedido ' + datos.nro + ' listo para enviar');
 });
@@ -1728,6 +1728,51 @@ function moverPastilla(conRebote) {
 window.addEventListener('resize', () => moverPastilla(false));
 
 /* ---------------- arranque ---------------- */
+
+/* Link de WhatsApp tolerante: acepta el número con espacios, guiones o +. */
+function waNumero() {
+  return String(CONFIG.whatsapp || '').replace(/\D/g, '');
+}
+
+/* Mientras el número siga siendo el de ejemplo no mostramos links rotos. */
+function waValido() {
+  const n = waNumero();
+  return n.length >= 12 && !/0{5,}$/.test(n);
+}
+
+function waLink(texto) {
+  return 'https://wa.me/' + waNumero() + (texto ? '?text=' + encodeURIComponent(texto) : '');
+}
+
+/* Ficha de negocio para Google (se arma con los datos del panel). */
+function fichaGoogle() {
+  const base = location.origin + location.pathname.replace(/index\.html$/, '');
+  const ficha = {
+    '@context': 'https://schema.org',
+    '@type': 'GroceryStore',
+    name: CONFIG.marca,
+    description: 'Dietética en Mendoza: frutos secos, semillas, legumbres, especias, infusiones y productos sin TACC.',
+    url: base,
+    image: base + 'assets/logo/og.png',
+    logo: base + 'assets/logo/icono-512.png',
+    areaServed: CONFIG.zonas,
+    currenciesAccepted: 'ARS',
+    paymentAccepted: CONFIG.mediosPago,
+    priceRange: '$$'
+  };
+  if (waValido()) { ficha.telephone = '+' + waNumero(); ficha.sameAs = [waLink('')]; }
+  if (CONFIG.direccion && !/completar/i.test(CONFIG.direccion)) {
+    ficha.address = { '@type': 'PostalAddress', streetAddress: CONFIG.direccion, addressLocality: 'Mendoza', addressCountry: 'AR' };
+  }
+  if (CONFIG.instagram) ficha.sameAs = (ficha.sameAs || []).concat([CONFIG.instagram]);
+  if (CONFIG.email) ficha.email = CONFIG.email;
+
+  const et = document.createElement('script');
+  et.type = 'application/ld+json';
+  et.textContent = JSON.stringify(ficha);
+  document.head.appendChild(et);
+}
+
 function pintarCascara() {
   $('#marca-nombre').textContent = CONFIG.marca;
   $('#marca-bajada').textContent = CONFIG.bajada;
@@ -1737,12 +1782,18 @@ function pintarCascara() {
   $('#menu-cats').innerHTML = linksCategorias;
   $('#menu-cats-compact').innerHTML = '<a href="#/catalogo" data-cerrar>Todos los productos</a>' + linksCategorias;
 
+  const hayWa = waValido();
+  const linkWa = hayWa
+    ? '<a class="menu-wa" href="' + waLink('¡Hola! Quería hacerles una consulta.') + '" target="_blank" rel="noopener">Escribinos por WhatsApp</a>'
+    : '';
+
   $('#menu-datos').innerHTML =
     '<p>' + esc(CONFIG.direccion) + '</p>' +
     '<p>' + esc(CONFIG.horarios) + '</p>' +
-    '<p>' + esc(CONFIG.zonas) + '</p>';
+    '<p>' + esc(CONFIG.zonas) + '</p>' + linkWa;
 
   $('#pie-datos').innerHTML =
+    '<img class="pie__sello" src="assets/logo/sello-crema.webp?v=1" alt="" width="197" height="260" loading="lazy" decoding="async">' +
     '<span class="filete filete--claro filete--pie" aria-hidden="true"><img src="assets/detalle-crema.png?v=2" alt="" width="440" height="130" loading="lazy" decoding="async"></span>' +
     '<div class="pie__bloque"><h3>' + esc(CONFIG.marca) + '</h3>' +
       '<p>' + esc(CONFIG.direccion) + '</p><p>' + esc(CONFIG.horarios) + '</p></div>' +
@@ -1750,10 +1801,13 @@ function pintarCascara() {
     '<div class="pie__bloque"><h3>Tienda</h3><div class="pie__links">' +
       '<a href="#/catalogo">Catálogo</a><a href="#/mix">Armá tu mix</a>' +
       '<a href="#/combos">Combos</a><a href="#/como-comprar">Cómo comprar</a>' +
+      (hayWa ? '<a href="' + waLink('¡Hola! Quería hacerles una consulta.') + '" target="_blank" rel="noopener">WhatsApp</a>' : '') +
+      (CONFIG.instagram ? '<a href="' + esc(CONFIG.instagram) + '" target="_blank" rel="noopener">Instagram</a>' : '') +
     '</div></div>';
 
   if (DEMO) $('#banda-demo').classList.remove('oculto');
   pintarContadorCarrito();
+  fichaGoogle();
 }
 
 /* la tienda arranca cuando el catálogo terminó de cargar */

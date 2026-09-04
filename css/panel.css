@@ -12,7 +12,8 @@
   border:1px solid var(--linea);border-radius:var(--r-lg);
   padding:28px 22px;box-shadow:0 12px 32px rgba(63,36,22,.10);
 }
-.acceso h1{font-size:26px;line-height:1.15;margin-bottom:10px}
+.acceso__logo{display:block;height:26px;width:auto;margin:0 0 14px}
+.acceso h1{font-size:20px;font-weight:500;line-height:1.2;margin-bottom:10px}
 .acceso h1 em{font-style:normal;color:var(--russet)}
 .acceso__txt{font-size:14px;color:var(--gris-txt);margin:0 0 20px;line-height:1.5}
 .acceso__pie{font-size:12px;color:var(--gris-txt);margin:16px 0 0;text-align:center}
