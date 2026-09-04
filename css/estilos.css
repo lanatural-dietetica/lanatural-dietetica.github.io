@@ -645,9 +645,9 @@ body::before{
 .mix-grid{gap:14px}
 .portada-vista{margin-bottom:30px}
 .portada-vista::after{
-  content:"";display:block;width:min(100%,360px);height:1px;margin-top:26px;
-  background:linear-gradient(90deg,var(--oliva),var(--oliva) 38%,transparent 38%,transparent 43%,var(--oliva) 43%,var(--oliva));
-  opacity:.62;
+  content:"";display:block;width:min(100%,300px);height:60px;margin-top:20px;
+  background:url("../assets/detalle-oliva.png?v=1") no-repeat left center;
+  background-size:contain;opacity:.9;
 }
 .portada-vista h1{max-width:11ch;font-size:clamp(48px,12vw,78px);font-weight:500;line-height:.96;letter-spacing:-.03em}
 .portada-vista p{max-width:28ch;margin:16px 0 0;color:#564033;font-size:clamp(17px,4vw,22px);line-height:1.4}
@@ -858,9 +858,9 @@ body::before{
   .portada-vista h1{max-width:8ch;font-size:46px;line-height:.96}
   .portada-vista p{margin-top:12px;font-size:17px;line-height:1.35}
   .portada-vista::after{
-    width:100%;height:18px;margin-top:16px;background-color:transparent;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 18'%3E%3Cg fill='none' stroke='%236f7a52' stroke-width='1.1'%3E%3Cpath d='M2 9h157M201 9h157M163 9c5-8 10 8 15 0s10 8 15 0M171 4c2 4 5 6 9 5M189 4c-2 4-5 6-9 5'/%3E%3C/g%3E%3Ccircle cx='2' cy='9' r='2' fill='%236f7a52'/%3E%3Ccircle cx='358' cy='9' r='2' fill='%236f7a52'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;background-position:center;background-size:100% 18px;
+    width:min(100%,260px);height:56px;margin-top:16px;background-color:transparent;
+    background-image:url("../assets/detalle-oliva.png?v=1");
+    background-repeat:no-repeat;background-position:left center;background-size:contain;
   }
 
   .creador-mix{padding:26px 0 36px}
@@ -1754,3 +1754,40 @@ body.compacto .icon-btn__img--carrito{width:23px;height:23px}
 
 /* el filtro activo usa el mismo oliva que el resto de la marca */
 .chip[aria-pressed="true"]{background:var(--oliva);border-color:var(--oliva)}
+
+
+/* ============================================================
+   El detalle de La Natural, usado como separador
+   ============================================================ */
+.adorno{
+  display:block;height:auto;margin:16px auto 0;
+  width:min(230px,62%);opacity:.92;
+}
+.adorno--titulo{margin:-6px auto 22px;width:min(200px,52%)}
+.adorno--claro{margin:14px auto 6px;width:min(240px,66%)}
+.adorno--pie{margin:0 auto 24px;width:min(200px,54%);opacity:.55}
+
+@media (min-width:640px){
+  .adorno{width:260px}
+  .adorno--titulo{width:230px;margin-bottom:26px}
+  .adorno--claro{width:280px}
+  .adorno--pie{width:240px}
+}
+
+/* en el mix y en los combos el separador va centrado en escritorio */
+@media (min-width:960px){
+  .portada-vista::after{
+    width:300px;height:66px;margin-top:24px;
+    background-position:left center;
+  }
+}
+
+/* los títulos de los pasos no se parten a la mitad */
+.paso h3{
+  overflow-wrap:normal;word-break:normal;hyphens:none;
+  text-wrap:balance;
+}
+@media (max-width:639px){
+  .paso h3{font-size:clamp(16px,4.9vw,24px);letter-spacing:.03em;line-height:1.12}
+  .paso__cuerpo{min-width:0}
+}
