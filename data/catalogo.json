@@ -873,7 +873,7 @@
       "alergenos": "",
       "color": "#c8a97e",
       "color2": "#e3cba6",
-      "img": "assets/productos/harina-de-algarroba.jpg?v=mtmcrxvz"
+      "img": "assets/productos/harina-de-algarroba-heol1.jpg"
     },
     {
       "id": "p21",
@@ -5166,5 +5166,5 @@
       "texto": "Elegí envío o retiro en el local."
     }
   ],
-  "sello": 1788494040957
+  "sello": 1788497799234
 }
