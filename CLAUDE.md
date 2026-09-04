@@ -208,3 +208,30 @@ Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <no
   suaves y altura determinada por la proporción 1983/793 de la foto v2. El texto queda
   centrado ópticamente y los productos comienzan cerca del mensaje. Estos ajustes siguen
   dentro de `@media (min-width:960px)` y no modifican mobile.
+
+## Reglas que salieron de la auditoría — 2026-09-03
+Se auditó todo el sitio (funcionamiento, datos, accesibilidad, peso y coherencia visual).
+No había bugs; sí desprolijidades acumuladas por trabajar en capas. Para no volver a ellas:
+
+**Colores.** Usar SIEMPRE las variables de `:root`. No inventar cremas nuevos: había 16 tonos
+separados por 2 a 5 puntos, invisibles a ojo, que sólo ensuciaban. Se unificaron (63 → 54
+colores). Si hace falta un tono que no existe, agregarlo como variable, no suelto en una regla.
+
+**Tamaños mínimos.** Nada que se toque puede medir menos de 36 px, y lo que se toca seguido
+(favoritos, stepper, medidas) va en 40. Ningún texto por debajo de 10,5 px: la clientela de una
+dietética no tiene veinte años. El contraste mínimo es 4,5 — el oliva `--oliva` sobre blanco da
+4,58, así que **no aclarar ese verde** para textos en blanco.
+
+**Peso.** Fotos de producto a 800x800 webp (~60 KB). Íconos del inicio a 260x260 (~12 KB).
+Hero móvil ~110 KB, hero escritorio ~120 KB. Antes de subir una imagen, pasarla por
+`scripts/foto-producto.py`. Si una imagen deja de usarse, **borrarla**: había 793 KB de heros
+viejos sin referencia.
+
+**CSS.** Hoy hay selectores definidos hasta once veces (`.cat-card__fig`, `.cat-card`, `.hero`).
+La mayoría son legítimos, uno por tamaño de pantalla, pero conviene **editar la regla que ya
+existe en el bloque que corresponde en vez de apilar otra corrección al final del archivo**.
+Si un cambio no se ve, es porque una capa posterior lo está pisando.
+
+**Antes de dar algo por terminado**: abrir el catálogo, la ficha, el mix, los combos y el
+carrito en celular y en escritorio, y mirar la consola. La auditoría completa está en el
+historial de la conversación del 2026-09-03.
