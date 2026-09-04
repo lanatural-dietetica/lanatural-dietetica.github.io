@@ -347,7 +347,7 @@ Quedan dos casos sin resolver, no los toqué:
 - **Corazón de favoritos** sin plato de fondo (`background:transparent`) para no tapar
   la foto; el área táctil sigue en 40 px. Activo se pinta de `--russet` con
   `fill:currentColor`, y lleva `drop-shadow` para que se lea sobre cualquier foto.
-- **Fondo de página más oscuro**: variable nueva `--fondo:#e4d3b8`, sólo para `body`.
+- **Fondo de página más oscuro**: variable nueva `--fondo:#d5dcc6` (oliva claro; el arena `#e4d3b8` se probó y no combinaba con el crema), sólo para `body`.
   Las tarjetas siguen en `--crema-card` y las fotos en `--foto-crema`, así el producto
   salta en vez de fundirse. El hero sigue en `#f4ead9` a propósito, para que la foto
   del hero no corte contra el fondo.
