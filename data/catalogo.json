@@ -4157,39 +4157,6 @@
       "costoKg": 2950
     },
     {
-      "id": "p123",
-      "sku": "",
-      "slug": "mix-7-semillas-saludables",
-      "nombre": "Mix 7 Semillas Saludables",
-      "categoria": "frutos",
-      "subtitulo": "",
-      "marca": "",
-      "tipo": "granel",
-      "margen": 60,
-      "descuento": 0,
-      "presentaciones": [
-        "250g",
-        "500g",
-        "1kg"
-      ],
-      "presentacionDefecto": "1kg",
-      "tags": [],
-      "estado": "publicado",
-      "disponible": true,
-      "destacado": false,
-      "orden": 123,
-      "mix": true,
-      "descripcion": "El mix de 7 semillas combina distintas semillas seleccionadas, aportando fibra, grasas saludables y proteínas vegetales. Es una opción nutritiva para enriquecer ensaladas, yogures o panificados. Ideal para incorporar variedad y valor…",
-      "preparacion": "",
-      "origen": "",
-      "ingredientes": "",
-      "alergenos": "",
-      "img": "assets/productos/mix-7-semillas-saludables.webp",
-      "color": "#c8a97e",
-      "color2": "#e3cba6",
-      "costoKg": 3900
-    },
-    {
       "id": "p124",
       "sku": "",
       "slug": "quinoa-nacional",
@@ -5133,5 +5100,5 @@
       "texto": "Elegí envío o retiro en el local."
     }
   ],
-  "sello": 1788497830807
+  "sello": 1788497854630
 }
