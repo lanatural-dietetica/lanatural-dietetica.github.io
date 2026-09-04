@@ -81,7 +81,7 @@
       "slug": "frutos-y-semillas",
       "orden": 1,
       "visible": true,
-      "img": "assets/cat-frutos.webp",
+      "img": "assets/cat-frutos.webp?v=20260903b",
       "color": "#c98f4e"
     },
     {
@@ -90,7 +90,7 @@
       "slug": "infusiones",
       "orden": 2,
       "visible": true,
-      "img": "assets/cat-infusiones.webp",
+      "img": "assets/cat-infusiones.webp?v=20260903b",
       "color": "#8e3b3b"
     },
     {
@@ -99,7 +99,7 @@
       "slug": "granos-y-legumbres",
       "orden": 3,
       "visible": true,
-      "img": "assets/cat-legumbres.webp",
+      "img": "assets/cat-legumbres.webp?v=20260903b",
       "color": "#d8b271"
     },
     {
@@ -108,7 +108,7 @@
       "slug": "sin-tacc",
       "orden": 4,
       "visible": true,
-      "img": "assets/cat-sintacc.webp",
+      "img": "assets/cat-sintacc.webp?v=20260903b",
       "color": "#e0d3ab"
     },
     {
@@ -117,7 +117,7 @@
       "slug": "dulces-y-cacao",
       "orden": 5,
       "visible": true,
-      "img": "assets/cat-dulces.webp",
+      "img": "assets/cat-dulces.webp?v=20260903b",
       "color": "#4a2c1c"
     },
     {
@@ -126,8 +126,26 @@
       "slug": "despensa",
       "orden": 6,
       "visible": true,
-      "img": "assets/cat-despensa.webp",
+      "img": "assets/cat-despensa.webp?v=20260903b",
       "color": "#a9563a"
+    },
+    {
+      "id": "conservas",
+      "nombre": "Conservas",
+      "slug": "conservas",
+      "orden": 7,
+      "visible": true,
+      "img": "assets/cat-conservas.webp?v=20260903b",
+      "color": "#8e3b3b"
+    },
+    {
+      "id": "suplementos",
+      "nombre": "Suplementos naturales",
+      "slug": "suplementos-naturales",
+      "orden": 8,
+      "visible": true,
+      "img": "assets/cat-suplementos.webp?v=20260903b",
+      "color": "#6f7a52"
     }
   ],
   "etiquetas": [
@@ -585,7 +603,7 @@
       "sku": "DE-010",
       "slug": "pasta-de-mani-stevia",
       "nombre": "Pasta de Maní con Stevia",
-      "categoria": "despensa",
+      "categoria": "conservas",
       "subtitulo": "Frasco 370 g · sin azúcar agregada",
       "marca": "Entrenuts",
       "tipo": "envasado",

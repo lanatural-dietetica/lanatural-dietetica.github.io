@@ -231,10 +231,18 @@ colores). Si hace falta un tono que no existe, agregarlo como variable, no suelt
 dietética no tiene veinte años. El contraste mínimo es 4,5 — el oliva `--oliva` sobre blanco da
 4,58, así que **no aclarar ese verde** para textos en blanco.
 
-**Peso.** Fotos de producto a 800x800 webp (~60 KB). Íconos del inicio a 260x260 (~12 KB).
+**Peso.** Fotos de producto a 800x800 webp (~60 KB). Íconos del inicio a 260x260.
 Hero móvil ~110 KB, hero escritorio ~120 KB. Antes de subir una imagen, pasarla por
 `scripts/foto-producto.py`. Si una imagen deja de usarse, **borrarla**: había 793 KB de heros
 viejos sin referencia.
+
+**Íconos del inicio.** Hay ocho categorías visibles, ordenadas alfabéticamente y paginadas de
+cuatro en cuatro. Mobile conserva la grilla 2×2, el swipe y los puntos; desde 640 px se usan
+flechas laterales y no se muestran puntos. Todos los íconos, incluidos `acceso-mix.webp`,
+`acceso-combos.webp` y `acceso-info.webp`, llevan lienzo 260×260, contenido visual de hasta
+226 px y fondo plano exacto `--foto-crema` (`#FAE6D0`). Normalizarlos con
+`scripts/icono-categoria.py`; no corregir diferencias de fondo agregando otro crema en CSS.
+Las categorías incorporadas para la demo son `Conservas` y `Suplementos naturales`.
 
 **CSS.** Hoy hay selectores definidos hasta once veces (`.cat-card__fig`, `.cat-card`, `.hero`).
 La mayoría son legítimos, uno por tamaño de pantalla, pero conviene **editar la regla que ya

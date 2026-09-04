@@ -499,7 +499,9 @@ function vistaHome() {
           ).join('') +
         '</div>' +
         (paginasCats.length > 1
-          ? '<div class="cats-puntos" role="group" aria-label="Páginas de categorías">' + paginasCats.map((_, indice) =>
+          ? '<button class="cats-flecha cats-flecha--ant" type="button" data-cats-dir="-1" aria-label="Ver categorías anteriores" hidden>' + ICO.flecha + '</button>' +
+            '<button class="cats-flecha cats-flecha--sig" type="button" data-cats-dir="1" aria-label="Ver más categorías">' + ICO.flecha + '</button>' +
+            '<div class="cats-puntos" role="group" aria-label="Páginas de categorías">' + paginasCats.map((_, indice) =>
               '<button type="button" data-cats-ir="' + indice + '" aria-label="Ver categorías ' + (indice * 4 + 1) + ' a ' + Math.min((indice + 1) * 4, cats.length) + '"' + (indice === 0 ? ' aria-current="true"' : '') + '></button>'
             ).join('') + '</div>'
           : '') +
@@ -519,16 +521,16 @@ function vistaHome() {
     '<div class="titulo-filete"><h2>También podés</h2></div>' +
     '<div class="cats-grid">' +
       '<a class="cat-card" href="#/mix"><span class="cat-card__nom">Armá tu mix</span>' +
-        '<img class="cat-card__fig" src="assets/acceso-mix.webp" alt="" width="400" height="400" loading="lazy" decoding="async">' +
+        '<img class="cat-card__fig" src="assets/acceso-mix.webp?v=20260903b" alt="" width="400" height="400" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Empezar ' + ICO.flecha + '</span></a>' +
       '<a class="cat-card" href="#/combos"><span class="cat-card__nom">Combos</span>' +
-        '<img class="cat-card__fig" src="assets/acceso-combos.webp" alt="" width="400" height="400" loading="lazy" decoding="async">' +
+        '<img class="cat-card__fig" src="assets/acceso-combos.webp?v=20260903b" alt="" width="400" height="400" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Ver combos ' + ICO.flecha + '</span></a>' +
       '<a class="cat-card" href="#/como-comprar"><span class="cat-card__nom">Cómo comprar</span>' +
-        '<img class="cat-card__fig" src="assets/acceso-info.webp" alt="" width="400" height="400" loading="lazy" decoding="async">' +
+        '<img class="cat-card__fig" src="assets/acceso-info.webp?v=20260903b" alt="" width="400" height="400" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Leer ' + ICO.flecha + '</span></a>' +
       '<a class="cat-card" href="#/catalogo?cat=sintacc"><span class="cat-card__nom">Sin TACC</span>' +
-        '<img class="cat-card__fig" src="assets/cat-sintacc.webp" alt="" width="400" height="400" loading="lazy" decoding="async">' +
+        '<img class="cat-card__fig" src="assets/cat-sintacc.webp?v=20260903b" alt="" width="400" height="400" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Ver productos ' + ICO.flecha + '</span></a>' +
     '</div>' +
   '</div></section>';
@@ -539,12 +541,27 @@ function prepararCategoriasHome() {
   if (!pista) return;
   const paginas = $$('[data-cats-pagina]', pista);
   const puntos = $$('.cats-puntos [data-cats-ir]', pista.parentElement);
+  const flechas = $$('[data-cats-dir]', pista.parentElement);
   let cuadroPendiente = false;
+  let indiceActivo = 0;
 
   const marcarPagina = indice => {
+    indiceActivo = indice;
     puntos.forEach((punto, i) => {
       if (i === indice) punto.setAttribute('aria-current', 'true');
       else punto.removeAttribute('aria-current');
+    });
+    flechas.forEach(flecha => {
+      const direccion = Number(flecha.dataset.catsDir);
+      flecha.hidden = direccion < 0 ? indice === 0 : indice === paginas.length - 1;
+    });
+  };
+  const irAPagina = indice => {
+    const pagina = paginas[Math.max(0, Math.min(indice, paginas.length - 1))];
+    if (!pagina) return;
+    pista.scrollTo({
+      left: pagina.offsetLeft,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
     });
   };
   const paginaVisible = () => {
@@ -564,13 +581,9 @@ function prepararCategoriasHome() {
     requestAnimationFrame(paginaVisible);
   }, { passive: true });
 
-  puntos.forEach((punto, indice) => punto.addEventListener('click', () => {
-    const pagina = paginas[indice];
-    if (!pagina) return;
-    pista.scrollTo({
-      left: pagina.offsetLeft,
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
-    });
+  puntos.forEach((punto, indice) => punto.addEventListener('click', () => irAPagina(indice)));
+  flechas.forEach(flecha => flecha.addEventListener('click', () => {
+    irAPagina(indiceActivo + Number(flecha.dataset.catsDir));
   }));
 }
 
