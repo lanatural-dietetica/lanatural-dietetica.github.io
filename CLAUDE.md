@@ -351,8 +351,15 @@ Quedan dos casos sin resolver, no los toqué:
   Las tarjetas siguen en `--crema-card` y las fotos en `--foto-crema`, así el producto
   salta en vez de fundirse. El hero sigue en `#f4ead9` a propósito, para que la foto
   del hero no corte contra el fondo.
-- **Bloque de filtros del catálogo**: buscador, chips de categorías y orden viven juntos
-  dentro de `.filtros`, con fondo arena `--arena:#ead9c2`, para separarlos de la grilla.
+- **Franja de arriba del catálogo** (`.cat-cabecera`): el título "Nuestra selección", el
+  buscador, los chips y el orden van sobre el mismo fondo arena `--arena:#ead9c2`, de
+  punta a punta de la pantalla y cerrado con una línea abajo. **No es una caja**: se probó
+  encerrar sólo los filtros en un recuadro redondeado y Juani lo rechazó. Los elementos de
+  adentro conservan el formato que ya tenían. La franja arranca pegada al header
+  (`.seccion.catalogo{padding-top:0}`, con dos clases porque si no la pisan las reglas de
+  `.catalogo` de los breakpoints).
+- La franja lleva un **grano de papel** en `::before` (SVG feTurbulence, `opacity:.085`).
+  Es la textura que pidió Juani. Si sube mucho, ensucia el color.
   Ojo: `body` está definido **dos veces** sin media query (líneas ~36 y ~503). La segunda
   gana. Si tocás el fondo de la página hay que cambiar **las dos** o el escritorio queda
   con el color viejo (ya pasó una vez).
