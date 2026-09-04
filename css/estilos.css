@@ -1444,20 +1444,21 @@ body.compacto .icon-btn svg{width:22px;height:22px}
   .marca__bajada{font-size:11px;margin-top:3px}
 
   .hero{
-    height:auto;min-height:0;padding:0;
+    height:auto;min-height:0;padding:clamp(22px,2vw,30px) 0 clamp(28px,2.4vw,36px);
     background:#f4ead9;
   }
   .hero .contenedor{
     position:relative;display:block;
-    width:100%;max-width:1440px;height:auto;aspect-ratio:1896/830;
-    padding:0;overflow:hidden;
+    width:calc(100% - 40px);max-width:1320px;height:auto;aspect-ratio:1983/793;
+    margin:0 auto;padding:0;overflow:hidden;border:1px solid rgba(122,68,35,.12);border-radius:18px;
+    box-shadow:0 16px 38px rgba(82,48,27,.12);
   }
   .hero__txt{
-    position:relative;z-index:2;width:min(40%,460px);max-width:none;
-    padding:clamp(72px,6.5vw,98px) 0 0 clamp(62px,7.5vw,108px);
+    position:absolute;z-index:2;top:50%;left:clamp(52px,6.2vw,86px);
+    width:min(34%,400px);max-width:none;padding:0;transform:translateY(-50%);
   }
-  .hero h1{max-width:9ch;font-size:clamp(50px,4.25vw,62px);line-height:.96}
-  .hero p{max-width:24ch;margin:16px 0 22px;font-size:19px;line-height:1.38}
+  .hero h1{max-width:8ch;font-size:clamp(50px,4vw,58px);line-height:.95;letter-spacing:-.025em;text-wrap:balance}
+  .hero p{max-width:22ch;margin:15px 0 22px;font-size:18px;line-height:1.38}
   .hero__arte{
     position:absolute;inset:0;height:100%;margin:0;overflow:hidden;filter:none;
   }
@@ -1465,7 +1466,7 @@ body.compacto .icon-btn svg{width:22px;height:22px}
   .hero__arte img{
     width:100%;height:100%;aspect-ratio:auto;
     object-fit:cover;object-position:center;
-    transform:scale(1.14);transform-origin:100% 50%;
+    transform:none;
   }
 
   .titulo-filete h2{font-size:34px}
@@ -1528,6 +1529,12 @@ body.compacto .icon-btn svg{width:22px;height:22px}
   .paso__ico svg{width:100%;height:100%}
   .paso h3{font-size:24px}
   .paso p{font-size:16px}
+}
+
+@media (min-width:960px) and (max-width:1199px){
+  .hero .contenedor{width:calc(100% - 32px)}
+  .hero__txt{left:52px;width:36%}
+  .hero h1{font-size:clamp(46px,5vw,54px)}
 }
 
 /* ============================================================

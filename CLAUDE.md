@@ -171,10 +171,10 @@ Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <no
 ## Ajuste visual de escritorio — 2026-09-03
 - La composición mobile validada contra las maquetas no se toca. Los ajustes nuevos viven
   dentro de `@media (min-width:960px)` al final de `css/estilos.css`.
-- En desktop, el hero vuelve a llevar el texto superpuesto sobre una foto panorámica creada
-  para ese formato: `assets/hero-lanatural-desktop.webp` (con `.jpg` de respaldo). La escena
-  reserva el lado izquierdo para el texto y mantiene todos los productos completos a la derecha.
-  Mobile conserva `assets/hero-lanatural.webp` y su composición validada.
+- En desktop, el hero lleva el texto superpuesto sobre la foto panorámica v2:
+  `assets/hero-lanatural-desktop-v2.webp` (con `.jpg` de respaldo). La escena agrupa bowls,
+  chocolate, canela y semillas con mayor presencia, sin recortar ningún producto. Mobile
+  conserva `assets/hero-lanatural.webp` y su composición validada.
 - El hero usa `Elegí lo natural.` como título y `Sabores para disfrutar.` como bajada en
   `data/catalogo.json`.
 - Las tarjetas de categoría son más compactas y usan `#FAE7D0` sólo en desktop para coincidir
@@ -204,6 +204,7 @@ Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <no
   automático al enfocarlos. `html` usa `touch-action:manipulation` para evitar el zoom por
   doble toque, pero el viewport no bloquea el zoom manual con dos dedos. Esto también aplica
   al panel de administración.
-- El hero desktop conserva la foto panorámica, pero la amplía un 14% desde la derecha para
-  acercar los productos al mensaje. El texto entra más hacia el centro y es un poco más
-  chico. Estos ajustes siguen dentro de `@media (min-width:960px)` y no modifican mobile.
+- El hero desktop es una pieza contenida de hasta 1320 px, con márgenes laterales, esquinas
+  suaves y altura determinada por la proporción 1983/793 de la foto v2. El texto queda
+  centrado ópticamente y los productos comienzan cerca del mensaje. Estos ajustes siguen
+  dentro de `@media (min-width:960px)` y no modifican mobile.
