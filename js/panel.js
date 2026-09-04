@@ -135,11 +135,50 @@ function emparejarFondo(ctx, ancho, alto) {
   const delta = [FOTO.fondo[0] - fondo[0], FOTO.fondo[1] - fondo[1], FOTO.fondo[2] - fondo[2]];
 
   const CERCA = 22, LEJOS = 80, CERCA2 = CERCA * CERCA, LEJOS2 = LEJOS * LEJOS;
-
-  for (let i = 0; i < px.length; i += 4) {
+  const lejos = p => {
+    const i = p * 4;
     const dr = px[i] - fondo[0], dg = px[i + 1] - fondo[1], db = px[i + 2] - fondo[2];
-    const d2 = dr * dr + dg * dg + db * db;
-    if (d2 >= LEJOS2) continue;
+    return dr * dr + dg * dg + db * db;
+  };
+
+  // El fondo se pinta avanzando desde el marco de la foto y frenando en cuanto
+  // hay un escalón de color. Así el fondo y su sombra se corrigen enteros, pero
+  // un envase blanco sobre fondo blanco queda intacto: su borde es un escalón.
+  const PASO = 3;
+  const total = ancho * alto;
+  const esFondo = new Uint8Array(total);
+  const cola = new Int32Array(total);
+  let fin = 0;
+  const escalon = (a, b) => {
+    const i = a * 4, j = b * 4;
+    return Math.abs(px[i] - px[j]) < PASO
+        && Math.abs(px[i + 1] - px[j + 1]) < PASO
+        && Math.abs(px[i + 2] - px[j + 2]) < PASO;
+  };
+  const sembrar = p => { if (!esFondo[p] && lejos(p) < LEJOS2) { esFondo[p] = 1; cola[fin++] = p; } };
+  const seguir = (desde, p) => { if (!esFondo[p] && lejos(p) < LEJOS2 && escalon(desde, p)) { esFondo[p] = 1; cola[fin++] = p; } };
+
+  for (let x = 0; x < ancho; x++) { sembrar(x); sembrar((alto - 1) * ancho + x); }
+  for (let y = 0; y < alto; y++) { sembrar(y * ancho); sembrar(y * ancho + ancho - 1); }
+  for (let cab = 0; cab < fin; cab++) {
+    const p = cola[cab], x = p % ancho, y = (p - x) / ancho;
+    if (x > 0) seguir(p, p - 1);
+    if (x < ancho - 1) seguir(p, p + 1);
+    if (y > 0) seguir(p, p - ancho);
+    if (y < alto - 1) seguir(p, p + ancho);
+  }
+
+  // Si el fondo se metió en el centro, el producto es casi del color del fondo:
+  // no se toca la foto, es preferible el fondo blanco a arruinar el producto.
+  let centro = 0, cuenta = 0;
+  for (let y = Math.floor(alto * 0.3); y < alto * 0.7; y++)
+    for (let x = Math.floor(ancho * 0.3); x < ancho * 0.7; x++, cuenta++)
+      if (esFondo[y * ancho + x]) centro++;
+  if (cuenta && centro / cuenta > 0.35) return { corregida: false, fondo };
+
+  for (let p = 0; p < total; p++) {
+    if (!esFondo[p]) continue;
+    const i = p * 4, d2 = lejos(p);
     if (d2 <= CERCA2) {
       px[i] = FOTO.fondo[0]; px[i + 1] = FOTO.fondo[1]; px[i + 2] = FOTO.fondo[2];
       continue;
@@ -150,6 +189,7 @@ function emparejarFondo(ctx, ancho, alto) {
     px[i + 2] = Math.max(0, Math.min(255, px[i + 2] + delta[2] * peso));
   }
   ctx.putImageData(d, 0, 0);
+  return { corregida: true, fondo: FOTO.fondo };
 }
 
 async function prepararFoto(file) {
@@ -164,19 +204,20 @@ async function prepararFoto(file) {
   soloFoto.width = w; soloFoto.height = h;
   const cf = soloFoto.getContext('2d', { willReadFrequently: true });
   cf.drawImage(img, 0, 0, w, h);
-  emparejarFondo(cf, w, h);
+  const r = emparejarFondo(cf, w, h);
 
-  // y después, centrada en el cuadrado con el fondo de las tarjetas
+  // y después, centrada en el cuadrado. Si la foto no se pudo corregir, el
+  // relleno va del color que ya tenía, así al menos queda pareja.
   const lienzo = document.createElement('canvas');
   lienzo.width = lienzo.height = lado;
   const ctx = lienzo.getContext('2d', { willReadFrequently: true });
-  ctx.fillStyle = 'rgb(' + FOTO.fondo.join(',') + ')';
+  ctx.fillStyle = 'rgb(' + r.fondo.map(Math.round).join(',') + ')';
   ctx.fillRect(0, 0, lado, lado);
   ctx.drawImage(soloFoto, Math.round((lado - w) / 2), Math.round((lado - h) / 2));
 
   const f = formatoDeSalida();
   const blob = await new Promise(ok => lienzo.toBlob(ok, f.tipo, f.calidad));
-  return { blob, ext: f.ext, vistaPrevia: URL.createObjectURL(blob), antes: file.size, despues: blob.size };
+  return { blob, ext: f.ext, vistaPrevia: URL.createObjectURL(blob), antes: file.size, despues: blob.size, corregida: r.corregida };
 }
 
 async function subirFoto(slug, blob, ext, rutaAnterior) {
@@ -1137,9 +1178,13 @@ document.addEventListener('change', async ev => {
     const ruta = await subirFoto(p.slug, r.blob, r.ext, p.img);
     p.img = ruta;
     $('#foto-dato').textContent = 'Lista: de ' + pesoLindo(r.antes) + ' a ' + pesoLindo(r.despues) + '. Tocá Guardar para que se vea en la tienda.';
-    aviso(r.despues > 300 * 1024
-      ? 'Foto subida, pero quedó pesada (' + pesoLindo(r.despues) + '). Ahora tocá Guardar.'
-      : 'Foto subida. Ahora tocá Guardar cambios.', 'ok');
+    if (!r.corregida) {
+      aviso('Foto subida, pero el producto es casi del mismo color que su fondo: la dejamos como está para no despintarlo. Si podés, sacala sobre un fondo más contrastado. Ahora tocá Guardar.', 'ok');
+    } else {
+      aviso(r.despues > 300 * 1024
+        ? 'Foto subida, pero quedó pesada (' + pesoLindo(r.despues) + '). Ahora tocá Guardar.'
+        : 'Foto subida. Ahora tocá Guardar cambios.', 'ok');
+    }
   } catch (e) {
     $('#foto-dato').textContent = 'No pudimos subir la foto.';
     aviso('No se pudo subir la foto: ' + e.message, 'error');

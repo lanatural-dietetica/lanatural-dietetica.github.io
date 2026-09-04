@@ -267,8 +267,9 @@ ya recortados, en el color de la marca y con fondo transparente:
 
 | Archivo | Qué es | Dónde se usa |
 |---|---|---|
-| `wordmark-crema.webp` | "LA Natural" | header de la tienda |
-| `wordmark-taupe.webp` | ídem, en marrón | pantalla de acceso del panel |
+| `lockup-crema.webp` | óvalo "LA" + "Natural" | header de la tienda |
+| `lockup-taupe.webp` | ídem, en marrón | pantalla de acceso del panel |
+| `wordmark-*.webp` | sólo "LA Natural" | libre |
 | `sello-crema.webp` | sello circular con "NATURAL" alrededor | pie de página |
 | `sello-taupe.webp` | ídem, en marrón | libre |
 | `monograma-*.webp` | sólo el óvalo con la "LA" | libre (sirve para tamaños chicos) |
@@ -282,7 +283,11 @@ ya recortados, en el color de la marca y con fondo transparente:
   (`#marca-nombre` con `.visually-hidden`) para SEO y lectores de pantalla:
   **no lo borres**, `app.js` lo escribe desde `CONFIG.marca`.
 - Tamaños del logo del header: `.marca__logo` con altura por breakpoint
-  (23 px mobile, 24 base, 28 ≥640, 30/32 desktop, 19 en header compacto).
+  (36 px mobile, 42 base, 44 ≥640, 44/46 desktop, 26 en header compacto).
+- **La bajada "productos saludables" va como texto, no como imagen.** En el lockup
+  original es tan chica que a la altura del header quedaría en 2 px. Se escribe con
+  Karla en versalitas (`.marca__bajada`, `CONFIG.bajada`), liviana y con poca opacidad
+  para que el logo siga mandando. Si la agrandás o la ponés en negrita, tapa al logo.
 
 ## Salir en internet (SEO) — 2026-09-04 (cambios hechos por Claude)
 - `index.html` lleva title/description propios, canonical absoluto, Open Graph y
@@ -303,3 +308,33 @@ ya recortados, en el color de la marca y con fondo transparente:
   link ni en el pie ni en el menú, a propósito.
 - **Falta el número real de la clienta.** Cuando esté, se carga en
   `data/catalogo.json` → `config.whatsapp`, en formato `549261...` sin `+` ni espacios.
+
+
+## Fondo de las fotos, segunda vuelta — 2026-09-04 (cambios hechos por Claude)
+El primer algoritmo corría el color de **cualquier** píxel parecido al fondo, en
+cualquier parte de la imagen. Resultado: los envases blancos se volvían crema y se
+fundían con la tarjeta. Juani lo marcó: "me gusta lo del fondo pero es peligroso".
+
+Ahora, tanto en `js/panel.js` (`emparejarFondo`) como en `scripts/foto-producto.py`
+(`pegado_al_borde`), el fondo se pinta **avanzando desde el marco de la foto**:
+- Sólo se corrige lo que está conectado con el borde, así una etiqueta blanca en el
+  medio del envase no se toca.
+- La corrida frena en cuanto hay un **escalón de color de 3 o más** entre dos píxeles
+  vecinos (`PASO = 3`). Eso deja pasar el degradé del fondo y de la sombra —que suben
+  de a un punto por píxel— y frena en el borde del producto. **No suavices la imagen
+  antes de medir el escalón**: se probó y aplasta el borde, la mancha se escapa y el
+  envase se vuelve a lavar.
+- Red de seguridad: si el fondo igual se metió en el centro (más del 35 % del cuadro
+  central), es porque el producto es casi del color del fondo. Ahí **no se corrige
+  nada**: se deja la foto como está y el panel se lo avisa a la clienta.
+
+Fotos ya reparadas desde el original de Paladear: plata coloidal, probióticos, rhodiola
+rosea, sal dietética, tomate condimentado y tomate triturado. Al cambiar el archivo hay
+que subir el `?v=` del campo `img` de ese producto en `data/catalogo.json`.
+
+Quedan dos casos sin resolver, no los toqué:
+- Los **bowls generados** (los 84 de Codex) tienen productos blancos —harinas, porotos
+  alubia, panko— con el centro en crema exacto. No tengo el original para rehacerlos.
+  Si los regenerás, revisá que el blanco siga siendo blanco.
+- `salsa-de-tomate-crema.webp` y `harina-integral-de-trigo.webp` los subió la clienta
+  desde el panel con el algoritmo viejo: hay que volver a subirlos.

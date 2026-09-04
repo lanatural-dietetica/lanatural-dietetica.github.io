@@ -4,7 +4,7 @@
   "demo": true,
   "config": {
     "marca": "La Natural",
-    "bajada": "dietetica",
+    "bajada": "productos saludables",
     "slogan": "Elegí lo natural.",
     "slogan2": "Sabores para disfrutar.",
     "whatsapp": "5492610000000",
@@ -2635,7 +2635,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/sal-dietetica-natural.webp?v=20260904b",
+      "img": "assets/productos/sal-dietetica-natural.webp?v=20260904c",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoUnidad": 2200
@@ -4512,7 +4512,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/plata-coloidal.webp?v=20260904b",
+      "img": "assets/productos/plata-coloidal.webp?v=20260904c",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoUnidad": 7450
@@ -4795,7 +4795,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/probioticos.webp?v=20260904b",
+      "img": "assets/productos/probioticos.webp?v=20260904c",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoUnidad": 13300
@@ -4826,7 +4826,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/rhodiola-rosea-extracto.webp?v=20260904b",
+      "img": "assets/productos/rhodiola-rosea-extracto.webp?v=20260904c",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoUnidad": 15250
@@ -4888,7 +4888,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/tomate-condimentado.webp?v=20260904b",
+      "img": "assets/productos/tomate-condimentado.webp?v=20260904c",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoUnidad": 3000
@@ -4919,7 +4919,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/tomate-triturado.webp?v=20260904b",
+      "img": "assets/productos/tomate-triturado.webp?v=20260904c",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoUnidad": 1150

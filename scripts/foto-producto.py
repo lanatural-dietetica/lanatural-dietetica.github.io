@@ -18,6 +18,46 @@ from PIL import Image
 FONDO_OFICIAL = np.array([250, 230, 208], dtype=float)   # #FAE6D0
 CERCA, LEJOS = 22.0, 80.0
 
+def invadio_el_centro(fondo):
+    """El producto ocupa el centro. Si el fondo se metió ahí, la foto no se puede
+    corregir sin arruinar el producto (blanco sobre blanco, por ejemplo)."""
+    h, w = fondo.shape
+    centro = fondo[int(h * .3):int(h * .7), int(w * .3):int(w * .7)]
+    return centro.mean() > 0.35
+
+
+def pegado_al_borde(candidato, a, PASO=3.0):
+    """Marca sólo el fondo que se toca con el marco de la foto.
+
+    Avanza de a un píxel y frena en cuanto hay un escalón de color: así el fondo
+    y su sombra se corrigen enteros, pero un envase blanco sobre fondo blanco
+    queda intacto, porque su borde es un escalón aunque el color sea parecido.
+    """
+    salto = [np.zeros(candidato.shape, dtype=bool) for _ in range(4)]
+    d0 = np.abs(np.diff(a, axis=0)).max(axis=-1) < PASO   # entre filas
+    d1 = np.abs(np.diff(a, axis=1)).max(axis=-1) < PASO   # entre columnas
+    salto[0][1:] = d0            # viniendo de arriba
+    salto[1][:-1] = d0           # viniendo de abajo
+    salto[2][:, 1:] = d1         # viniendo de la izquierda
+    salto[3][:, :-1] = d1        # viniendo de la derecha
+
+    m = np.zeros_like(candidato)
+    m[0], m[-1] = candidato[0], candidato[-1]
+    m[:, 0], m[:, -1] = candidato[:, 0], candidato[:, -1]
+    while True:
+        antes = m.sum()
+        for i in range(1, m.shape[0]):
+            m[i] |= m[i - 1] & candidato[i] & salto[0][i]
+        for i in range(m.shape[0] - 2, -1, -1):
+            m[i] |= m[i + 1] & candidato[i] & salto[1][i]
+        for j in range(1, m.shape[1]):
+            m[:, j] |= m[:, j - 1] & candidato[:, j] & salto[2][:, j]
+        for j in range(m.shape[1] - 2, -1, -1):
+            m[:, j] |= m[:, j + 1] & candidato[:, j] & salto[3][:, j]
+        if m.sum() == antes:
+            return m
+
+
 def preparar(entrada, nombre, TAM=800, carpeta='assets/productos'):
     im = Image.open(entrada).convert('RGB')
     a = np.asarray(im, dtype=float)
@@ -29,9 +69,17 @@ def preparar(entrada, nombre, TAM=800, carpeta='assets/productos'):
     delta = FONDO_OFICIAL - fondo
 
     dist = np.sqrt(((a - fondo) ** 2).sum(axis=-1))
-    peso = np.clip((LEJOS - dist) / (LEJOS - CERCA), 0.0, 1.0)[..., None]
-    corregida = np.clip(a + delta * peso, 0, 255).astype(np.uint8)
-    corregida[dist <= CERCA] = FONDO_OFICIAL.astype(np.uint8)
+    fondo_real = pegado_al_borde(dist < LEJOS, a)
+
+    if invadio_el_centro(fondo_real):
+        # el producto es casi del color del fondo: mejor no tocar nada
+        print('%-26s OJO: producto del color del fondo, se deja sin corregir' % nombre)
+        corregida = a.astype(np.uint8)
+    else:
+        peso = np.clip((LEJOS - dist) / (LEJOS - CERCA), 0.0, 1.0)
+        peso[~fondo_real] = 0.0
+        corregida = np.clip(a + delta * peso[..., None], 0, 255).astype(np.uint8)
+        corregida[fondo_real & (dist <= CERCA)] = FONDO_OFICIAL.astype(np.uint8)
 
     out = Image.fromarray(corregida).resize((TAM, TAM), Image.LANCZOS)
     out.save('%s/%s.webp' % (carpeta, nombre), 'WEBP', quality=84, method=6)
