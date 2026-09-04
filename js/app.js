@@ -101,6 +101,7 @@ const estado = {
   catalogo: { q: '', cat: 'todos', orden: 'nombre' },
   mix: { tam: null, ing: {}, cat: 'todos', q: '', nombre: '' },
   ficha: { pres: null, cant: 1, tab: 'descripcion' },
+  comboAbierto: null,
   cards: {},  // { idProducto: { pres, cant } } — lo elegido en cada tarjeta del catálogo
   checkout: { paso: 0, tipo: null }
 };
@@ -273,9 +274,11 @@ function tarjetaProducto(p) {
   const st  = estadoCard(p);
   const pr  = precios(p, st.pres);
   const cat = catPorId(p.categoria);
-  const badge = p.destacado
-    ? '<span class="prod__badge">Destacado</span>'
-    : (p.tags && p.tags.includes('sintacc') ? '<span class="prod__badge prod__badge--tag">Sin TACC</span>' : '');
+  const badge = pr.descuento
+    ? '<span class="desc-badge">−' + pr.descuento + '%</span>'
+    : (p.destacado
+      ? '<span class="prod__badge">Destacado</span>'
+      : (p.tags && p.tags.includes('sintacc') ? '<span class="prod__badge prod__badge--tag">Sin TACC</span>' : ''));
   const fav = estado.favs.includes(p.id);
   const ped = enElPedido(p);
 
@@ -701,7 +704,7 @@ function vistaProducto(slug) {
             '<span>' +
               (pr.descuento ? '<span class="precio__antes">' + money(pr.venta) + '</span>' : '') +
               '<span class="precio" id="precio-ficha">' + money(pr.final) + '</span>' +
-              (pr.descuento ? '<span class="ahorro" id="ahorro-ficha">Ahorrás ' + money(pr.ahorro) + '</span>' : '') +
+              (pr.descuento ? '<span class="ahorro" id="ahorro-ficha">−' + pr.descuento + '% de descuento</span>' : '') +
             '</span>' +
             '<span class="stepper">' +
               '<button data-cant="-1" aria-label="Quitar una unidad">−</button>' +
@@ -912,32 +915,58 @@ function vistaCombos() {
       '<h1>Combos para cada día</h1>' +
       '<p>Una selección simple, lista para llevar.</p>' +
     '</div>' +
-    (activos.length ? activos.map(c => {
-      const pr = preciosCombo(c);
-      const n = c.items.reduce((s, i) => s + (i.cant || 1), 0);
-      return '<article class="combo">' +
-        '<div class="combo__top">' +
-          '<div class="combo__txt">' +
-            '<h3>' + esc(c.nombre) + '</h3>' +
-            '<div class="combo__hr"></div>' +
-            '<p class="combo__desc">' + esc(c.descripcion) + '</p>' +
-            '<span class="combo__n">' + ICO.caja + n + ' productos</span>' +
-          '</div>' +
-          '<div class="combo__fig"><img src="' + imgDe(c) + '" alt="Productos incluidos en ' + esc(c.nombre) + '" width="700" height="700" loading="lazy" decoding="async"></div>' +
-        '</div>' +
-        '<ul class="combo__detalle">' +
-          c.items.map(i => {
-            const p = prodPorId(i.productoId);
-            return p ? '<li>' + esc(p.nombre) + ' · ' + esc(presNombre(i.presentacionId)) + (i.cant > 1 ? ' × ' + i.cant : '') + '</li>' : '';
-          }).join('') +
-        '</ul>' +
-        (pr.ahorro ? '<span class="precio__antes">' + money(pr.lista) + '</span>' : '') +
-        '<div class="combo__precio">' + money(pr.final) + '</div>' +
-        (pr.ahorro ? '<span class="combo__ahorro">Ahorrás ' + money(pr.ahorro) + '</span>' : '') +
-        '<button class="btn btn--oliva btn--bloque" data-combo="' + c.id + '">Agregar el combo ' + ICO.flecha + '</button>' +
-      '</article>';
-    }).join('') : vacio('Todavía no hay combos', 'Estamos armando las primeras selecciones.')) +
+    (activos.length ? activos.map(comboHTML).join('')
+                    : vacio('Todavía no hay combos', 'Estamos armando las primeras selecciones.')) +
   '</div></section>';
+}
+
+function comboHTML(c) {
+  const pr = preciosCombo(c);
+  const n = c.items.reduce((s, i) => s + (i.cant || 1), 0);
+  const abierto = estado.comboAbierto === c.id;
+  return '<article class="combo' + (abierto ? ' combo--abierto' : '') + '" data-comboid="' + c.id + '">' +
+    '<button class="combo__cab" data-abrircombo="' + c.id + '" aria-expanded="' + abierto + '">' +
+      '<span class="combo__txt">' +
+        '<span class="combo__nom">' + esc(c.nombre) + '</span>' +
+        '<span class="combo__hr"></span>' +
+        '<span class="combo__desc">' + esc(c.descripcion) + '</span>' +
+        '<span class="combo__n">' + ICO.caja + n + ' productos</span>' +
+      '</span>' +
+      '<span class="combo__fig">' +
+        (c.descuento ? '<span class="desc-badge">−' + c.descuento + '%</span>' : '') +
+        '<img src="' + imgDe(c) + '" alt="Productos incluidos en ' + esc(c.nombre) + '" width="700" height="700" loading="lazy" decoding="async">' +
+      '</span>' +
+    '</button>' +
+
+    '<div class="combo__cuerpo"' + (abierto ? '' : ' hidden') + '>' +
+      '<ul class="combo__lista">' +
+        c.items.map(i => {
+          const p = prodPorId(i.productoId);
+          if (!p) return '';
+          const unit = precios(p, i.presentacionId).final;
+          return '<li>' +
+            '<span class="combo__item-nom">' + esc(p.nombre) +
+              '<em>' + esc(presNombre(i.presentacionId)) + (i.cant > 1 ? ' × ' + i.cant : '') + '</em></span>' +
+            '<span class="combo__item-precio">' + money(unit * (i.cant || 1)) + '</span>' +
+          '</li>';
+        }).join('') +
+      '</ul>' +
+      '<div class="combo__cuentas">' +
+        '<div class="combo__fila"><span>Por separado</span><span class="precio__antes">' + money(pr.lista) + '</span></div>' +
+        (c.descuento ? '<div class="combo__fila combo__fila--desc"><span>Descuento del combo</span><span>−' + c.descuento + '%</span></div>' : '') +
+      '</div>' +
+    '</div>' +
+
+    '<div class="combo__pie">' +
+      '<span class="combo__precio">' +
+        (pr.ahorro ? '<span class="precio__antes">' + money(pr.lista) + '</span>' : '') +
+        money(pr.final) +
+      '</span>' +
+      (c.descuento ? '<span class="desc-chip">−' + c.descuento + '% de descuento</span>' : '') +
+    '</div>' +
+    '<button class="btn btn--oliva btn--bloque" data-combo="' + c.id + '">Agregar el combo ' + ICO.flecha + '</button>' +
+    '<button class="combo__ver" data-abrircombo="' + c.id + '">' + (abierto ? 'Ocultar el detalle' : 'Ver qué trae') + '</button>' +
+  '</article>';
 }
 
 function vistaComoComprar() {
@@ -1507,6 +1536,20 @@ document.addEventListener('click', ev => {
   }
 
   /* --- combos --- */
+  const abrirCombo = t.closest('[data-abrircombo]');
+  if (abrirCombo) {
+    const id = abrirCombo.dataset.abrircombo;
+    estado.comboAbierto = estado.comboAbierto === id ? null : id;
+    const art = document.querySelector('[data-comboid="' + id + '"]');
+    if (art) {
+      const c = COMBOS.find(x => x.id === id);
+      art.outerHTML = comboHTML(c);
+      const nuevo = document.querySelector('[data-comboid="' + id + '"]');
+      if (nuevo && estado.comboAbierto === id) nuevo.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+    return;
+  }
+
   const combo = t.closest('[data-combo]');
   if (combo) {
     const c = COMBOS.find(x => x.id === combo.dataset.combo);
@@ -1579,7 +1622,7 @@ function render2Ficha() {
   const el = $('#precio-ficha');
   if (el) el.textContent = money(pr.final);
   const ah = $('#ahorro-ficha');
-  if (ah) ah.textContent = pr.ahorro ? 'Ahorrás ' + money(pr.ahorro) : '';
+  if (ah) ah.textContent = pr.descuento ? '−' + pr.descuento + '% de descuento' : '';
   const antes = $('.fila-precio .precio__antes');
   if (antes) antes.textContent = pr.descuento ? money(pr.venta) : '';
 }

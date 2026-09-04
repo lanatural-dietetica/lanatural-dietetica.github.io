@@ -1788,3 +1788,71 @@ body.compacto .icon-btn__img--carrito{width:23px;height:23px}
   .paso h3{font-size:clamp(16px,4.9vw,24px);letter-spacing:.03em;line-height:1.12}
   .paso__cuerpo{min-width:0}
 }
+
+/* ============================================================
+   Descuentos en porcentaje y combos que se abren
+   ============================================================ */
+.desc-badge{
+  position:absolute;top:8px;left:8px;z-index:3;
+  background:var(--rojo);color:#fff;
+  font-size:11.5px;font-weight:700;letter-spacing:.03em;
+  padding:5px 9px;border-radius:999px;line-height:1;
+  box-shadow:0 2px 8px rgba(168,52,42,.28);
+}
+.desc-chip{
+  display:inline-flex;align-items:center;
+  background:rgba(168,52,42,.1);color:var(--rojo);
+  border:1px solid rgba(168,52,42,.25);
+  border-radius:999px;padding:5px 11px;
+  font-size:11.5px;font-weight:600;letter-spacing:.03em;
+}
+
+/* combo desplegable */
+.combo__cab{
+  display:flex;align-items:flex-start;gap:14px;width:100%;
+  background:none;border:0;padding:0;text-align:left;color:inherit;
+}
+.combo__txt{flex:1;min-width:0;display:block}
+.combo__nom{
+  display:block;font-family:var(--serif);font-size:20px;font-weight:500;
+  text-transform:uppercase;letter-spacing:.04em;line-height:1.15;
+}
+.combo__hr{display:block;height:1px;background:var(--linea);margin:10px 0;max-width:120px}
+.combo__desc{display:block;font-size:14px;color:var(--gris-txt);margin-bottom:10px}
+.combo__n{
+  display:inline-flex;align-items:center;gap:6px;font-size:12px;
+  background:var(--champan);border-radius:999px;padding:5px 10px;color:var(--gris-txt);
+}
+.combo__fig{position:relative;width:120px;flex:0 0 auto;align-self:flex-start}
+
+.combo__cuerpo{
+  border-top:1px dashed var(--linea);margin-top:14px;padding-top:12px;
+  animation:aparece .22s ease;
+}
+@keyframes aparece{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.combo__lista{list-style:none;margin:0;padding:0}
+.combo__lista li{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding:8px 0;border-bottom:1px solid var(--linea);font-size:14px;
+}
+.combo__lista li:last-child{border-bottom:0}
+.combo__item-nom{flex:1;min-width:0}
+.combo__item-nom em{
+  display:block;font-style:normal;font-size:12px;color:var(--gris-txt);margin-top:2px;
+}
+.combo__item-precio{font-weight:600;white-space:nowrap}
+.combo__cuentas{margin-top:10px;padding-top:10px;border-top:1px solid var(--linea)}
+.combo__fila{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;padding:3px 0;color:var(--gris-txt)}
+.combo__fila--desc{color:var(--rojo);font-weight:600}
+
+.combo__pie{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px}
+.combo__precio{font-family:var(--serif);font-size:26px;margin:0}
+.combo__ver{
+  width:100%;margin-top:8px;background:none;border:0;
+  color:var(--russet);font-size:13px;text-decoration:underline;padding:10px;
+}
+
+@media (min-width:640px){
+  .combo__fig{width:200px}
+  .combo__nom{font-size:23px}
+}

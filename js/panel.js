@@ -20,7 +20,8 @@ const esc = (s = '') => String(s)
 const fmt = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
 const money = n => '$ ' + fmt.format(Math.round(n || 0));
 
-const estado = { token: '', catalogo: null, sha: '', q: '', rubro: 'todos', editando: null, alta: null };
+const estado = { token: '', catalogo: null, sha: '', q: '', rubro: 'todos',
+                 seccion: 'productos', editando: null, editandoCombo: null, alta: null, eligiendo: false };
 
 /* ---------------- avisos ---------------- */
 let avisoTimer;
@@ -410,7 +411,7 @@ function mostrarAlta() {
     nombre: '', categoria: (estado.catalogo.categorias[0] || {}).id || '',
     tipo: 'granel', costo: 0, margen: estado.catalogo.config.margenPorDefecto || 60
   };
-  $('#panel-titulo').textContent = 'Producto nuevo';
+  tituloPanel('Producto nuevo');
   $('#btn-volver').classList.remove('oculto');
   $('#btn-guardar-top').classList.add('oculto');
   $('#panel-main').innerHTML = vistaAlta();
@@ -472,21 +473,23 @@ function vistaLista() {
   }
 
   return '' +
-    '<div class="panel-buscador">' +
-      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>' +
-      '<input id="q" type="search" placeholder="Buscar producto" value="' + esc(estado.q) + '" autocomplete="off">' +
-    '</div>' +
-    '<div class="chips-rubro">' +
-      rubros.map(r => '<button class="chip-panel" data-rubro="' + r.id + '" aria-pressed="' + (estado.rubro === r.id) + '">' +
-        esc(r.nombre) + '</button>').join('') +
-    '</div>' +
-    '<div class="lista-cab">' +
-      '<p class="panel-resumen">' + arr.length + (arr.length === 1 ? ' producto' : ' productos') +
-        (sinStock ? ' · ' + sinStock + ' sin stock' : '') + '</p>' +
-      '<span class="lista-acciones">' +
-        '<a class="btn-ver" href="./?fresco=1" target="_blank" rel="noopener">Ver tienda</a>' +
-        '<button class="btn-nuevo" id="btn-nuevo">+ Nuevo</button>' +
-      '</span>' +
+    '<div class="barra-fija">' +
+      '<div class="panel-buscador">' +
+        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>' +
+        '<input id="q" type="search" placeholder="Buscar producto, rubro o marca" value="' + esc(estado.q) + '" autocomplete="off">' +
+      '</div>' +
+      '<div class="chips-rubro">' +
+        rubros.map(r => '<button class="chip-panel" data-rubro="' + r.id + '" aria-pressed="' + (estado.rubro === r.id) + '">' +
+          esc(r.nombre) + '</button>').join('') +
+      '</div>' +
+      '<div class="lista-cab">' +
+        '<p class="panel-resumen">' + arr.length + (arr.length === 1 ? ' producto' : ' productos') +
+          (sinStock ? ' · ' + sinStock + ' sin stock' : '') + '</p>' +
+        '<span class="lista-acciones">' +
+          '<a class="btn-ver" href="./?fresco=1" target="_blank" rel="noopener">Ver tienda</a>' +
+          '<button class="btn-nuevo" id="btn-nuevo">+ Nuevo</button>' +
+        '</span>' +
+      '</div>' +
     '</div>' +
     cuerpo;
 }
@@ -636,23 +639,215 @@ function pintarCuenta() {
       : '');
 }
 
+/* ---------------- combos ---------------- */
+function cuentaCombo(k) {
+  let suma = 0;
+  const filas = (k.items || []).map(i => {
+    const p = (estado.catalogo.productos || []).find(x => x.id === i.productoId);
+    if (!p) return null;
+    const unit = precioDe(p, i.presentacionId);
+    const total = unit * (i.cant || 1);
+    suma += total;
+    return { p: p, medida: i.presentacionId, cant: i.cant || 1, total: total };
+  }).filter(Boolean);
+  const lista = redondear(suma);
+  const final = k.precioEspecial ? redondear(k.precioEspecial) : redondear(lista * (1 - (k.descuento || 0) / 100));
+  return { filas: filas, lista: lista, final: final };
+}
+
+function precioDe(p, presId) {
+  const c = cuentaDe(p);
+  const g = gramosDe(presId);
+  if (p.tipo !== 'granel') return c.final;
+  const base = (p.costoKg || 0) * g / 1000;
+  return redondear(redondear(base * (1 + c.margen / 100)) * (1 - c.desc / 100));
+}
+
+function vistaCombos() {
+  const combos = (estado.catalogo.combos || []).slice().sort((a, b) => (a.orden || 99) - (b.orden || 99));
+  return '' +
+    '<div class="barra-fija">' +
+      '<div class="lista-cab">' +
+        '<p class="panel-resumen">' + combos.length + (combos.length === 1 ? ' combo' : ' combos') + '</p>' +
+        '<span class="lista-acciones">' +
+          '<a class="btn-ver" href="./?fresco=1#/combos" target="_blank" rel="noopener">Ver tienda</a>' +
+          '<button class="btn-nuevo" id="btn-nuevo-combo">+ Nuevo</button>' +
+        '</span>' +
+      '</div>' +
+    '</div>' +
+    (combos.length ? combos.map(k => {
+      const c = cuentaCombo(k);
+      return '<button class="fila" data-editarcombo="' + k.id + '">' +
+        '<img class="fila__fig" src="' + (k.img || imgDe({})) + '" alt="" loading="lazy">' +
+        '<span class="fila__txt">' +
+          '<p class="fila__nom">' + esc(k.nombre || 'Combo sin nombre') + '</p>' +
+          '<p class="fila__precio">' + money(c.final) + ' · ' + c.filas.length + ' productos' +
+            (k.descuento ? ' · −' + k.descuento + '%' : '') + '</p>' +
+        '</span>' +
+        '<span class="fila__estado estado--' + (k.activo ? 'publicado' : 'oculto') + '">' +
+          (k.activo ? 'En venta' : 'Oculto') + '</span>' +
+      '</button>';
+    }).join('') : '<p class="cargando">Todavía no hay combos. Tocá “+ Nuevo” para armar el primero.</p>');
+}
+
+function vistaEditorCombo(k) {
+  const c = cuentaCombo(k);
+  return '' +
+  '<div class="editor">' +
+    '<div class="bloque">' +
+      '<p class="bloque__lbl">Datos</p>' +
+      '<div class="campos campos--uno">' +
+        '<div class="campo campo--ancho campo--texto">' +
+          '<label for="k-nombre">Nombre del combo</label>' +
+          '<input id="k-nombre" type="text" value="' + esc(k.nombre || '') + '" placeholder="Ej: Desayuno completo">' +
+        '</div>' +
+        '<div class="campo campo--ancho campo--texto">' +
+          '<label for="k-desc">Qué trae, en una línea</label>' +
+          '<input id="k-desc" type="text" value="' + esc(k.descripcion || '') + '" placeholder="Avena, miel y frutos secos.">' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="bloque">' +
+      '<p class="bloque__lbl">Qué lleva</p>' +
+      (c.filas.length ? '<div class="items">' + c.filas.map((f, idx) =>
+        '<div class="item-combo">' +
+          '<img class="item-combo__fig" src="' + imgDe(f.p) + '" alt="" loading="lazy">' +
+          '<div class="item-combo__txt">' +
+            '<p class="item-combo__nom">' + esc(f.p.nombre) + '</p>' +
+            '<div class="item-combo__ctrl">' +
+              '<select data-medida-item="' + idx + '">' +
+                f.p.presentaciones.map(id => '<option value="' + id + '"' + (id === f.medida ? ' selected' : '') + '>' +
+                  esc(nombrePres(id)) + '</option>').join('') +
+              '</select>' +
+              '<span class="stepper stepper--mini">' +
+                '<button data-cantitem="' + idx + '" data-delta="-1" aria-label="Menos">−</button>' +
+                '<span>' + f.cant + '</span>' +
+                '<button data-cantitem="' + idx + '" data-delta="1" aria-label="Más">+</button>' +
+              '</span>' +
+              '<strong>' + money(f.total) + '</strong>' +
+            '</div>' +
+          '</div>' +
+          '<button class="item-combo__quitar" data-quitaritem="' + idx + '" aria-label="Sacar del combo">×</button>' +
+        '</div>').join('') + '</div>'
+        : '<p class="campo__ayuda">Todavía no tiene productos.</p>') +
+      '<button class="btn btn--fantasma btn--bloque" id="agregar-item" style="margin-top:12px">+ Agregar producto</button>' +
+    '</div>' +
+
+    '<div class="bloque">' +
+      '<p class="bloque__lbl">Precio</p>' +
+      '<div class="campos">' +
+        '<div class="campo">' +
+          '<label for="k-descuento">Descuento %</label>' +
+          '<input id="k-descuento" type="number" inputmode="numeric" min="0" max="90" step="1" value="' + (k.descuento || 0) + '">' +
+        '</div>' +
+      '</div>' +
+      '<div class="cuenta" id="cuenta-combo">' +
+        '<div class="cuenta__fila"><span>Por separado</span><span>' + money(c.lista) + '</span></div>' +
+        (k.descuento ? '<div class="cuenta__fila"><span>Descuento ' + k.descuento + '%</span><span>− ' + money(c.lista - c.final) + '</span></div>' : '') +
+        '<div class="cuenta__fila cuenta__total"><span>Precio del combo</span><span>' + money(c.final) + '</span></div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="bloque">' +
+      '<p class="bloque__lbl">Estado</p>' +
+      '<div class="estados estados--dos">' +
+        '<button class="estado-btn" data-comboestado="1" aria-pressed="' + !!k.activo + '">En venta</button>' +
+        '<button class="estado-btn" data-comboestado="0" aria-pressed="' + !k.activo + '">Oculto</button>' +
+      '</div>' +
+      '<div class="interruptores">' +
+        '<button class="interruptor" data-comboflag="destacado" aria-pressed="' + !!k.destacado + '">' +
+          '<span>Destacado</span><small>Aparece primero en la lista</small></button>' +
+      '</div>' +
+    '</div>' +
+
+    '<button class="btn btn--oliva btn--bloque" id="guardar-combo">Guardar cambios</button>' +
+    '<button class="btn-borrar" id="borrar-combo">Eliminar este combo</button>' +
+  '</div>';
+}
+
+/* elegir qué producto sumar al combo */
+function vistaElegirProducto() {
+  const q = sinTildes(estado.q.trim());
+  let arr = (estado.catalogo.productos || []).filter(p => p.estado === 'publicado');
+  if (q) arr = arr.filter(p => sinTildes(p.nombre || '').includes(q));
+  arr.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es'));
+  return '' +
+    '<div class="barra-fija">' +
+      '<div class="panel-buscador">' +
+        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>' +
+        '<input id="q" type="search" placeholder="Buscar producto" value="' + esc(estado.q) + '" autocomplete="off">' +
+      '</div>' +
+      '<p class="panel-resumen">Tocá el que quieras sumar al combo</p>' +
+    '</div>' +
+    arr.slice(0, 60).map(p =>
+      '<button class="fila" data-sumaritem="' + p.id + '">' +
+        '<img class="fila__fig" src="' + imgDe(p) + '" alt="" loading="lazy">' +
+        '<span class="fila__txt"><p class="fila__nom">' + esc(p.nombre) + '</p>' +
+        '<p class="fila__precio">' + money(cuentaDe(p).final) + (p.tipo === 'granel' ? ' / kg' : ' / unidad') + '</p></span>' +
+      '</button>').join('');
+}
+
 /* ---------------- navegación ---------------- */
 function mostrarLista() {
   estado.alta = null;
+  estado.eligiendo = false;
   const p = estado.editando;
   if (p && !p.slug) estado.catalogo.productos = estado.catalogo.productos.filter(x => x.id !== p.id);
   estado.editando = null;
-  $('#panel-titulo').textContent = 'Productos';
+  estado.editandoCombo = null;
+  $('#panel-titulo').classList.add('oculto');
+  $('#panel-tabs').classList.remove('oculto');
+  $$('#panel-tabs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.seccion === estado.seccion));
   $('#btn-volver').classList.add('oculto');
   $('#btn-guardar-top').classList.add('oculto');
-  $('#panel-main').innerHTML = vistaLista();
+  $('#panel-main').innerHTML = estado.seccion === 'combos' ? vistaCombos() : vistaLista();
+  window.scrollTo(0, 0);
+}
+
+function tituloPanel(txt) {
+  $('#panel-titulo').textContent = txt;
+  $('#panel-titulo').classList.remove('oculto');
+  $('#panel-tabs').classList.add('oculto');
+}
+
+function mostrarEditorCombo(id) {
+  const k = (estado.catalogo.combos || []).find(x => x.id === id);
+  if (!k) return;
+  estado.editandoCombo = k;
+  estado.eligiendo = false;
+  tituloPanel(k.nombre || 'Combo nuevo');
+  $('#btn-volver').classList.remove('oculto');
+  $('#btn-guardar-top').classList.add('oculto');
+  $('#panel-main').innerHTML = vistaEditorCombo(k);
+  window.scrollTo(0, 0);
+}
+
+function mostrarElegirProducto() {
+  estado.eligiendo = true;
+  estado.q = '';
+  tituloPanel('Sumar producto');
+  $('#panel-main').innerHTML = vistaElegirProducto();
+  window.scrollTo(0, 0);
+}
+
+function comboNuevo() {
+  const combos = estado.catalogo.combos || (estado.catalogo.combos = []);
+  const num = combos.reduce((m, k) => Math.max(m, parseInt(String(k.id).replace(/\D/g, ''), 10) || 0), 0) + 1;
+  const k = {
+    id: 'c' + String(num).padStart(2, '0'), slug: '', nombre: '', descripcion: '',
+    items: [], descuento: 10, precioEspecial: null, activo: false, destacado: false,
+    orden: combos.length + 1, img: '', color: '#c07a45', color2: '#e0a674'
+  };
+  combos.push(k);
+  return k;
 }
 
 function mostrarEditor(id) {
   const p = (estado.catalogo.productos || []).find(x => x.id === id);
   if (!p) return;
   estado.editando = p;
-  $('#panel-titulo').textContent = p.nombre || 'Producto nuevo';
+  tituloPanel(p.nombre || 'Producto nuevo');
   $('#btn-volver').classList.remove('oculto');
   $('#btn-guardar-top').classList.remove('oculto');
   $('#panel-main').innerHTML = vistaEditor(p);
@@ -693,6 +888,90 @@ async function guardarProducto() {
 document.addEventListener('click', async ev => {
   const t = ev.target;
 
+  const tab = t.closest('[data-seccion]');
+  if (tab) { estado.seccion = tab.dataset.seccion; estado.q = ''; mostrarLista(); return; }
+
+  const filaCombo = t.closest('[data-editarcombo]');
+  if (filaCombo) { mostrarEditorCombo(filaCombo.dataset.editarcombo); return; }
+
+  if (t.closest('#btn-nuevo-combo')) { const k = comboNuevo(); mostrarEditorCombo(k.id); return; }
+
+  if (t.closest('#agregar-item')) { mostrarElegirProducto(); return; }
+
+  const sumar = t.closest('[data-sumaritem]');
+  if (sumar && estado.editandoCombo) {
+    const p = estado.catalogo.productos.find(x => x.id === sumar.dataset.sumaritem);
+    if (p) {
+      estado.editandoCombo.items.push({ productoId: p.id, presentacionId: p.presentacionDefecto, cant: 1 });
+      aviso(p.nombre + ' sumado al combo', 'ok');
+    }
+    mostrarEditorCombo(estado.editandoCombo.id);
+    return;
+  }
+
+  const quitarItem = t.closest('[data-quitaritem]');
+  if (quitarItem && estado.editandoCombo) {
+    estado.editandoCombo.items.splice(Number(quitarItem.dataset.quitaritem), 1);
+    mostrarEditorCombo(estado.editandoCombo.id);
+    return;
+  }
+
+  const cantItem = t.closest('[data-cantitem]');
+  if (cantItem && estado.editandoCombo) {
+    const it = estado.editandoCombo.items[Number(cantItem.dataset.cantitem)];
+    it.cant = Math.max(1, (it.cant || 1) + Number(cantItem.dataset.delta));
+    mostrarEditorCombo(estado.editandoCombo.id);
+    return;
+  }
+
+  const comboEstado = t.closest('[data-comboestado]');
+  if (comboEstado && estado.editandoCombo) {
+    estado.editandoCombo.activo = comboEstado.dataset.comboestado === '1';
+    $$('[data-comboestado]').forEach(b => b.setAttribute('aria-pressed', b === comboEstado));
+    return;
+  }
+
+  const comboFlag = t.closest('[data-comboflag]');
+  if (comboFlag && estado.editandoCombo) {
+    const k = estado.editandoCombo, campo = comboFlag.dataset.comboflag;
+    k[campo] = !k[campo];
+    comboFlag.setAttribute('aria-pressed', !!k[campo]);
+    return;
+  }
+
+  if (t.closest('#guardar-combo')) {
+    const k = estado.editandoCombo;
+    if (!k) return;
+    if (!k.nombre || k.nombre.trim().length < 2) { aviso('Ponele un nombre al combo.', 'error'); const n = $('#k-nombre'); if (n) n.focus(); return; }
+    if (!k.items.length) { aviso('El combo tiene que llevar al menos un producto.', 'error'); return; }
+    k.nombre = nombreLindo(k.nombre);
+    k.slug = slugLibre(aSlug(k.nombre), k.id);
+    const boton = $('#guardar-combo');
+    boton.disabled = true;
+    aviso('Guardando…', 'trabajando');
+    guardarCatalogo('Panel: combo ' + k.nombre)
+      .then(() => {
+        const sello = estado.catalogo.sello;
+        aviso('Guardado. Publicando en la tienda…', 'trabajando');
+        mostrarLista();
+        esperarPublicado(sello).then(ok => aviso(ok ? 'Listo, ya se ve en la tienda.' : 'Guardado. Está tardando en publicarse.', ok ? 'ok' : 'error'));
+      })
+      .catch(e => { aviso('No se pudo guardar: ' + e.message, 'error'); boton.disabled = false; });
+    return;
+  }
+
+  if (t.closest('#borrar-combo')) {
+    const k = estado.editandoCombo;
+    if (!k) return;
+    if (!confirm('¿Eliminar el combo "' + (k.nombre || 'sin nombre') + '"?')) return;
+    estado.catalogo.combos = estado.catalogo.combos.filter(x => x.id !== k.id);
+    aviso('Eliminando…', 'trabajando');
+    guardarCatalogo('Panel: elimina el combo ' + (k.nombre || k.id))
+      .then(() => { aviso('Combo eliminado.', 'ok'); estado.editandoCombo = null; mostrarLista(); })
+      .catch(e => aviso('No se pudo eliminar: ' + e.message, 'error'));
+    return;
+  }
+
   const chipRubro = t.closest('[data-rubro]');
   if (chipRubro) {
     estado.rubro = chipRubro.dataset.rubro;
@@ -703,7 +982,11 @@ document.addEventListener('click', async ev => {
   const fila = t.closest('[data-editar]');
   if (fila) { mostrarEditor(fila.dataset.editar); return; }
 
-  if (t.closest('#btn-volver')) { mostrarLista(); return; }
+  if (t.closest('#btn-volver')) {
+    if (estado.eligiendo && estado.editandoCombo) { mostrarEditorCombo(estado.editandoCombo.id); return; }
+    mostrarLista();
+    return;
+  }
 
   const btnEstado = t.closest('[data-estado]');
   if (btnEstado && estado.editando) {
@@ -822,6 +1105,11 @@ document.addEventListener('click', async ev => {
 document.addEventListener('change', ev => {
   if (ev.target.id === 'f-categoria' && estado.editando) estado.editando.categoria = ev.target.value;
   if (ev.target.id === 'a-categoria' && estado.alta) estado.alta.categoria = ev.target.value;
+  const medidaItem = ev.target.closest && ev.target.closest('[data-medida-item]');
+  if (medidaItem && estado.editandoCombo) {
+    estado.editandoCombo.items[Number(medidaItem.dataset.medidaItem)].presentacionId = ev.target.value;
+    mostrarEditorCombo(estado.editandoCombo.id);
+  }
 });
 
 document.addEventListener('change', async ev => {
@@ -873,9 +1161,24 @@ document.addEventListener('input', ev => {
     estado.q = ev.target.value;
     const cont = $('#panel-main');
     const foco = document.activeElement === ev.target;
-    cont.innerHTML = vistaLista();
+    cont.innerHTML = estado.eligiendo ? vistaElegirProducto()
+                   : (estado.seccion === 'combos' ? vistaCombos() : vistaLista());
     if (foco) { const n = $('#q'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
     return;
+  }
+  const k = estado.editandoCombo;
+  if (k) {
+    if (id === 'k-nombre') { k.nombre = ev.target.value; $('#panel-titulo').textContent = ev.target.value || 'Combo nuevo'; return; }
+    if (id === 'k-desc') { k.descripcion = ev.target.value; return; }
+    if (id === 'k-descuento') {
+      k.descuento = Math.min(90, Math.max(0, Number(ev.target.value) || 0));
+      const c = cuentaCombo(k), cont = $('#cuenta-combo');
+      if (cont) cont.innerHTML =
+        '<div class="cuenta__fila"><span>Por separado</span><span>' + money(c.lista) + '</span></div>' +
+        (k.descuento ? '<div class="cuenta__fila"><span>Descuento ' + k.descuento + '%</span><span>− ' + money(c.lista - c.final) + '</span></div>' : '') +
+        '<div class="cuenta__fila cuenta__total"><span>Precio del combo</span><span>' + money(c.final) + '</span></div>';
+      return;
+    }
   }
   const p = estado.editando;
   if (!p) return;

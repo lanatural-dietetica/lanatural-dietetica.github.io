@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/estilos.css?v=20260904i">
-<link rel="stylesheet" href="css/panel.css?v=20260904i">
+<link rel="stylesheet" href="css/estilos.css?v=20260904k">
+<link rel="stylesheet" href="css/panel.css?v=20260904k">
 </head>
 <body class="panel-body">
 
@@ -40,6 +40,10 @@
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
     <span class="panel-top__titulo" id="panel-titulo">Productos</span>
+    <nav class="panel-tabs" id="panel-tabs">
+      <button data-seccion="productos" aria-pressed="true">Productos</button>
+      <button data-seccion="combos" aria-pressed="false">Combos</button>
+    </nav>
     <button class="panel-top__guardar oculto" id="btn-guardar-top">Guardar</button>
   </header>
 
@@ -48,6 +52,6 @@
   <div class="aviso-guardado" id="aviso" role="status" aria-live="polite"></div>
 </div>
 
-<script src="js/panel.js?v=20260904i"></script>
+<script src="js/panel.js?v=20260904k"></script>
 </body>
 </html>

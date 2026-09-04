@@ -256,3 +256,54 @@
 }
 .estado-btn small{display:block;font-size:11px;opacity:.75;margin-top:3px;font-weight:400}
 .estados--dos .estado-btn{padding:12px 8px;min-height:56px}
+
+/* pestañas del encabezado: reemplazan al título cuando estás en las listas */
+.panel-tabs{display:flex;gap:4px;flex:1;background:rgba(0,0,0,.14);border-radius:999px;padding:3px}
+.panel-tabs button{
+  flex:1;background:none;border:0;color:rgba(244,234,217,.75);
+  border-radius:999px;padding:7px 10px;font-size:13.5px;min-height:34px;
+  transition:background .18s ease,color .18s ease;
+}
+.panel-tabs button[aria-pressed="true"]{background:var(--champan-claro);color:var(--russet);font-weight:600}
+.panel-top__titulo.oculto,.panel-tabs.oculto{display:none}
+
+/* la barra de búsqueda queda a la vista mientras se scrollea */
+.barra-fija{
+  position:sticky;top:58px;z-index:20;
+  background:var(--champan);
+  margin:-16px -14px 12px;padding:12px 14px 8px;
+  box-shadow:0 6px 14px -10px rgba(63,36,22,.4);
+}
+.barra-fija .panel-buscador{margin-bottom:9px}
+.barra-fija .chips-rubro{padding-bottom:8px}
+.barra-fija .lista-cab{margin-bottom:2px}
+@media (min-width:640px){
+  .barra-fija{margin:-22px -16px 14px;padding:14px 16px 8px}
+}
+
+/* ---------- productos dentro de un combo ---------- */
+.items{display:flex;flex-direction:column;gap:8px}
+.item-combo{
+  display:flex;align-items:center;gap:10px;
+  background:var(--champan-claro);border:1px solid var(--linea);
+  border-radius:var(--r-md);padding:9px 10px;
+}
+.item-combo__fig{
+  width:46px;height:46px;flex:0 0 auto;border-radius:9px;
+  object-fit:contain;background:var(--foto-crema);
+}
+.item-combo__txt{flex:1;min-width:0}
+.item-combo__nom{font-family:var(--serif);font-size:15px;margin:0 0 6px;line-height:1.2}
+.item-combo__ctrl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.item-combo__ctrl select{
+  font:inherit;font-size:12.5px;color:var(--marron-txt);
+  padding:6px 8px;border:1px solid var(--linea);border-radius:6px;
+  background:var(--crema-card);-webkit-appearance:none;appearance:none;min-height:32px;
+}
+.item-combo__ctrl .stepper button{width:28px;height:32px;font-size:15px}
+.item-combo__ctrl .stepper span{min-width:22px;line-height:32px;font-size:13px}
+.item-combo__ctrl strong{font-size:13.5px;margin-left:auto}
+.item-combo__quitar{
+  flex:0 0 auto;width:30px;height:30px;border:0;border-radius:50%;
+  background:rgba(168,52,42,.1);color:var(--rojo);font-size:17px;line-height:1;
+}
