@@ -34,7 +34,18 @@ function aviso(msg, tipo) {
 
 /* ---------------- GitHub ---------------- */
 const b64aTexto = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64), c => c.charCodeAt(0)));
-const textoAb64 = txt => btoa(String.fromCharCode(...new TextEncoder().encode(txt)));
+/* El catálogo ya pesa más de 100 KB. Pasarlo a base64 de una sola vez con
+   String.fromCharCode(...bytes) revienta la pila del navegador, así que se
+   convierte de a bloques. */
+function textoAb64(txt) {
+  const bytes = new TextEncoder().encode(txt);
+  const paso = 0x8000;
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += paso) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + paso));
+  }
+  return btoa(bin);
+}
 
 async function api(ruta, opciones = {}) {
   const r = await fetch('https://api.github.com/repos/' + REPO.duenio + '/' + REPO.nombre + ruta, {
