@@ -600,6 +600,7 @@ function filtrarCatalogo() {
       .toLowerCase().includes(q));
 
   if (f.orden === 'destacados') arr = arr.filter(p => p.destacado);
+  else if (f.orden === 'ofertas') arr = arr.filter(p => Number(p.descuento) > 0);
   else if (f.orden === 'sintacc') arr = arr.filter(p => (p.tags || []).includes('sintacc'));
   else if (f.orden === 'vegano') arr = arr.filter(p => (p.tags || []).includes('vegano'));
 
@@ -617,7 +618,9 @@ function pintarGrillaCatalogo() {
   if (!arr.length) {
     cont.innerHTML = f.q
       ? vacio('Sin resultados', 'No encontramos “' + f.q + '”. Probá con otra palabra o mirá todo el catálogo.')
-      : vacio('Todavía no hay productos acá', 'Elegí otra categoría o quitá los filtros.');
+      : f.orden === 'ofertas'
+        ? vacio('Ahora no hay ofertas', 'Volvé a mirar en unos días o mirá todo el catálogo.')
+        : vacio('Todavía no hay productos acá', 'Elegí otra categoría o quitá los filtros.');
   } else {
     cont.innerHTML = grilla(arr);
   }
@@ -646,6 +649,7 @@ function vistaCatalogo() {
         '<option value="precio-asc"' + (f.orden === 'precio-asc' ? ' selected' : '') + '>Precio: menor a mayor</option>' +
         '<option value="precio-desc"' + (f.orden === 'precio-desc' ? ' selected' : '') + '>Precio: mayor a menor</option>' +
         '<option value="destacados"' + (f.orden === 'destacados' ? ' selected' : '') + '>Solo destacados</option>' +
+        '<option value="ofertas"' + (f.orden === 'ofertas' ? ' selected' : '') + '>Solo ofertas</option>' +
         '<option value="sintacc"' + (f.orden === 'sintacc' ? ' selected' : '') + '>Solo Sin TACC</option>' +
         '<option value="vegano"' + (f.orden === 'vegano' ? ' selected' : '') + '>Solo veganos</option>' +
       '</select>' +

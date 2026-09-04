@@ -338,3 +338,18 @@ Quedan dos casos sin resolver, no los toqué:
   Si los regenerás, revisá que el blanco siga siendo blanco.
 - `salsa-de-tomate-crema.webp` y `harina-integral-de-trigo.webp` los subió la clienta
   desde el panel con el algoritmo viejo: hay que volver a subirlos.
+
+## Ajustes visuales — 2026-09-04, segunda tanda (cambios hechos por Claude)
+- **Logo del header engrosado.** Los trazos finos del lockup desaparecían a 36 px.
+  Se engordó la máscara con un `MaxFilter(5)` a 1200 px de alto y después se bajó a
+  200: queda legible sin cerrar los ojales del óvalo. El "grueso" (radio 9) ya
+  emborrona la N, no subir de ahí.
+- **Corazón de favoritos** sin plato de fondo (`background:transparent`) para no tapar
+  la foto; el área táctil sigue en 40 px. Activo se pinta de `--russet` con
+  `fill:currentColor`, y lleva `drop-shadow` para que se lea sobre cualquier foto.
+- **Fondo de página más oscuro**: variable nueva `--fondo:#e4d3b8`, sólo para `body`.
+  Las tarjetas siguen en `--crema-card` y las fotos en `--foto-crema`, así el producto
+  salta en vez de fundirse. El hero sigue en `#f4ead9` a propósito, para que la foto
+  del hero no corte contra el fondo.
+- **Filtro "Solo ofertas"** en el desplegable del catálogo, al lado de "Solo destacados"
+  (filtra `descuento > 0`). Juani lo pidió ahí y no como sección aparte ni vista propia.

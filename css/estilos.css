@@ -8,6 +8,7 @@
   --russet-osc:#60361c;
   --marron-txt:#3f2416;
   --champan:#f4ead9;
+  --fondo:#e4d3b8;      /* detrás de las tarjetas: más oscuro, para que el producto salte */
   --champan-claro:#faf4e9;
   --crema-card:#fbf6ec;
   --foto-crema:#fae6d0;
@@ -37,7 +38,7 @@ body{
   font-size:16px;
   line-height:1.55;
   color:var(--marron-txt);
-  background:var(--champan);
+  background:var(--fondo);
   overflow-wrap:break-word;
 }
 img{max-width:100%;display:block}
@@ -222,10 +223,14 @@ main{min-height:60vh;padding-bottom:40px}
 .prod__badge--tag{background:var(--oliva)}
 .prod__fav{
   position:absolute;top:6px;right:6px;z-index:2;
-  width:36px;height:36px;border-radius:50%;border:0;background:rgba(251,246,236,.85);
+  width:36px;height:36px;border-radius:50%;border:0;background:transparent;
   display:flex;align-items:center;justify-content:center;color:var(--marron-txt);
 }
-.prod__fav[aria-pressed="true"]{color:var(--rojo)}
+/* Sin plato de fondo, para no tapar la foto: el área táctil sigue entera y la
+   sombra lo mantiene visible sobre cualquier imagen. */
+.prod__fav svg{filter:drop-shadow(0 1px 2px rgba(63,36,22,.4))}
+.prod__fav[aria-pressed="true"]{color:var(--russet)}
+.prod__fav[aria-pressed="true"] svg{fill:currentColor}
 .prod__nom{font-family:var(--serif);font-size:16px;margin:10px 0 2px;line-height:1.25}
 .prod__sub{font-size:12px;color:var(--gris-txt);margin:0 0 8px}
 .prod__sel{
@@ -610,7 +615,7 @@ body::before{
 }
 .prod__fig{margin:-10px -10px 0;aspect-ratio:1.08/1;border-radius:17px 17px 8px 8px;background:var(--champan)}
 .prod__fig img{mix-blend-mode:normal;transform:scale(1.04)}
-.prod__fav{top:8px;right:8px;background:rgba(255,249,239,.82);backdrop-filter:blur(4px)}
+.prod__fav{top:8px;right:8px;background:transparent}
 .prod__badge{border-radius:6px;background:#82461f}
 .prod__badge--tag{background:#78845a}
 .prod__nom{font-size:clamp(16px,4.3vw,20px);margin-top:12px}
@@ -728,7 +733,7 @@ body::before{
 @media (max-width:639px){
   :root{--header-h:60px}
 
-  body{font-size:15px;background:#f4ead9}
+  body{font-size:15px;background:var(--fondo)}
   main{padding-bottom:62px}
   .contenedor{padding-inline:28px}
   .seccion{padding-block:27px 36px}
@@ -815,7 +820,7 @@ body::before{
   }
   .prod__fig{margin:-8px -8px 0;aspect-ratio:1.38/1;border-radius:12px 12px 5px 5px;background:var(--champan)}
   .prod__fig img{width:100%;height:100%;object-fit:cover;object-position:center;transform:none;mix-blend-mode:normal}
-  .prod__fav{top:5px;right:5px;width:32px;height:32px;background:rgba(255,249,239,.88);backdrop-filter:none}
+  .prod__fav{top:5px;right:5px;width:32px;height:32px;background:transparent}
   .prod__fav svg{width:18px;height:18px}
   .prod__badge{top:7px;left:7px;padding:4px 7px;border-radius:4px;font-size:8px}
   .prod__nom{margin:8px 0 2px;font-size:15px;line-height:1.1}
