@@ -234,7 +234,7 @@ const ICO = {
   tienda: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h16v11H4z"/><path d="M3 9l1.5-5h15L21 9"/><path d="M9 20v-6h6v6"/></svg>',
   basura: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>',
   bolsa: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14l-1 13H6z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>',
-  ornamento: '<img class="adorno adorno--claro" src="assets/detalle-crema.png?v=1" alt="" width="440" height="130" loading="lazy" decoding="async">',
+  ornamento: '<span class="filete filete--claro" aria-hidden="true"><img src="assets/detalle-crema.png?v=2" alt="" width="440" height="130" loading="lazy" decoding="async"></span>',
   pasoProducto: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="50" cy="50" r="42"/><path d="M28 51h44c-2 17-10 25-22 25s-20-8-22-25z"/><path d="M37 48c-5-11 0-19 8-26 5 11 2 20-4 26M49 46c4-13 13-18 25-18-2 12-10 19-22 21M59 48c7-7 15-7 22-4-5 8-12 11-21 9"/><ellipse cx="75" cy="70" rx="4" ry="2.5"/><ellipse cx="82" cy="64" rx="3" ry="2"/></svg>',
   pasoCantidad: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="50" cy="50" r="42"/><path d="M31 31h38c0 9-6 15-14 17v5h11l5 24H29l5-24h11v-5c-8-2-14-8-14-17z"/><circle cx="50" cy="65" r="8"/><path d="M50 65l5-5M42 31h16"/></svg>',
   pasoEntrega: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="50" cy="50" r="42"/><path d="M14 61h24V43H14v18zm24-13h10l8 8v5H38V48z"/><circle cx="24" cy="65" r="4"/><circle cx="47" cy="65" r="4"/><path d="M61 41h25v28H61zM58 41h31l-4-12H62l-4 12zM70 69V55h8v14M58 41c1 5 7 5 8 0 1 5 7 5 8 0 1 5 7 5 8 0 1 5 7 5 8 0"/><path d="M55 27v48" stroke-dasharray="3 4"/></svg>'
@@ -513,7 +513,6 @@ function vistaHome() {
 
   '<section class="seccion favoritos"><div class="contenedor">' +
     '<div class="titulo-filete"><h2>Nuestros favoritos</h2></div>' +
-    '<img class="adorno adorno--titulo" src="assets/detalle-oliva.png?v=1" alt="" width="440" height="130" loading="lazy" decoding="async">' +
     grilla(destacados) +
     '<p style="text-align:center;margin-top:22px"><a class="btn btn--fantasma" href="#/catalogo">Ver todo el catálogo</a></p>' +
   '</div></section>' +
@@ -1701,7 +1700,7 @@ function pintarCascara() {
     '<p>' + esc(CONFIG.zonas) + '</p>';
 
   $('#pie-datos').innerHTML =
-    '<img class="adorno adorno--pie" src="assets/detalle-crema.png?v=1" alt="" width="440" height="130" loading="lazy" decoding="async">' +
+    '<span class="filete filete--claro filete--pie" aria-hidden="true"><img src="assets/detalle-crema.png?v=2" alt="" width="440" height="130" loading="lazy" decoding="async"></span>' +
     '<div class="pie__bloque"><h3>' + esc(CONFIG.marca) + '</h3>' +
       '<p>' + esc(CONFIG.direccion) + '</p><p>' + esc(CONFIG.horarios) + '</p></div>' +
     '<div class="pie__bloque"><h3>Entrega</h3><p>' + esc(CONFIG.zonas) + '</p><p>' + esc(CONFIG.mediosPago) + '</p></div>' +

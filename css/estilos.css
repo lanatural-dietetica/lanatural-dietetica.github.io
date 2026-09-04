@@ -645,9 +645,11 @@ body::before{
 .mix-grid{gap:14px}
 .portada-vista{margin-bottom:30px}
 .portada-vista::after{
-  content:"";display:block;width:min(100%,300px);height:60px;margin-top:20px;
-  background:url("../assets/detalle-oliva.png?v=1") no-repeat left center;
-  background-size:contain;opacity:.9;
+  content:"";display:block;width:min(100%,320px);height:16px;margin-top:22px;
+  background:
+    url("../assets/detalle-oliva.png?v=2") center/46px auto no-repeat,
+    linear-gradient(90deg,var(--oliva) 0 38%,transparent 38% 62%,var(--oliva) 62% 100%) center/100% 1px no-repeat;
+  opacity:.72;
 }
 .portada-vista h1{max-width:11ch;font-size:clamp(48px,12vw,78px);font-weight:500;line-height:.96;letter-spacing:-.03em}
 .portada-vista p{max-width:28ch;margin:16px 0 0;color:#564033;font-size:clamp(17px,4vw,22px);line-height:1.4}
@@ -858,9 +860,11 @@ body::before{
   .portada-vista h1{max-width:8ch;font-size:46px;line-height:.96}
   .portada-vista p{margin-top:12px;font-size:17px;line-height:1.35}
   .portada-vista::after{
-    width:min(100%,260px);height:56px;margin-top:16px;background-color:transparent;
-    background-image:url("../assets/detalle-oliva.png?v=1");
-    background-repeat:no-repeat;background-position:left center;background-size:contain;
+    width:min(100%,280px);height:14px;margin-top:16px;background-color:transparent;
+    background:
+      url("../assets/detalle-oliva.png?v=2") center/42px auto no-repeat,
+      linear-gradient(90deg,var(--oliva) 0 37%,transparent 37% 63%,var(--oliva) 63% 100%) center/100% 1px no-repeat;
+    opacity:.7;
   }
 
   .creador-mix{padding:26px 0 36px}
@@ -1757,29 +1761,22 @@ body.compacto .icon-btn__img--carrito{width:23px;height:23px}
 
 
 /* ============================================================
-   El detalle de La Natural, usado como separador
+   El detalle de La Natural, diminuto, entre dos líneas
    ============================================================ */
-.adorno{
-  display:block;height:auto;margin:16px auto 0;
-  width:min(230px,62%);opacity:.92;
+.filete{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:min(300px,84%);margin:16px auto 10px;
 }
-.adorno--titulo{margin:-6px auto 22px;width:min(200px,52%)}
-.adorno--claro{margin:14px auto 6px;width:min(240px,66%)}
-.adorno--pie{margin:0 auto 24px;width:min(200px,54%);opacity:.55}
+.filete::before,.filete::after{
+  content:"";flex:1;height:1px;background:currentColor;opacity:.42;
+}
+.filete img{width:44px;height:auto;opacity:.85;flex:0 0 auto}
+.filete--claro{color:var(--champan)}
+.filete--pie{margin:0 auto 20px;width:min(240px,70%);opacity:.75}
 
 @media (min-width:640px){
-  .adorno{width:260px}
-  .adorno--titulo{width:230px;margin-bottom:26px}
-  .adorno--claro{width:280px}
-  .adorno--pie{width:240px}
-}
-
-/* en el mix y en los combos el separador va centrado en escritorio */
-@media (min-width:960px){
-  .portada-vista::after{
-    width:300px;height:66px;margin-top:24px;
-    background-position:left center;
-  }
+  .filete{width:min(340px,60%);margin:18px auto 12px}
+  .filete img{width:50px}
 }
 
 /* los títulos de los pasos no se parten a la mitad */
