@@ -248,3 +248,11 @@
   .campo--texto textarea,
   .campo--texto select{font-size:16px}
 }
+
+/* alta guiada */
+.alta__intro{
+  font-size:14px;color:var(--gris-txt);line-height:1.5;
+  margin:0 0 20px;padding-bottom:16px;border-bottom:1px solid var(--linea);
+}
+.estado-btn small{display:block;font-size:11px;opacity:.75;margin-top:3px;font-weight:400}
+.estados--dos .estado-btn{padding:12px 8px;min-height:56px}

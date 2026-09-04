@@ -20,7 +20,7 @@ const esc = (s = '') => String(s)
 const fmt = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
 const money = n => '$ ' + fmt.format(Math.round(n || 0));
 
-const estado = { token: '', catalogo: null, sha: '', q: '', rubro: 'todos', editando: null };
+const estado = { token: '', catalogo: null, sha: '', q: '', rubro: 'todos', editando: null, alta: null };
 
 /* ---------------- avisos ---------------- */
 let avisoTimer;
@@ -116,18 +116,19 @@ async function abrirImagen(file) {
 }
 
 /* deja el fondo en el color exacto de las tarjetas, sin tocar el bowl ni dejar halo */
-function emparejarFondo(ctx, lado) {
-  const d = ctx.getImageData(0, 0, lado, lado);
+function emparejarFondo(ctx, ancho, alto) {
+  const d = ctx.getImageData(0, 0, ancho, alto);
   const px = d.data;
-  const borde = 10, salto = 3, muestras = [[], [], []];
+  const borde = Math.max(4, Math.round(Math.min(ancho, alto) * 0.012));
+  const salto = 3, muestras = [[], [], []];
   const tomar = (x, y) => {
-    const i = (y * lado + x) * 4;
+    const i = (y * ancho + x) * 4;
     muestras[0].push(px[i]); muestras[1].push(px[i + 1]); muestras[2].push(px[i + 2]);
   };
   for (let y = 0; y < borde; y += salto)
-    for (let x = 0; x < lado; x += salto) { tomar(x, y); tomar(x, lado - 1 - y); }
+    for (let x = 0; x < ancho; x += salto) { tomar(x, y); tomar(x, alto - 1 - y); }
   for (let x = 0; x < borde; x += salto)
-    for (let y = borde; y < lado - borde; y += salto) { tomar(x, y); tomar(lado - 1 - x, y); }
+    for (let y = borde; y < alto - borde; y += salto) { tomar(x, y); tomar(ancho - 1 - x, y); }
   const mediana = a => { a.sort((x, y) => x - y); return a[Math.floor(a.length / 2)]; };
   const fondo = [mediana(muestras[0]), mediana(muestras[1]), mediana(muestras[2])];
   const delta = [FOTO.fondo[0] - fondo[0], FOTO.fondo[1] - fondo[1], FOTO.fondo[2] - fondo[2]];
@@ -153,30 +154,33 @@ function emparejarFondo(ctx, lado) {
 async function prepararFoto(file) {
   const img = await abrirImagen(file);
   const lado = FOTO.lado;
+  const escala = Math.min(lado / img.width, lado / img.height);
+  const w = Math.max(1, Math.round(img.width * escala));
+  const h = Math.max(1, Math.round(img.height * escala));
+
+  // primero la foto sola, para poder medir SU fondo y no el relleno
+  const soloFoto = document.createElement('canvas');
+  soloFoto.width = w; soloFoto.height = h;
+  const cf = soloFoto.getContext('2d', { willReadFrequently: true });
+  cf.drawImage(img, 0, 0, w, h);
+  emparejarFondo(cf, w, h);
+
+  // y después, centrada en el cuadrado con el fondo de las tarjetas
   const lienzo = document.createElement('canvas');
   lienzo.width = lienzo.height = lado;
   const ctx = lienzo.getContext('2d', { willReadFrequently: true });
-
-  // fondo de base, para que una foto que no sea cuadrada no quede con bordes vacíos
   ctx.fillStyle = 'rgb(' + FOTO.fondo.join(',') + ')';
   ctx.fillRect(0, 0, lado, lado);
-
-  // la foto entera, sin recortar, centrada
-  const escala = Math.min(lado / img.width, lado / img.height);
-  const w = img.width * escala, h = img.height * escala;
-  ctx.drawImage(img, (lado - w) / 2, (lado - h) / 2, w, h);
-
-  emparejarFondo(ctx, lado);
+  ctx.drawImage(soloFoto, Math.round((lado - w) / 2), Math.round((lado - h) / 2));
 
   const f = formatoDeSalida();
   const blob = await new Promise(ok => lienzo.toBlob(ok, f.tipo, f.calidad));
   return { blob, ext: f.ext, vistaPrevia: URL.createObjectURL(blob), antes: file.size, despues: blob.size };
 }
 
-async function subirFoto(slug, blob, ext) {
-  const ruta = 'assets/productos/' + slug + '.' + (ext || 'webp');
-  let sha = null;
-  try { sha = (await api('/contents/' + ruta + '?ref=main')).sha; } catch (e) {}   // si no existe, se crea
+async function subirFoto(slug, blob, ext, rutaAnterior) {
+  const marca = Date.now().toString(36).slice(-5);
+  const ruta = 'assets/productos/' + slug + '-' + marca + '.' + (ext || 'webp');
   const base64 = await new Promise(ok => {
     const fr = new FileReader();
     fr.onload = () => ok(fr.result.split(',')[1]);
@@ -184,12 +188,24 @@ async function subirFoto(slug, blob, ext) {
   });
   await api('/contents/' + ruta, {
     method: 'PUT',
-    body: JSON.stringify({
-      message: 'Panel: foto de ' + slug,
-      content: base64, branch: 'main', ...(sha ? { sha } : {})
-    })
+    body: JSON.stringify({ message: 'Panel: foto de ' + slug, content: base64, branch: 'main' })
   });
-  return ruta + '?v=' + Date.now().toString(36);
+  borrarFoto(rutaAnterior);   // la anterior ya no le sirve a nadie
+  return ruta;
+}
+
+/* borra la foto que reemplazamos, si estaba en el repositorio */
+async function borrarFoto(ruta) {
+  if (!ruta) return;
+  const limpia = String(ruta).split('?')[0];
+  if (!limpia.startsWith('assets/productos/')) return;
+  try {
+    const d = await api('/contents/' + limpia + '?ref=main');
+    await api('/contents/' + limpia, {
+      method: 'DELETE',
+      body: JSON.stringify({ message: 'Panel: saca la foto anterior', sha: d.sha, branch: 'main' })
+    });
+  } catch (e) {}
 }
 
 /* La tienda se publica sola, pero tarda un rato. En vez de dejarla adivinando,
@@ -319,28 +335,120 @@ function usadoEnCombos(id) {
     .map(c => c.nombre);
 }
 
+/* ---------------- alta guiada ----------------
+   Pide sólo lo indispensable. La foto, las medidas y los textos vienen después,
+   con el producto ya creado, así se entiende qué falta en cada momento.
+------------------------------------------------------------------ */
+function vistaAlta() {
+  const a = estado.alta;
+  const cats = estado.catalogo.categorias || [];
+  return '' +
+  '<div class="editor">' +
+    '<p class="alta__intro">Cargá lo mínimo para crearlo. Después le ponés la foto, las medidas y la descripción.</p>' +
+
+    '<div class="bloque">' +
+      '<p class="bloque__lbl">1 · Qué es</p>' +
+      '<div class="campos campos--uno">' +
+        '<div class="campo campo--ancho campo--texto">' +
+          '<label for="a-nombre">Nombre del producto</label>' +
+          '<input id="a-nombre" type="text" value="' + esc(a.nombre) + '" placeholder="Ej: Almendras tostadas">' +
+        '</div>' +
+        '<div class="campo campo--ancho campo--texto">' +
+          '<label for="a-categoria">Categoría</label>' +
+          '<select id="a-categoria">' +
+            cats.map(x => '<option value="' + x.id + '"' + (x.id === a.categoria ? ' selected' : '') + '>' + esc(x.nombre) + '</option>').join('') +
+          '</select>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="bloque">' +
+      '<p class="bloque__lbl">2 · Cómo se vende</p>' +
+      '<div class="estados estados--dos">' +
+        '<button class="estado-btn" data-altatipo="granel" aria-pressed="' + (a.tipo === 'granel') + '">' +
+          'Por peso<small>Lo fraccionás vos</small></button>' +
+        '<button class="estado-btn" data-altatipo="envasado" aria-pressed="' + (a.tipo === 'envasado') + '">' +
+          'Por unidad<small>Viene envasado</small></button>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="bloque">' +
+      '<p class="bloque__lbl">3 · Cuánto cuesta</p>' +
+      '<div class="campos">' +
+        '<div class="campo">' +
+          '<label for="a-costo">' + (a.tipo === 'granel' ? 'Costo por kilo' : 'Costo por unidad') + '</label>' +
+          '<input id="a-costo" type="number" inputmode="numeric" min="0" step="1" value="' + (a.costo || '') + '">' +
+        '</div>' +
+        '<div class="campo">' +
+          '<label for="a-margen">Ganancia %</label>' +
+          '<input id="a-margen" type="number" inputmode="numeric" min="0" max="900" step="1" value="' + a.margen + '">' +
+        '</div>' +
+      '</div>' +
+      '<div class="cuenta" id="alta-cuenta"></div>' +
+    '</div>' +
+
+    '<button class="btn btn--oliva btn--bloque" id="crear-producto">Crear producto</button>' +
+    '<p class="campo__ayuda" style="text-align:center;margin-top:10px">Se guarda como <b>oculto</b> hasta que lo termines.</p>' +
+  '</div>';
+}
+
+function pintarCuentaAlta() {
+  const a = estado.alta;
+  const cont = $('#alta-cuenta');
+  if (!cont) return;
+  const venta = redondear((a.costo || 0) * (1 + (a.margen || 0) / 100));
+  cont.innerHTML =
+    '<div class="cuenta__fila"><span>Costo</span><span>' + money(a.costo || 0) + '</span></div>' +
+    '<div class="cuenta__fila"><span>Ganancia ' + (a.margen || 0) + '%</span><span>+ ' + money(venta - (a.costo || 0)) + '</span></div>' +
+    '<div class="cuenta__fila cuenta__total"><span>' + (a.tipo === 'granel' ? 'Precio por kilo' : 'Precio final') + '</span>' +
+      '<span>' + money(venta) + '</span></div>';
+}
+
+function mostrarAlta() {
+  estado.editando = null;
+  estado.alta = {
+    nombre: '', categoria: (estado.catalogo.categorias[0] || {}).id || '',
+    tipo: 'granel', costo: 0, margen: estado.catalogo.config.margenPorDefecto || 60
+  };
+  $('#panel-titulo').textContent = 'Producto nuevo';
+  $('#btn-volver').classList.remove('oculto');
+  $('#btn-guardar-top').classList.add('oculto');
+  $('#panel-main').innerHTML = vistaAlta();
+  pintarCuentaAlta();
+  setTimeout(() => { const n = $('#a-nombre'); if (n) n.focus(); }, 80);
+}
+
 /* ---------------- vistas ---------------- */
-function filaProducto(p) {
+function filaProducto(p, conRubro) {
   const c = cuentaDe(p);
   const e = estadoDe(p);
+  const cat = (estado.catalogo.categorias || []).find(x => x.id === p.categoria);
   return '<button class="fila" data-editar="' + p.id + '">' +
     '<img class="fila__fig" src="' + imgDe(p) + '" alt="" loading="lazy">' +
     '<span class="fila__txt">' +
       '<p class="fila__nom">' + esc(p.nombre || 'Sin nombre') + '</p>' +
-      '<p class="fila__precio">' + money(c.final) + (p.tipo === 'granel' ? ' / kg' : ' / unidad') + '</p>' +
+      '<p class="fila__precio">' + money(c.final) + (p.tipo === 'granel' ? ' / kg' : ' / unidad') +
+        (conRubro && cat ? ' · ' + esc(cat.nombre) : '') + '</p>' +
     '</span>' +
     '<span class="fila__estado estado--' + e + '">' + ETIQUETA_ESTADO[e] + '</span>' +
   '</button>';
 }
 
+const sinTildes = t => (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
 function vistaLista() {
-  const q = estado.q.trim().toLowerCase();
+  const q = sinTildes(estado.q.trim());
   const cats = estado.catalogo.categorias || [];
   const porNombre = (a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es', { sensitivity: 'base' });
 
   let arr = (estado.catalogo.productos || []).slice();
   if (estado.rubro !== 'todos') arr = arr.filter(p => p.categoria === estado.rubro);
-  if (q) arr = arr.filter(p => (p.nombre || '').toLowerCase().includes(q));
+  if (q) {
+    const nombreCat = id => (cats.find(c => c.id === id) || {}).nombre || '';
+    arr = arr.filter(p => sinTildes(
+      (p.nombre || '') + ' ' + (p.marca || '') + ' ' + (p.subtitulo || '') + ' ' + nombreCat(p.categoria)
+    ).includes(q));
+  }
   arr.sort(porNombre);
 
   const sinStock = (estado.catalogo.productos || []).filter(p => estadoDe(p) === 'sinstock').length;
@@ -360,7 +468,7 @@ function vistaLista() {
     const huerfanos = arr.filter(p => !cats.some(c => c.id === p.categoria));
     if (huerfanos.length) cuerpo += '<p class="grupo-lbl">Sin categoría <span>' + huerfanos.length + '</span></p>' + huerfanos.map(filaProducto).join('');
   } else {
-    cuerpo = arr.map(filaProducto).join('');
+    cuerpo = arr.map(p => filaProducto(p, true)).join('');
   }
 
   return '' +
@@ -530,6 +638,7 @@ function pintarCuenta() {
 
 /* ---------------- navegación ---------------- */
 function mostrarLista() {
+  estado.alta = null;
   const p = estado.editando;
   if (p && !p.slug) estado.catalogo.productos = estado.catalogo.productos.filter(x => x.id !== p.id);
   estado.editando = null;
@@ -605,10 +714,40 @@ document.addEventListener('click', async ev => {
 
   if (t.closest('#btn-foto')) { $('#archivo-foto').click(); return; }
 
-  if (t.closest('#btn-nuevo')) {
+  if (t.closest('#btn-nuevo')) { mostrarAlta(); return; }
+
+  const altaTipo = t.closest('[data-altatipo]');
+  if (altaTipo && estado.alta) {
+    estado.alta.tipo = altaTipo.dataset.altatipo;
+    $('#panel-main').innerHTML = vistaAlta();
+    pintarCuentaAlta();
+    return;
+  }
+
+  if (t.closest('#crear-producto')) {
+    const a = estado.alta;
+    if (!a.nombre || a.nombre.trim().length < 2) { aviso('Ponele un nombre.', 'error'); const n = $('#a-nombre'); if (n) n.focus(); return; }
+    if (!a.costo) { aviso('Falta el costo.', 'error'); const c = $('#a-costo'); if (c) c.focus(); return; }
     const p = productoNuevo();
-    mostrarEditor(p.id);
-    setTimeout(() => { const n = $('#f-nombre'); if (n) n.focus(); }, 80);
+    p.nombre = nombreLindo(a.nombre);
+    p.slug = slugLibre(aSlug(p.nombre), p.id);
+    p.categoria = a.categoria;
+    p.tipo = a.tipo;
+    p.margen = a.margen;
+    if (a.tipo === 'granel') { p.costoKg = a.costo; delete p.costoUnidad; }
+    else { p.costoUnidad = a.costo; delete p.costoKg; }
+    p.estado = 'borrador'; p.disponible = false;    // nace oculto hasta que lo terminen
+    acomodarMedidas(p);
+    const boton = $('#crear-producto');
+    boton.disabled = true;
+    aviso('Creando…', 'trabajando');
+    guardarCatalogo('Panel: crea ' + p.nombre)
+      .then(() => { aviso('Creado. Ahora agregale la foto y el resto.', 'ok'); estado.alta = null; mostrarEditor(p.id); })
+      .catch(e => {
+        estado.catalogo.productos = estado.catalogo.productos.filter(x => x.id !== p.id);
+        aviso('No se pudo crear: ' + e.message, 'error');
+        boton.disabled = false;
+      });
     return;
   }
 
@@ -682,6 +821,7 @@ document.addEventListener('click', async ev => {
 
 document.addEventListener('change', ev => {
   if (ev.target.id === 'f-categoria' && estado.editando) estado.editando.categoria = ev.target.value;
+  if (ev.target.id === 'a-categoria' && estado.alta) estado.alta.categoria = ev.target.value;
 });
 
 document.addEventListener('change', async ev => {
@@ -706,7 +846,7 @@ document.addEventListener('change', async ev => {
     const r = await prepararFoto(file);
     $('#foto-actual').src = r.vistaPrevia;
     $('#foto-dato').textContent = 'De ' + pesoLindo(r.antes) + ' a ' + pesoLindo(r.despues) + '. Subiendo…';
-    const ruta = await subirFoto(p.slug, r.blob, r.ext);
+    const ruta = await subirFoto(p.slug, r.blob, r.ext, p.img);
     p.img = ruta;
     $('#foto-dato').textContent = 'Lista: de ' + pesoLindo(r.antes) + ' a ' + pesoLindo(r.despues) + '. Tocá Guardar para que se vea en la tienda.';
     aviso(r.despues > 300 * 1024
@@ -723,6 +863,12 @@ document.addEventListener('change', async ev => {
 
 document.addEventListener('input', ev => {
   const id = ev.target.id;
+  if (estado.alta && id.startsWith('a-')) {
+    if (id === 'a-nombre') estado.alta.nombre = ev.target.value;
+    if (id === 'a-costo')  { estado.alta.costo  = Math.max(0, Number(ev.target.value) || 0); pintarCuentaAlta(); }
+    if (id === 'a-margen') { estado.alta.margen = Math.min(900, Math.max(0, Number(ev.target.value) || 0)); pintarCuentaAlta(); }
+    return;
+  }
   if (id === 'q') {
     estado.q = ev.target.value;
     const cont = $('#panel-main');
