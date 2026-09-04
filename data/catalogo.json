@@ -872,7 +872,8 @@
       "ingredientes": "",
       "alergenos": "",
       "color": "#c8a97e",
-      "color2": "#e3cba6"
+      "color2": "#e3cba6",
+      "img": "assets/productos/harina-de-algarroba.jpg?v=mtmcrxvz"
     }
   ],
   "combos": [
@@ -1017,5 +1018,5 @@
       "texto": "Elegí envío o retiro en el local."
     }
   ],
-  "sello": 1788489704624
+  "sello": 1788490014627
 }
