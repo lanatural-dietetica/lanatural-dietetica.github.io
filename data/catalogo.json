@@ -665,7 +665,7 @@
       "slug": "salsa-de-tomate",
       "nombre": "Salsa de Tomate",
       "categoria": "despensa",
-      "subtitulo": "Frasco 420 g · sin conservantes",
+      "subtitulo": "Frasco 1 L · sin conservantes",
       "marca": "Casera",
       "tipo": "envasado",
       "costoUnidad": 1650,
@@ -689,7 +689,7 @@
       "origen": "Mendoza, Argentina",
       "ingredientes": "Tomate, sal, aceite de girasol, albahaca.",
       "alergenos": "No contiene alérgenos declarados.",
-      "img": "assets/productos/salsa-de-tomate.jpg?v=20260902g",
+      "img": "assets/productos/salsa-de-tomate.jpg?v=mtmf3xmr",
       "color": "#b8352a",
       "color2": "#d1523f"
     },
@@ -5193,5 +5193,5 @@
       "texto": "Elegí envío o retiro en el local."
     }
   ],
-  "sello": 1788490014627
+  "sello": 1788493954172
 }
