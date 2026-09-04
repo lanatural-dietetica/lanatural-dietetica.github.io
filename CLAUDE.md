@@ -352,7 +352,7 @@ Quedan dos casos sin resolver, no los toqué:
   salta en vez de fundirse. El hero sigue en `#f4ead9` a propósito, para que la foto
   del hero no corte contra el fondo.
 - **Franja de arriba del catálogo** (`.cat-cabecera`): el título "Nuestra selección", el
-  buscador, los chips y el orden van sobre el mismo fondo arena `--arena:#ead9c2`, de
+  buscador, los chips y el orden van sobre el mismo fondo arena `--arena:#d2ae83`, de
   punta a punta de la pantalla y cerrado con una línea abajo. **No es una caja**: se probó
   encerrar sólo los filtros en un recuadro redondeado y Juani lo rechazó. Los elementos de
   adentro conservan el formato que ya tenían. La franja arranca pegada al header
