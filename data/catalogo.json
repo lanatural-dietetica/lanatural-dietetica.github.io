@@ -1875,39 +1875,6 @@
       "costoKg": 26550
     },
     {
-      "id": "p52",
-      "sku": "",
-      "slug": "chips-de-banana",
-      "nombre": "Chips de Banana",
-      "categoria": "frutos",
-      "subtitulo": "",
-      "marca": "",
-      "tipo": "granel",
-      "margen": 60,
-      "descuento": 0,
-      "presentaciones": [
-        "250g",
-        "500g",
-        "1kg"
-      ],
-      "presentacionDefecto": "1kg",
-      "tags": [],
-      "estado": "publicado",
-      "disponible": true,
-      "destacado": false,
-      "orden": 52,
-      "mix": true,
-      "descripcion": "Rodajas de banana de textura crocante y sabor dulce, prácticas para colaciones y mezclas. Aportan principalmente hidratos de carbono; grasas y azúcares pueden variar según el método de elaboración.",
-      "preparacion": "",
-      "origen": "",
-      "ingredientes": "",
-      "alergenos": "",
-      "img": "assets/productos/chips-de-banana.webp",
-      "color": "#c8a97e",
-      "color2": "#e3cba6",
-      "costoKg": 11150
-    },
-    {
       "id": "p53",
       "sku": "",
       "slug": "fruta-escurrida",
@@ -5166,5 +5133,5 @@
       "texto": "Elegí envío o retiro en el local."
     }
   ],
-  "sello": 1788497799234
+  "sello": 1788497830807
 }
