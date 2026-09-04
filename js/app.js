@@ -458,7 +458,9 @@ function cerrarBusqueda() {
 /* ---------------- vistas ---------------- */
 function vistaHome() {
   const destacados = publicados().filter(p => p.destacado).slice(0, 6);
-  const cats = categoriasVisibles().slice(0, 4);
+  const cats = categoriasVisibles();
+  const paginasCats = [];
+  for (let i = 0; i < cats.length; i += 4) paginasCats.push(cats.slice(i, i + 4));
 
   return '' +
   '<section class="hero">' +
@@ -482,14 +484,25 @@ function vistaHome() {
   '<section class="cats">' +
     '<div class="contenedor">' +
       '<div class="titulo-filete"><h2>Elegí por categoría</h2></div>' +
-      '<div class="cats-grid">' +
-        cats.map(c =>
-          '<a class="cat-card" href="#/catalogo?cat=' + c.id + '">' +
-            '<span class="cat-card__nom">' + esc(c.nombre) + '</span>' +
-            '<img class="cat-card__fig" src="' + imgDe(c) + '" alt="" width="418" height="418" loading="lazy" decoding="async">' +
-            '<span class="cat-card__ver">Ver productos ' + ICO.flecha + '</span>' +
-          '</a>'
-        ).join('') +
+      '<div class="cats-carrusel">' +
+        '<div class="cats-pista" data-cats-pista>' +
+          paginasCats.map((pagina, indice) =>
+            '<div class="cats-pagina cats-pagina--' + pagina.length + '" data-cats-pagina="' + indice + '" role="group" aria-label="Página ' + (indice + 1) + ' de categorías">' +
+              pagina.map(c =>
+                '<a class="cat-card" href="#/catalogo?cat=' + c.id + '">' +
+                  '<span class="cat-card__nom">' + esc(c.nombre) + '</span>' +
+                  '<img class="cat-card__fig" src="' + imgDe(c) + '" alt="" width="418" height="418" loading="lazy" decoding="async">' +
+                  '<span class="cat-card__ver">Ver productos ' + ICO.flecha + '</span>' +
+                '</a>'
+              ).join('') +
+            '</div>'
+          ).join('') +
+        '</div>' +
+        (paginasCats.length > 1
+          ? '<div class="cats-puntos" role="group" aria-label="Páginas de categorías">' + paginasCats.map((_, indice) =>
+              '<button type="button" data-cats-ir="' + indice + '" aria-label="Ver categorías ' + (indice * 4 + 1) + ' a ' + Math.min((indice + 1) * 4, cats.length) + '"' + (indice === 0 ? ' aria-current="true"' : '') + '></button>'
+            ).join('') + '</div>'
+          : '') +
       '</div>' +
     '</div>' +
   '</section>' +
@@ -519,6 +532,46 @@ function vistaHome() {
         '<span class="cat-card__ver">Ver productos ' + ICO.flecha + '</span></a>' +
     '</div>' +
   '</div></section>';
+}
+
+function prepararCategoriasHome() {
+  const pista = $('[data-cats-pista]');
+  if (!pista) return;
+  const paginas = $$('[data-cats-pagina]', pista);
+  const puntos = $$('.cats-puntos [data-cats-ir]', pista.parentElement);
+  let cuadroPendiente = false;
+
+  const marcarPagina = indice => {
+    puntos.forEach((punto, i) => {
+      if (i === indice) punto.setAttribute('aria-current', 'true');
+      else punto.removeAttribute('aria-current');
+    });
+  };
+  const paginaVisible = () => {
+    let indice = 0;
+    let distancia = Infinity;
+    paginas.forEach((pagina, i) => {
+      const actual = Math.abs(pagina.offsetLeft - pista.scrollLeft);
+      if (actual < distancia) { distancia = actual; indice = i; }
+    });
+    marcarPagina(indice);
+    cuadroPendiente = false;
+  };
+
+  pista.addEventListener('scroll', () => {
+    if (cuadroPendiente) return;
+    cuadroPendiente = true;
+    requestAnimationFrame(paginaVisible);
+  }, { passive: true });
+
+  puntos.forEach((punto, indice) => punto.addEventListener('click', () => {
+    const pagina = paginas[indice];
+    if (!pagina) return;
+    pista.scrollTo({
+      left: pagina.offsetLeft,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+    });
+  }));
 }
 
 function filtrarCatalogo() {
@@ -1157,6 +1210,7 @@ function render() {
   document.body.dataset.vista = vista;
   app.innerHTML = html;
   document.title = titulo;
+  if (vista === 'inicio') prepararCategoriasHome();
   if (vista === 'catalogo') pintarGrillaCatalogo();
   if (vista === 'mix' && estado.mix.tam) pintarMix();
 

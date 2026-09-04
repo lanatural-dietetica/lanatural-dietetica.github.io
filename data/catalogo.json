@@ -117,7 +117,7 @@
       "slug": "dulces-y-cacao",
       "orden": 5,
       "visible": true,
-      "img": "assets/productos/chocolate-amargo-70.webp?v=20260903a",
+      "img": "assets/cat-dulces.webp",
       "color": "#4a2c1c"
     },
     {
@@ -126,7 +126,7 @@
       "slug": "despensa",
       "orden": 6,
       "visible": true,
-      "img": "assets/productos/harina-integral.jpg?v=20260902g",
+      "img": "assets/cat-despensa.webp",
       "color": "#a9563a"
     }
   ],

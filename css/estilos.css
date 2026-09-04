@@ -159,6 +159,26 @@ main{min-height:60vh;padding-bottom:40px}
 /* ---------- categorías ---------- */
 .cats{background:var(--oliva);color:var(--champan-claro);padding:28px 0}
 .cats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.cats-pista{
+  display:flex;overflow-x:auto;scroll-snap-type:x mandatory;
+  overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.cats-pista::-webkit-scrollbar{display:none}
+.cats-pagina{
+  flex:0 0 100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;scroll-snap-align:start;scroll-snap-stop:always;
+}
+.cats-puntos{display:flex;align-items:center;justify-content:center;margin-top:7px}
+.cats-puntos button{
+  width:36px;height:36px;padding:0;border:0;background:transparent;
+  position:relative;cursor:pointer;
+}
+.cats-puntos button::before{
+  content:"";position:absolute;inset:14px;border-radius:999px;
+  background:rgba(250,244,233,.42);transition:inset .2s ease,background-color .2s ease;
+}
+.cats-puntos button[aria-current="true"]::before{inset:14px 9px;background:var(--champan-claro)}
 .cat-card{
   background:var(--crema-card);color:var(--marron-txt);
   border-radius:var(--r-lg);padding:14px;
@@ -418,6 +438,9 @@ main{min-height:60vh;padding-bottom:40px}
 @media (min-width:640px){
   .grilla{grid-template-columns:repeat(3,1fr);gap:16px}
   .cats-grid{grid-template-columns:repeat(4,1fr)}
+  .cats-pagina{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+  .cats-pagina--2 .cat-card:first-child{grid-column:2}
+  .cats-pagina--1 .cat-card:first-child{grid-column:2}
   .mix-grid{grid-template-columns:repeat(3,1fr)}
   .prod__nom{font-size:17px}
 }
@@ -738,6 +761,7 @@ body::before{
   .cats .contenedor{padding-inline:21px}
   .cats .titulo-filete{margin-bottom:18px}
   .cats-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .cats-pagina{gap:10px}
   .cat-card{
     position:relative;overflow:hidden;height:108px;min-height:108px;padding:12px;
     border:0;border-radius:11px;background:#fbf6ec;
@@ -1472,6 +1496,7 @@ body.compacto .icon-btn svg{width:22px;height:22px}
   .titulo-filete h2{font-size:34px}
   .cats{padding:32px 0 36px}
   .cats-grid{gap:16px}
+  .cats-pagina{gap:16px}
   .cat-card{
     min-height:0;padding:18px 16px 16px;gap:8px;
     background:var(--foto-crema);border-color:rgba(122,91,61,.12);

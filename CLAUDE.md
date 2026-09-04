@@ -132,12 +132,21 @@ están publicados pero nadie los ve. Al tocar css/ o js/, bumpear la versión en
 
 ## Íconos del inicio — 2026-09-02
 Los generó Juani con el mismo criterio que las fotos de producto (fondo plano #FAE6D0).
-Están en `assets/`, a 400x400 webp, y pesan 167 KB los siete juntos.
+Están en `assets/`, a 260x260 webp, y pesan cerca de 107 KB los nueve juntos.
 - Categorías (campo `img` en `CATEGORIAS`, `js/datos.js`): `cat-frutos.webp`,
-  `cat-infusiones.webp`, `cat-legumbres.webp`, `cat-sintacc.webp`.
+  `cat-infusiones.webp`, `cat-legumbres.webp`, `cat-sintacc.webp`,
+  `cat-dulces.webp` y `cat-despensa.webp`.
 - Accesos de la sección "También podés" (en `vistaHome()`, `js/app.js`):
   `acceso-mix.webp`, `acceso-combos.webp`, `acceso-info.webp`.
-Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <nombre> 400 assets`.
+Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <nombre> 260 assets`.
+
+## Carrusel de categorías del inicio — 2026-09-03
+- La portada muestra todas las categorías en orden alfabético, agrupadas de a cuatro.
+- En mobile cada página conserva la grilla 2x2 validada; en desktop son cuatro tarjetas en
+  una fila. La pista se desplaza horizontalmente con scroll-snap y también se puede navegar
+  con los indicadores inferiores. Las páginas incompletas quedan centradas en desktop.
+- Al sumar categorías nuevas en el panel no hay que editar la portada: el carrusel crea las
+  páginas automáticamente desde `categoriasVisibles()`.
 
 ## Panel de administración — 2026-09-03
 - Vive en `admin.html` + `css/panel.css` + `js/panel.js`, en el mismo repo y con la misma
