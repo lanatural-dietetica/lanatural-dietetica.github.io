@@ -99,7 +99,7 @@ const LS_ULTIMO  = 'dietetica_ultimo_v1';
 
 const estado = {
   carrito: leer(LS_CARRITO, []),
-  catalogo: { q: '', cat: 'todos', orden: 'nombre', tags: [] },
+  catalogo: { q: '', cat: 'todos', orden: 'nombre', tags: [], oferta: false },
   mix: { tam: null, ing: {}, cat: 'todos', q: '', nombre: '' },
   ficha: { pres: null, cant: 1, tab: 'descripcion' },
   comboAbierto: null,
@@ -612,8 +612,8 @@ function filtrarCatalogo() {
   // las etiquetas se suman entre sí: sin TACC + vegano deja lo que cumple las dos
   if (f.tags.length) arr = arr.filter(p => f.tags.every(t => (p.tags || []).includes(t)));
 
+  if (f.oferta) arr = arr.filter(p => Number(p.descuento) > 0);
   if (f.orden === 'destacados') arr = arr.filter(p => p.destacado);
-  else if (f.orden === 'ofertas') arr = arr.filter(p => Number(p.descuento) > 0);
 
   if (f.orden === 'precio-asc') arr.sort((a, b) => precioDesde(a) - precioDesde(b) || porNombre(a, b));
   else if (f.orden === 'precio-desc') arr.sort((a, b) => precioDesde(b) - precioDesde(a) || porNombre(a, b));
@@ -639,8 +639,8 @@ function pintarGrillaCatalogo() {
   if (!arr.length) {
     cont.innerHTML = f.q
       ? vacio('Sin resultados', 'No encontramos “' + f.q + '”. Probá con otra palabra o mirá todo el catálogo.')
-      : f.orden === 'ofertas'
-        ? vacio('Ahora no hay ofertas', 'Volvé a mirar en unos días o mirá todo el catálogo.')
+      : f.oferta
+        ? vacio('Ahora no hay ofertas acá', 'Probá en otra categoría o apagá el filtro de ofertas.')
         : vacio('Todavía no hay productos acá', 'Elegí otra categoría o quitá los filtros.');
   } else {
     cont.innerHTML = grilla(arr);
@@ -654,6 +654,7 @@ function vistaCatalogo() {
   const chips = [{ id: 'todos', nombre: 'Todos' }]
     .concat(categoriasVisibles());
   const etiquetas = etiquetasConProductos();
+  const nOfertas = publicados().filter(p => Number(p.descuento) > 0).length;
 
   return '' +
   '<section class="seccion catalogo">' +
@@ -665,8 +666,11 @@ function vistaCatalogo() {
     '<div class="chips" role="group" aria-label="Categorías">' +
       chips.map(c => '<button class="chip" data-chip="' + c.id + '" aria-pressed="' + (f.cat === c.id) + '">' + esc(c.nombre) + '</button>').join('') +
     '</div>' +
-    (etiquetas.length
-      ? '<div class="chips chips--tags" role="group" aria-label="Filtrar por tipo de alimentación">' +
+    (etiquetas.length || nOfertas
+      ? '<div class="chips chips--tags" role="group" aria-label="Filtros">' +
+          (nOfertas
+            ? '<button class="chip chip--tag chip--oferta" data-oferta="1" aria-pressed="' + f.oferta + '">Ofertas<small>' + nOfertas + '</small></button>'
+            : '') +
           etiquetas.map(e => '<button class="chip chip--tag" data-tag="' + e.id + '" aria-pressed="' + f.tags.includes(e.id) + '">' +
             esc(e.nombre) + '<small>' + e.n + '</small></button>').join('') +
         '</div>'
@@ -681,7 +685,6 @@ function vistaCatalogo() {
         '<option value="precio-asc"' + (f.orden === 'precio-asc' ? ' selected' : '') + '>Precio: menor a mayor</option>' +
         '<option value="precio-desc"' + (f.orden === 'precio-desc' ? ' selected' : '') + '>Precio: mayor a menor</option>' +
         '<option value="destacados"' + (f.orden === 'destacados' ? ' selected' : '') + '>Solo destacados</option>' +
-        '<option value="ofertas"' + (f.orden === 'ofertas' ? ' selected' : '') + '>Solo ofertas</option>' +
       '</select>' +
       '<svg class="orden-campo__flecha" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
       '</div>' +
@@ -1314,7 +1317,7 @@ function render() {
 
   if (vista === 'catalogo') {
     if (params.cat) estado.catalogo.cat = params.cat;
-    if (params.ofertas) { estado.catalogo.cat = 'todos'; estado.catalogo.orden = 'ofertas'; }
+    if (params.ofertas) { estado.catalogo.cat = 'todos'; estado.catalogo.oferta = true; }
     html = vistaCatalogo();
     titulo = 'Catálogo · ' + CONFIG.marca;
   } else if (vista === 'producto') {
@@ -1512,6 +1515,14 @@ document.addEventListener('click', ev => {
     onda(add, ev);
     confirmarBoton(add, 'Agregado');
     agregarProductoDesdeTarjeta(add.dataset.add);
+    return;
+  }
+
+  const oferta = t.closest('[data-oferta]');
+  if (oferta) {
+    estado.catalogo.oferta = !estado.catalogo.oferta;
+    oferta.setAttribute('aria-pressed', estado.catalogo.oferta);
+    pintarGrillaCatalogo();
     return;
   }
 

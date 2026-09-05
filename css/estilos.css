@@ -286,6 +286,11 @@ main{min-height:60vh;padding-bottom:40px}
 }
 .chip--tag[aria-pressed="true"]{border-style:solid}
 .chip--tag[aria-pressed="true"] small{background:rgba(255,255,255,.22);color:#fff}
+.chip--oferta{border-color:rgba(168,52,42,.45);color:var(--rojo)}
+.chip--oferta small{background:rgba(168,52,42,.12);color:var(--rojo)}
+/* dos clases, para ganarle a los .chip[aria-pressed] de los breakpoints de abajo */
+.chip--tag.chip--oferta[aria-pressed="true"]{background:var(--rojo);border-color:var(--rojo);color:#fff}
+.chip--tag.chip--oferta[aria-pressed="true"] small{background:rgba(255,255,255,.22);color:#fff}
 /* Volver de la ficha de producto: vuelve a la lista, al punto donde estabas. */
 .orden-fila{
   display:flex;align-items:center;justify-content:space-between;gap:14px;

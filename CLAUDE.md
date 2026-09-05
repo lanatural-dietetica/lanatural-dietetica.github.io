@@ -433,6 +433,11 @@ Mercado Libre. Lo que se hizo:
   **Falta cargar las etiquetas**: hoy sólo 20 de 145 productos las tienen.
 - **"Ofertas de la semana" en el inicio**: las 4 de mayor descuento, y si hay más, un botón
   a `#/catalogo?ofertas=1`. La sección no existe si no hay productos rebajados.
+- **Ofertas es un chip, no un orden** (`estado.catalogo.oferta`). Estuvo un rato como opción
+  del desplegable y dejaba encerrado: entrabas a las ofertas y no se veía cómo volver al
+  resto. Como chip se apaga de un toque. Va en rojo y **necesita dos clases**
+  (`.chip--tag.chip--oferta[aria-pressed="true"]`) para ganarle a los
+  `.chip[aria-pressed="true"]` que se repiten en los breakpoints de más abajo.
 - **Orden "Recomendados"**: destacados primero, después por el orden del catálogo. No es
   "más vendidos" porque no hay datos de ventas; no inventar ese dato.
 - **Búsqueda sin acentos en todos lados**: `filtrarCatalogo` y el buscador de Armá tu mix
