@@ -438,8 +438,14 @@ Mercado Libre. Lo que se hizo:
   resto. Como chip se apaga de un toque. Va en rojo y **necesita dos clases**
   (`.chip--tag.chip--oferta[aria-pressed="true"]`) para ganarle a los
   `.chip[aria-pressed="true"]` que se repiten en los breakpoints de más abajo.
-- **Orden "Recomendados"**: destacados primero, después por el orden del catálogo. No es
-  "más vendidos" porque no hay datos de ventas; no inventar ese dato.
+- **Orden "Recomendados"**: destacados primero, después por el orden de categoría (el mismo
+  que los chips) y A-Z adentro. No se llama "más vendidos" porque no hay datos de ventas:
+  no inventar ese dato.
+- **Las categorías respetan el `orden` del catálogo, no el alfabético.** `categoriasVisibles()`
+  las ordenaba con `porNombre` y tiraba a la basura el orden cargado, así que la primera que
+  se veía era Conservas (21 productos, lo menos dietética que hay) en vez de Frutos y
+  semillas (42). El orden cargado es: frutos y semillas, infusiones, granos y legumbres,
+  sin TACC, dulces y cacao, despensa, conservas, suplementos.
 - **Búsqueda sin acentos en todos lados**: `filtrarCatalogo` y el buscador de Armá tu mix
   usaban `toLowerCase()` pelado, así que "acido" no encontraba "Ácido Ascórbico". Ahora los
   tres buscadores pasan por `normalizarBusqueda`.

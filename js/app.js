@@ -22,7 +22,10 @@ const prodPorSlug = s => PRODUCTOS.find(p => p.slug === s);
 const catPorId = id => CATEGORIAS.find(c => c.id === id);
 const etiqueta = id => (ETIQUETAS.find(e => e.id === id) || {}).nombre || id;
 const porNombre = (a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es');
-const categoriasVisibles = () => CATEGORIAS.filter(c => c.visible).sort(porNombre);
+/* Respetan el orden cargado en el catálogo (1 = la que más se vende), no el alfabético:
+   la primera que se ve tiene que ser la que define al local. */
+const categoriasVisibles = () => CATEGORIAS.filter(c => c.visible)
+  .slice().sort((a, b) => (a.orden || 99) - (b.orden || 99) || porNombre(a, b));
 
 const publicados = () => PRODUCTOS
   .filter(p => p.estado === 'publicado')
@@ -617,8 +620,11 @@ function filtrarCatalogo() {
 
   if (f.orden === 'precio-asc') arr.sort((a, b) => precioDesde(a) - precioDesde(b) || porNombre(a, b));
   else if (f.orden === 'precio-desc') arr.sort((a, b) => precioDesde(b) - precioDesde(a) || porNombre(a, b));
-  else if (f.orden === 'recomendados') arr.sort((a, b) =>
-    (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0) || (a.orden || 0) - (b.orden || 0) || porNombre(a, b));
+  else if (f.orden === 'recomendados') {
+    const peso = id => ((CATEGORIAS.find(c => c.id === id) || {}).orden || 99);
+    arr.sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0)
+      || peso(a.categoria) - peso(b.categoria) || porNombre(a, b));
+  }
   else arr.sort(porNombre);
   return arr;
 }
