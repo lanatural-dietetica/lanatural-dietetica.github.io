@@ -15,7 +15,7 @@ import sys
 import numpy as np
 from PIL import Image
 
-FONDO_OFICIAL = np.array([250, 230, 208], dtype=float)   # #FAE6D0
+FONDO_OFICIAL = np.array([246, 238, 227], dtype=float)   # #F6EEE3
 CERCA, LEJOS = 22.0, 80.0
 
 def invadio_el_centro(fondo):

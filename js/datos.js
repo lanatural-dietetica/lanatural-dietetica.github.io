@@ -65,7 +65,7 @@ async function cargarCatalogo() {
 function imgDemo(c1, c2) {
   const svg =
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">' +
-      '<rect width="400" height="400" fill="#fae6d0"/>' +
+      '<rect width="400" height="400" fill="#f6eee3"/>' +
       '<ellipse cx="200" cy="330" rx="150" ry="22" fill="#e9d5b8" opacity=".7"/>' +
       '<path d="M70 205a130 130 0 0 0 260 0z" fill="#fbf6ec"/>' +
       '<ellipse cx="200" cy="205" rx="130" ry="34" fill="#fbf6ec" stroke="#e0d2ba" stroke-width="3"/>' +

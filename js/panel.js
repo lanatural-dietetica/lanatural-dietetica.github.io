@@ -87,7 +87,7 @@ async function guardarCatalogo(mensaje) {
    Se achican en el propio celular antes de subirlas: 800x800, fondo
    emparejado con el de las tarjetas y WebP. Una foto de 3 MB queda en 60 KB.
 --------------------------------------------------------------- */
-const FOTO = { lado: 800, calidad: 0.84, fondo: [250, 230, 208] };  // #FAE6D0
+const FOTO = { lado: 800, calidad: 0.84, fondo: [246, 238, 227] };  // #F6EEE3
 
 /* Safari viejo no sabe comprimir en WebP y devuelve un PNG enorme sin avisar.
    Así que primero preguntamos qué formato soporta de verdad. */

@@ -116,13 +116,15 @@ están publicados pero nadie los ve. Al tocar css/ o js/, bumpear la versión en
   hay más de una medida. Es el formato de Paladear.
 
 ## Fondo de las fotos — 2026-09-02
-- El color oficial es **#FAE6D0** (`--foto-crema` en `css/estilos.css`). Antes era #f5e6d4;
-  se cambió para que coincida con lo que devuelve el generador de imágenes, que nunca
-  respeta el hex exacto que se le pide.
+- El color oficial es **#F6EEE3** (`--foto-crema` en `css/estilos.css`). Pasó por #f5e6d4 y
+  por #FAE6D0; el 2026-09-05 se llevó al crema de la maqueta que pasó Juani, más neutro y
+  menos durazno. **Al cambiarlo hay que reprocesar todas las fotos**, y también los
+  `cat-*`, `acceso-*` y `combo-*` de `assets/`, o se ve el recuadro de la foto contra la
+  tarjeta. El script para eso quedó documentado abajo.
 - Toda foto nueva se prepara con `scripts/foto-producto.py`, que mide el fondo real en el
-  marco, lo lleva a #FAE6D0 sin tocar el bowl ni dejar halo, redimensiona a 800x800 y guarda
+  marco, lo lleva a #F6EEE3 sin tocar el bowl ni dejar halo, redimensiona a 800x800 y guarda
   `.webp` y `.jpg`. Uso: `python3 scripts/foto-producto.py <entrada> <nombre>`.
-- El procesador local y el del panel fijan a #FAE6D0 los píxeles de fondo cercanos al tono
+- El procesador local y el del panel fijan a #F6EEE3 los píxeles de fondo cercanos al tono
   del marco, incluso si el promedio ya coincide. Así elimina variaciones y degradados leves.
 - Si se vuelve a cambiar `--foto-crema`, hay que reprocesar todas las fotos con ese script,
   porque si no se ve el recuadro de la imagen contra la tarjeta.
@@ -131,7 +133,7 @@ están publicados pero nadie los ve. Al tocar css/ o js/, bumpear la versión en
   frascos rotulados Paladear de Nuez Mariposa y Castaña de Cajú; ahora ambas usan el bowl.
 
 ## Íconos del inicio — 2026-09-02
-Los generó Juani con el mismo criterio que las fotos de producto (fondo plano #FAE6D0).
+Los generó Juani con el mismo criterio que las fotos de producto (fondo plano #F6EEE3).
 Están en `assets/`, a 260x260 webp, y pesan cerca de 107 KB los nueve juntos.
 - Categorías (campo `img` en `CATEGORIAS`, `js/datos.js`): `cat-frutos.webp`,
   `cat-infusiones.webp`, `cat-legumbres.webp`, `cat-sintacc.webp`,
@@ -163,7 +165,7 @@ Se procesan igual que las fotos: `python3 scripts/foto-producto.py <entrada> <no
 - Estados: En venta (`estado:'publicado'`, `disponible:true`), Sin stock (`publicado` +
   `disponible:false`) y Oculto (`estado:'borrador'`).
 - **Fotos**: el panel las achica en el propio celular antes de subirlas — 800x800, fondo
-  emparejado con `#FAE6D0` y WebP (de 3 MB a ~65 KB). Si la foto ya viene con el fondo
+  emparejado con `#F6EEE3` y WebP (de 3 MB a ~65 KB). Si la foto ya viene con el fondo
   correcto, se saltea ese paso para no hacerla esperar. Se guardan en
   `assets/productos/<slug>.webp` y el campo `img` lleva `?v=` para saltar el caché.
 - **Alta y edición completa**: botón "+ Nuevo" en la lista; el editor maneja nombre, bajada,
@@ -240,7 +242,7 @@ viejos sin referencia.
 cuatro en cuatro. Mobile conserva la grilla 2×2, el swipe y los puntos; desde 640 px se usan
 flechas laterales y no se muestran puntos. Todos los íconos, incluidos `acceso-mix.webp`,
 `acceso-combos.webp` y `acceso-info.webp`, llevan lienzo 260×260, contenido visual de hasta
-226 px y fondo plano exacto `--foto-crema` (`#FAE6D0`). Normalizarlos con
+226 px y fondo plano exacto `--foto-crema` (`#F6EEE3`). Normalizarlos con
 `scripts/icono-categoria.py`; no corregir diferencias de fondo agregando otro crema en CSS.
 Las categorías incorporadas para la demo son `Conservas` y `Suplementos naturales`.
 
@@ -370,3 +372,31 @@ Quedan dos casos sin resolver, no los toqué:
   y **sólo aparece si hay alguno guardado** (`estado.favs.length`). Filtra por `f.cat`, no
   por `f.orden`. Se descartó ponerlo en el desplegable (queda escondido), en el header y
   como quinta pestaña de la barra de abajo.
+
+## Maqueta del catálogo — 2026-09-05 (cambios hechos por Claude)
+Juani pasó `maquetafondocatalogo.PNG`. De ahí salieron, medidos sobre la imagen:
+- Franja de arriba `--arena:#f6eee4`, grilla `--fondo:#d7dcc9`, tarjetas `#fbf6ed`.
+- **Fondo de las fotos `--foto-crema:#f6eee3`** (antes #FAE6D0, más durazno). Se
+  reprocesaron las 145 fotos de producto y los `cat-*`, `acceso-*` y `combo-*`; ocho
+  quedaron fuera del algoritmo normal (producto del color del fondo) y se hicieron con
+  un margen más chico (LEJOS 32 / CERCA 14).
+- Las **hojas** (`assets/hojas-izq.webp`, `hojas-der.webp`) están recortadas de esa
+  misma maqueta, no dibujadas: se les sacó el fondo por distancia de color y se borró
+  lo marrón (líneas y texto) filtrando `r - b > 35` con `r < 200`. Van en
+  `.cat-cabecera::before/::after`.
+- La fila de abajo de la franja (`.orden-fila`) lleva "N productos" a la izquierda y el
+  orden a la derecha, separada por una línea, como en la maqueta.
+
+## Datos reales y checkout — 2026-09-05
+- WhatsApp real: **5492622724422**. Dirección: **Libertad 1241, Villa Nueva, Mendoza**.
+- El checkout **ya no pide teléfono**: el pedido llega por WhatsApp, así que el número ya
+  lo tiene el local. No volver a agregarlo.
+
+## Volver y posición del scroll — 2026-09-05
+- La ficha de producto tiene un botón **Volver** pegajoso arriba a la izquierda.
+- Cada pantalla se acuerda de su scroll (`posiciones`, en `app.js`). Al volver —con ese
+  botón o con el del celular— se vuelve al punto donde estabas; al entrar a una pantalla
+  nueva, arranca arriba. La posición se guarda al principio de `render()`, antes de
+  reemplazar el HTML, **no** sólo en el evento de scroll.
+- El botón "Ver productos" del hero apunta a `#/catalogo?cat=todos` para que no arrastre
+  la categoría que estaba filtrada.

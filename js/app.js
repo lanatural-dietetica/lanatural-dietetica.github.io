@@ -471,7 +471,7 @@ function vistaHome() {
       '<div class="hero__txt">' +
         '<h1>' + esc(CONFIG.slogan) + '</h1>' +
         '<p>' + esc(CONFIG.slogan2) + '</p>' +
-        '<a class="btn btn--oliva btn--hero" href="#/catalogo">Ver productos ' + ICO.flecha + '</a>' +
+        '<a class="btn btn--oliva btn--hero" href="#/catalogo?cat=todos">Ver productos ' + ICO.flecha + '</a>' +
       '</div>' +
       '<div class="hero__arte">' +
         '<picture>' +
@@ -517,23 +517,23 @@ function vistaHome() {
   '<section class="seccion favoritos"><div class="contenedor">' +
     '<div class="titulo-filete"><h2>Nuestros favoritos</h2></div>' +
     grilla(destacados) +
-    '<p style="text-align:center;margin-top:22px"><a class="btn btn--fantasma" href="#/catalogo">Ver todo el catálogo</a></p>' +
+    '<p style="text-align:center;margin-top:22px"><a class="btn btn--fantasma" href="#/catalogo?cat=todos">Ver todo el catálogo</a></p>' +
   '</div></section>' +
 
   '<section class="seccion" style="background:var(--champan-claro)"><div class="contenedor">' +
     '<div class="titulo-filete"><h2>También podés</h2></div>' +
     '<div class="cats-grid">' +
       '<a class="cat-card" href="#/mix"><span class="cat-card__nom">Armá tu mix</span>' +
-        '<img class="cat-card__fig" src="assets/acceso-mix.webp?v=20260903b" alt="" width="400" height="400" loading="lazy" decoding="async">' +
+        '<img class="cat-card__fig" src="assets/acceso-mix.webp?v=20260905a" alt="" width="400" height="400" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Empezar ' + ICO.flecha + '</span></a>' +
       '<a class="cat-card" href="#/combos"><span class="cat-card__nom">Combos</span>' +
-        '<img class="cat-card__fig" src="assets/acceso-combos.webp?v=20260903b" alt="" width="400" height="400" loading="lazy" decoding="async">' +
+        '<img class="cat-card__fig" src="assets/acceso-combos.webp?v=20260905a" alt="" width="400" height="400" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Ver combos ' + ICO.flecha + '</span></a>' +
       '<a class="cat-card" href="#/como-comprar"><span class="cat-card__nom">Cómo comprar</span>' +
-        '<img class="cat-card__fig" src="assets/acceso-info.webp?v=20260903b" alt="" width="400" height="400" loading="lazy" decoding="async">' +
+        '<img class="cat-card__fig" src="assets/acceso-info.webp?v=20260905a" alt="" width="400" height="400" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Leer ' + ICO.flecha + '</span></a>' +
       '<a class="cat-card" href="#/catalogo?cat=sintacc"><span class="cat-card__nom">Sin TACC</span>' +
-        '<img class="cat-card__fig" src="assets/cat-sintacc.webp?v=20260903b" alt="" width="400" height="400" loading="lazy" decoding="async">' +
+        '<img class="cat-card__fig" src="assets/cat-sintacc.webp?v=20260905a" alt="" width="400" height="400" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Ver productos ' + ICO.flecha + '</span></a>' +
     '</div>' +
   '</div></section>';
@@ -649,7 +649,9 @@ function vistaCatalogo() {
       chips.map(c => '<button class="chip' + (c.id === 'favoritos' ? ' chip--fav' : '') + '" data-chip="' + c.id + '" aria-pressed="' + (f.cat === c.id) + '">' +
         (c.id === 'favoritos' ? ICO.corazon : '') + esc(c.nombre) + '</button>').join('') +
     '</div>' +
-    '<div class="barra-orden">' +
+    '<div class="orden-fila">' +
+      '<p id="conteo-catalogo"></p>' +
+      '<div class="orden-campo">' +
       '<label class="visually-hidden" for="orden">Ordenar o filtrar productos</label>' +
       '<select id="orden">' +
         '<option value="nombre"' + (f.orden === 'nombre' ? ' selected' : '') + '>Nombre A-Z</option>' +
@@ -660,10 +662,11 @@ function vistaCatalogo() {
         '<option value="sintacc"' + (f.orden === 'sintacc' ? ' selected' : '') + '>Solo Sin TACC</option>' +
         '<option value="vegano"' + (f.orden === 'vegano' ? ' selected' : '') + '>Solo veganos</option>' +
       '</select>' +
+      '<svg class="orden-campo__flecha" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
+      '</div>' +
     '</div>' +
     '</div></div>' +
     '<div class="contenedor">' +
-    '<p id="conteo-catalogo" style="font-size:13px;color:var(--gris-txt);margin:0 0 12px"></p>' +
     '<div id="grilla-catalogo"></div>' +
   '</div></section>';
 }
@@ -693,6 +696,10 @@ function vistaProducto(slug) {
   ];
 
   return '' +
+  '<button class="volver-atras" type="button" data-volver aria-label="Volver">' +
+    '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>' +
+    '<span>Volver</span>' +
+  '</button>' +
   '<section class="seccion ficha"><div class="contenedor">' +
     '<p class="ficha__cat"><a href="#/catalogo?cat=' + p.categoria + '">' + esc(cat ? cat.nombre : '') + '</a></p>' +
     '<h1>' + esc(p.nombre) + '</h1>' +
@@ -1019,7 +1026,7 @@ const perfil = () => leer(LS_PERFIL, { nombre: '', tel: '', direcciones: [] });
 function guardarPerfil(datos) {
   const p = perfil();
   p.nombre = datos.nombre || p.nombre;
-  p.tel = datos.tel || p.tel;
+  // el teléfono ya no se pide: el pedido llega por WhatsApp
   if (datos.dir && !p.direcciones.includes(datos.dir)) p.direcciones.unshift(datos.dir);
   p.direcciones = p.direcciones.slice(0, 3);
   guardar(LS_PERFIL, p);
@@ -1129,15 +1136,13 @@ function pasoDatos() {
   const co = estado.checkout;
   const pf = perfil();
   const esEnvio = co.tipo === 'domicilio';
-  const guardados = pf.nombre || pf.tel || (pf.direcciones && pf.direcciones.length);
+  const guardados = pf.nombre || (pf.direcciones && pf.direcciones.length);
 
   return resumenChico() +
     '<p class="co-lbl">' + (esEnvio ? esc(CONFIG.entrega[1] || 'Envío a domicilio') : esc(CONFIG.entrega[0] || 'Retiro en el local')) + '</p>' +
     '<form id="form-pedido" novalidate>' +
       '<div class="form-campo"><label for="f-nombre">Nombre y apellido *</label>' +
         '<input id="f-nombre" name="nombre" required autocomplete="name" value="' + esc(pf.nombre || '') + '"></div>' +
-      '<div class="form-campo"><label for="f-tel">Teléfono *</label>' +
-        '<input id="f-tel" name="tel" type="tel" required autocomplete="tel" inputmode="tel" value="' + esc(pf.tel || '') + '"></div>' +
       (esEnvio
         ? (pf.direcciones && pf.direcciones.length
             ? '<div class="form-campo"><label>Direcciones guardadas</label>' +
@@ -1190,7 +1195,6 @@ function armarMensaje(datos) {
   L.push('TOTAL ESTIMADO: ' + money(totalCarrito()));
   L.push('');
   L.push('Nombre: ' + datos.nombre);
-  L.push('Teléfono: ' + datos.tel);
   L.push('Entrega: ' + datos.entrega);
   if (datos.dir) L.push('Dirección: ' + datos.dir);
   if (datos.hora) L.push('Paso: ' + datos.hora);
@@ -1262,6 +1266,10 @@ function render() {
     titulo = CONFIG.marca + ' · ' + (CONFIG.rubro || 'Dietética en Mendoza');
   }
 
+  // antes de reemplazar la pantalla, anotamos dónde había quedado la anterior
+  posiciones[hashPrevio] = window.scrollY || document.documentElement.scrollTop || 0;
+  hashPrevio = location.hash || '#/';
+
   document.body.dataset.vista = vista;
   app.innerHTML = html;
   document.title = titulo;
@@ -1277,7 +1285,10 @@ function render() {
   moverPastilla(true);
   requestAnimationFrame(() => moverPastilla(false));  // por si la barra todavía no estaba medida
   cerrarPaneles();
-  window.scrollTo(0, 0);
+  const alto = volviendo ? (posiciones[location.hash || '#/'] || 0) : 0;
+  volviendo = false;
+  window.scrollTo(0, alto);
+  if (alto) requestAnimationFrame(() => window.scrollTo(0, alto));
   alScrollear();
 }
 
@@ -1387,6 +1398,8 @@ document.addEventListener('click', ev => {
   if (t.closest('#btn-menu'))    { abrirPanel('menu'); return; }
   if (t.closest('#btn-categorias-compactas')) { abrirPanel('categorias'); return; }
   if (t.closest('.carrito-btn') || t.closest('#cart-fab')) { abrirPanel('carrito'); return; }
+
+  if (t.closest('[data-volver]')) { history.back(); return; }
 
   const fav = t.closest('[data-fav]');
   if (fav) {
@@ -1670,7 +1683,6 @@ document.addEventListener('submit', ev => {
   const esEnvio = estado.checkout.tipo === 'domicilio';
   const datos = {
     nombre: f.nombre.value.trim(),
-    tel: f.tel.value.trim(),
     entrega: esEnvio ? (CONFIG.entrega[1] || 'Envío a domicilio') : (CONFIG.entrega[0] || 'Retiro en el local'),
     dir: esEnvio && f.dir ? f.dir.value.trim() : '',
     hora: !esEnvio && f.hora ? f.hora.value.trim() : '',
@@ -1681,7 +1693,6 @@ document.addEventListener('submit', ev => {
   let problema = '';
   if (!estado.carrito.length) problema = 'El carrito está vacío.';
   else if (datos.nombre.length < 2) problema = 'Escribí tu nombre.';
-  else if (datos.tel.replace(/\D/g, '').length < 8) problema = 'Escribí un teléfono válido.';
   else if (esEnvio && !datos.dir) problema = 'Escribí la dirección de envío.';
   else if (totalCarrito() < (CONFIG.compraMinima || 0)) problema = 'No llegás a la compra mínima.';
 
@@ -1708,10 +1719,19 @@ document.addEventListener('keydown', ev => {
 
 window.addEventListener('hashchange', render);
 
+/* Cada pantalla se acuerda de dónde estabas. Al volver (con el botón de la página
+   o con el del celular) se vuelve a ese punto, no al principio. */
+const posiciones = {};
+let hashPrevio = location.hash || '#/';
+let volviendo = false;
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.addEventListener('popstate', () => { volviendo = true; });
+
 /* ---------------- movimiento de la cáscara ---------------- */
 /* al bajar por el catálogo aparece la barra de búsqueda y categorías */
 function alScrollear() {
   const y = window.scrollY || document.documentElement.scrollTop || 0;
+  posiciones[location.hash || '#/'] = y;
   document.body.classList.toggle('compacto', y > 140);
   const mostrarBarra = document.body.dataset.vista === 'catalogo' && y > 140 && !document.body.classList.contains('busqueda-abierta');
   document.body.classList.toggle('compacto-catalogo', mostrarBarra);
