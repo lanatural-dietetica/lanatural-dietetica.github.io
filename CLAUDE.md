@@ -444,3 +444,7 @@ Mercado Libre. Lo que se hizo:
   envío sin cargo; con `envioCosto`, lo muestra en el paso de entrega.
 - **`whatsappLista`**: si se carga el link de una lista de difusión, aparece "Ofertas por
   WhatsApp" en el pie. Vacío por defecto.
+
+- **Se sacó "Nuestros favoritos" del inicio** el 2026-09-05. Las reglas de CSS que tenía
+  (`.favoritos`) pasaron a `.ofertas-home`, que es la sección que ocupa ese lugar ahora.
+  El inicio quedó: categorías → ofertas → también podés.

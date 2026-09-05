@@ -463,7 +463,6 @@ function cerrarBusqueda() {
 
 /* ---------------- vistas ---------------- */
 function vistaHome() {
-  const destacados = publicados().filter(p => p.destacado).slice(0, 6);
   const conDescuento = publicados().filter(p => Number(p.descuento) > 0)
     .sort((a, b) => Number(b.descuento) - Number(a.descuento));
   const rebajados = conDescuento.slice(0, 4);
@@ -530,12 +529,6 @@ function vistaHome() {
           : '') +
       '</div></section>'
     : '') +
-
-  '<section class="seccion favoritos"><div class="contenedor">' +
-    '<div class="titulo-filete"><h2>Nuestros favoritos</h2></div>' +
-    grilla(destacados) +
-    '<p style="text-align:center;margin-top:22px"><a class="btn btn--fantasma" href="#/catalogo?cat=todos">Ver todo el catálogo</a></p>' +
-  '</div></section>' +
 
   '<section class="seccion" style="background:var(--champan-claro)"><div class="contenedor">' +
     '<div class="titulo-filete"><h2>También podés</h2></div>' +

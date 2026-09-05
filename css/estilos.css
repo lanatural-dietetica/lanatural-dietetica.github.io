@@ -871,9 +871,9 @@ body::before{
   .franja .contenedor{padding-inline:12px}
   .franja svg{width:21px;height:21px}
 
-  .favoritos{padding:27px 0 34px}
-  .favoritos .contenedor{padding-inline:25px}
-  .favoritos .titulo-filete{margin-bottom:18px}
+  .ofertas-home{padding:27px 0 34px}
+  .ofertas-home .contenedor{padding-inline:25px}
+  .ofertas-home .titulo-filete{margin-bottom:18px}
 
   .grilla{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   .prod{
@@ -1604,7 +1604,7 @@ body.compacto .icon-btn svg{width:22px;height:22px}
   }
   .cat-card__ver{font-size:10.5px}
 
-  .favoritos .prod__fig,
+  .ofertas-home .prod__fig,
   .catalogo .prod__fig{aspect-ratio:1.14/1}
   .prod__nom{font-size:18px}
 
