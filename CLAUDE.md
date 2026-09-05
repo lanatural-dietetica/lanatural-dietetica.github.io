@@ -448,3 +448,6 @@ Mercado Libre. Lo que se hizo:
 - **Se sacó "Nuestros favoritos" del inicio** el 2026-09-05. Las reglas de CSS que tenía
   (`.favoritos`) pasaron a `.ofertas-home`, que es la sección que ocupa ese lugar ahora.
   El inicio quedó: categorías → ofertas → también podés.
+- `favicon.ico` en la raíz (16/32/48 dentro del mismo archivo, sacado de
+  `assets/logo/icono-192.png`). El navegador lo pide solo aunque estén declarados los PNG:
+  sin él, cada visita dejaba un 404 en la consola.
