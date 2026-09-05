@@ -91,13 +91,11 @@ const gLabel = g => g >= 1000 && g % 1000 === 0 ? (g / 1000) + ' kg' : g + ' g';
 
 /* ---------------- estado ---------------- */
 const LS_CARRITO = 'dietetica_carrito_v1';
-const LS_FAVS    = 'dietetica_favs_v1';
 const LS_PERFIL  = 'dietetica_perfil_v1';
 const LS_ULTIMO  = 'dietetica_ultimo_v1';
 
 const estado = {
   carrito: leer(LS_CARRITO, []),
-  favs:    leer(LS_FAVS, []),
   catalogo: { q: '', cat: 'todos', orden: 'nombre' },
   mix: { tam: null, ing: {}, cat: 'todos', q: '', nombre: '' },
   ficha: { pres: null, cant: 1, tab: 'descripcion' },
@@ -201,13 +199,6 @@ function pintarContadorCarrito() {
   }
 }
 
-function toggleFav(id) {
-  estado.favs = estado.favs.includes(id)
-    ? estado.favs.filter(f => f !== id)
-    : estado.favs.concat(id);
-  guardar(LS_FAVS, estado.favs);
-}
-
 let toastTimer;
 function toast(msg) {
   const t = $('#toast');
@@ -223,7 +214,6 @@ const ICO = {
   lupa: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>',
   menu: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>',
   cerrar: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
-  corazon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 20s-7-4.5-7-9.2A3.9 3.9 0 0 1 12 8a3.9 3.9 0 0 1 7 2.8C19 15.5 12 20 12 20z"/></svg>',
   camion: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M1 6h12v10H1zM13 9h4l3 3v4h-7z"/><circle cx="6" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg>',
   caja: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg>',
   check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>',
@@ -279,7 +269,6 @@ function tarjetaProducto(p) {
     : (p.destacado
       ? '<span class="prod__badge">Destacado</span>'
       : (p.tags && p.tags.includes('sintacc') ? '<span class="prod__badge prod__badge--tag">Sin TACC</span>' : ''));
-  const fav = estado.favs.includes(p.id);
   const ped = enElPedido(p);
 
   return '' +
@@ -288,7 +277,6 @@ function tarjetaProducto(p) {
       badge +
       '<img src="' + imgDe(p) + '" alt="' + esc(p.nombre) + '" width="400" height="400" loading="lazy" decoding="async">' +
     '</a>' +
-    '<button class="prod__fav" data-fav="' + p.id + '" aria-pressed="' + fav + '" aria-label="Guardar ' + esc(p.nombre) + ' en favoritos">' + ICO.corazon + '</button>' +
     '<h3 class="prod__nom"><a href="#/producto/' + p.slug + '">' + esc(p.nombre) + '</a></h3>' +
     '<p class="prod__sub">' + esc(p.subtitulo || (cat ? cat.nombre : '')) + '</p>' +
 
@@ -594,8 +582,7 @@ function filtrarCatalogo() {
   const f = estado.catalogo;
   const q = f.q.trim().toLowerCase();
   let arr = publicados();
-  if (f.cat === 'favoritos') arr = arr.filter(p => estado.favs.includes(p.id));
-  else if (f.cat !== 'todos') arr = arr.filter(p => p.categoria === f.cat || (p.tags || []).includes(f.cat));
+ if (f.cat !== 'todos') arr = arr.filter(p => p.categoria === f.cat || (p.tags || []).includes(f.cat));
   if (q) arr = arr.filter(p =>
     (p.nombre + ' ' + (p.subtitulo || '') + ' ' + (p.descripcion || '') + ' ' + (p.tags || []).join(' '))
       .toLowerCase().includes(q));
@@ -621,9 +608,7 @@ function pintarGrillaCatalogo() {
       ? vacio('Sin resultados', 'No encontramos “' + f.q + '”. Probá con otra palabra o mirá todo el catálogo.')
       : f.orden === 'ofertas'
         ? vacio('Ahora no hay ofertas', 'Volvé a mirar en unos días o mirá todo el catálogo.')
-        : f.cat === 'favoritos'
-          ? vacio('Todavía no guardaste favoritos', 'Tocá el corazón de cualquier producto y va a quedar guardado acá, en este celular.')
-          : vacio('Todavía no hay productos acá', 'Elegí otra categoría o quitá los filtros.');
+        : vacio('Todavía no hay productos acá', 'Elegí otra categoría o quitá los filtros.');
   } else {
     cont.innerHTML = grilla(arr);
   }
@@ -633,9 +618,7 @@ function pintarGrillaCatalogo() {
 
 function vistaCatalogo() {
   const f = estado.catalogo;
-  // el chip de favoritos aparece sólo si hay alguno guardado
   const chips = [{ id: 'todos', nombre: 'Todos' }]
-    .concat(estado.favs.length ? [{ id: 'favoritos', nombre: 'Favoritos' }] : [])
     .concat(categoriasVisibles());
 
   return '' +
@@ -646,8 +629,7 @@ function vistaCatalogo() {
       '<span>Buscar productos</span><small>Escribí un nombre o categoría</small>' +
     '</button>' +
     '<div class="chips" role="group" aria-label="Categorías">' +
-      chips.map(c => '<button class="chip' + (c.id === 'favoritos' ? ' chip--fav' : '') + '" data-chip="' + c.id + '" aria-pressed="' + (f.cat === c.id) + '">' +
-        (c.id === 'favoritos' ? ICO.corazon : '') + esc(c.nombre) + '</button>').join('') +
+      chips.map(c => '<button class="chip" data-chip="' + c.id + '" aria-pressed="' + (f.cat === c.id) + '">' + esc(c.nombre) + '</button>').join('') +
     '</div>' +
     '<div class="orden-fila">' +
       '<p id="conteo-catalogo"></p>' +
@@ -1400,15 +1382,6 @@ document.addEventListener('click', ev => {
   if (t.closest('.carrito-btn') || t.closest('#cart-fab')) { abrirPanel('carrito'); return; }
 
   if (t.closest('[data-volver]')) { history.back(); return; }
-
-  const fav = t.closest('[data-fav]');
-  if (fav) {
-    toggleFav(fav.dataset.fav);
-    fav.setAttribute('aria-pressed', estado.favs.includes(fav.dataset.fav));
-    // si justo estamos mirando la lista de favoritos, el producto tiene que salir
-    if (estado.catalogo.cat === 'favoritos') pintarGrillaCatalogo();
-    return;
-  }
 
   const peso = t.closest('[data-peso]');
   if (peso) {
