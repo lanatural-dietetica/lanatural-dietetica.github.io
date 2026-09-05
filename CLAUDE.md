@@ -438,8 +438,10 @@ Mercado Libre. Lo que se hizo:
   resto. Como chip se apaga de un toque. Va en rojo y **necesita dos clases**
   (`.chip--tag.chip--oferta[aria-pressed="true"]`) para ganarle a los
   `.chip[aria-pressed="true"]` que se repiten en los breakpoints de más abajo.
-- **Orden "Recomendados"**: destacados primero, después por el orden de categoría (el mismo
-  que los chips) y A-Z adentro. No se llama "más vendidos" porque no hay datos de ventas:
+- **Orden "Recomendados", y es el de fábrica** (`estado.catalogo.orden`): destacados primero,
+  después por el orden de categoría (el mismo que los chips) y A-Z adentro. Antes abría en
+  A-Z y el catálogo arrancaba con seis frascos de aceitunas seguidos. La vidriera la maneja
+  la clienta desde el panel con el check de destacado. No se llama "más vendidos" porque no hay datos de ventas:
   no inventar ese dato.
 - **Las categorías respetan el `orden` del catálogo, no el alfabético.** `categoriasVisibles()`
   las ordenaba con `porNombre` y tiraba a la basura el orden cargado, así que la primera que

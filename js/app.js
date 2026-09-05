@@ -102,7 +102,7 @@ const LS_ULTIMO  = 'dietetica_ultimo_v1';
 
 const estado = {
   carrito: leer(LS_CARRITO, []),
-  catalogo: { q: '', cat: 'todos', orden: 'nombre', tags: [], oferta: false },
+  catalogo: { q: '', cat: 'todos', orden: 'recomendados', tags: [], oferta: false },
   mix: { tam: null, ing: {}, cat: 'todos', q: '', nombre: '' },
   ficha: { pres: null, cant: 1, tab: 'descripcion' },
   comboAbierto: null,
@@ -686,8 +686,8 @@ function vistaCatalogo() {
       '<div class="orden-campo">' +
       '<label class="visually-hidden" for="orden">Ordenar o filtrar productos</label>' +
       '<select id="orden">' +
-        '<option value="nombre"' + (f.orden === 'nombre' ? ' selected' : '') + '>Nombre A-Z</option>' +
         '<option value="recomendados"' + (f.orden === 'recomendados' ? ' selected' : '') + '>Recomendados</option>' +
+        '<option value="nombre"' + (f.orden === 'nombre' ? ' selected' : '') + '>Nombre A-Z</option>' +
         '<option value="precio-asc"' + (f.orden === 'precio-asc' ? ' selected' : '') + '>Precio: menor a mayor</option>' +
         '<option value="precio-desc"' + (f.orden === 'precio-desc' ? ' selected' : '') + '>Precio: mayor a menor</option>' +
         '<option value="destacados"' + (f.orden === 'destacados' ? ' selected' : '') + '>Solo destacados</option>' +
