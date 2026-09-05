@@ -171,6 +171,18 @@ function cantidadLineaCarrito(i) {
   return i.cant + (i.cant === 1 ? ' unidad' : ' unidades');
 }
 
+/* Lo que va adelante en el pedido: el peso total si es a granel, o el número
+   pelado si son unidades (la palabra "unidades" no aporta al lado del nombre). */
+function cantidadPedido(b) {
+  if (b.tipo === 'producto') {
+    const p = prodPorId(b.lineas[0].id);
+    if (p && p.tipo === 'granel') {
+      const gramos = b.lineas.reduce((s, i) => s + ((pres(i.presentacionId) || {}).gramos || 0) * i.cant, 0);
+      return gLabel(gramos);
+    }
+  }
+  return String(b.unidades);
+}
 function cantidadBloqueCarrito(b) {
   if (b.tipo === 'producto') {
     const p = prodPorId(b.lineas[0].id);
@@ -1068,7 +1080,7 @@ function cuerpoBloqueCarrito(b) {
       '</div>';
     }).join('') +
     (b.lineas.length > 1
-      ? '<div class="item__sub"><span>Se pide junto: ' + esc(cantidadBloqueCarrito(b).replace(' en total', '')) +
+      ? '<div class="item__sub"><span>Se pide junto: ' + esc(cantidadPedido(b)) +
         '</span><strong>' + money(b.subtotal) + '</strong></div>'
       : '');
 }
@@ -1193,7 +1205,7 @@ function armarMensaje(datos) {
   // Una línea por producto con todo unificado: en el carrito las medidas van
   // separadas para poder editarlas, pero acá 1 kg + 250 g es "1,25 kg".
   agruparCarrito().forEach(b => {
-    L.push('*' + cantidadBloqueCarrito(b).replace(' en total', '') + '* - ' + b.nombre);
+    L.push('*' + cantidadPedido(b) + '* - ' + b.nombre);
     L.push('   ' + money(b.subtotal));
   });
 
