@@ -594,7 +594,8 @@ function filtrarCatalogo() {
   const f = estado.catalogo;
   const q = f.q.trim().toLowerCase();
   let arr = publicados();
-  if (f.cat !== 'todos') arr = arr.filter(p => p.categoria === f.cat || (p.tags || []).includes(f.cat));
+  if (f.cat === 'favoritos') arr = arr.filter(p => estado.favs.includes(p.id));
+  else if (f.cat !== 'todos') arr = arr.filter(p => p.categoria === f.cat || (p.tags || []).includes(f.cat));
   if (q) arr = arr.filter(p =>
     (p.nombre + ' ' + (p.subtitulo || '') + ' ' + (p.descripcion || '') + ' ' + (p.tags || []).join(' '))
       .toLowerCase().includes(q));
@@ -620,7 +621,9 @@ function pintarGrillaCatalogo() {
       ? vacio('Sin resultados', 'No encontramos “' + f.q + '”. Probá con otra palabra o mirá todo el catálogo.')
       : f.orden === 'ofertas'
         ? vacio('Ahora no hay ofertas', 'Volvé a mirar en unos días o mirá todo el catálogo.')
-        : vacio('Todavía no hay productos acá', 'Elegí otra categoría o quitá los filtros.');
+        : f.cat === 'favoritos'
+          ? vacio('Todavía no guardaste favoritos', 'Tocá el corazón de cualquier producto y va a quedar guardado acá, en este celular.')
+          : vacio('Todavía no hay productos acá', 'Elegí otra categoría o quitá los filtros.');
   } else {
     cont.innerHTML = grilla(arr);
   }
@@ -630,7 +633,9 @@ function pintarGrillaCatalogo() {
 
 function vistaCatalogo() {
   const f = estado.catalogo;
+  // el chip de favoritos aparece sólo si hay alguno guardado
   const chips = [{ id: 'todos', nombre: 'Todos' }]
+    .concat(estado.favs.length ? [{ id: 'favoritos', nombre: 'Favoritos' }] : [])
     .concat(categoriasVisibles());
 
   return '' +
@@ -641,7 +646,8 @@ function vistaCatalogo() {
       '<span>Buscar productos</span><small>Escribí un nombre o categoría</small>' +
     '</button>' +
     '<div class="chips" role="group" aria-label="Categorías">' +
-      chips.map(c => '<button class="chip" data-chip="' + c.id + '" aria-pressed="' + (f.cat === c.id) + '">' + esc(c.nombre) + '</button>').join('') +
+      chips.map(c => '<button class="chip' + (c.id === 'favoritos' ? ' chip--fav' : '') + '" data-chip="' + c.id + '" aria-pressed="' + (f.cat === c.id) + '">' +
+        (c.id === 'favoritos' ? ICO.corazon : '') + esc(c.nombre) + '</button>').join('') +
     '</div>' +
     '<div class="barra-orden">' +
       '<label class="visually-hidden" for="orden">Ordenar o filtrar productos</label>' +
@@ -1386,6 +1392,8 @@ document.addEventListener('click', ev => {
   if (fav) {
     toggleFav(fav.dataset.fav);
     fav.setAttribute('aria-pressed', estado.favs.includes(fav.dataset.fav));
+    // si justo estamos mirando la lista de favoritos, el producto tiene que salir
+    if (estado.catalogo.cat === 'favoritos') pintarGrillaCatalogo();
     return;
   }
 

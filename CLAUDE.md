@@ -365,3 +365,8 @@ Quedan dos casos sin resolver, no los toqué:
   con el color viejo (ya pasó una vez).
 - **Filtro "Solo ofertas"** en el desplegable del catálogo, al lado de "Solo destacados"
   (filtra `descuento > 0`). Juani lo pidió ahí y no como sección aparte ni vista propia.
+- **Favoritos**: hasta ahora el corazón guardaba en `localStorage` y no había dónde verlos.
+  Ahora hay un **chip "Favoritos"** entre los chips de categoría, apenas después de "Todos",
+  y **sólo aparece si hay alguno guardado** (`estado.favs.length`). Filtra por `f.cat`, no
+  por `f.orden`. Se descartó ponerlo en el desplegable (queda escondido), en el header y
+  como quinta pestaña de la barra de abajo.

@@ -263,6 +263,9 @@ main{min-height:60vh;padding-bottom:40px}
   min-height:42px;
 }
 .chip[aria-pressed="true"]{background:var(--oliva);border-color:var(--oliva);color:#fff}
+.chip--fav{display:inline-flex;align-items:center;gap:6px}
+.chip--fav svg{width:15px;height:15px;flex:0 0 auto}
+.chip--fav[aria-pressed="true"] svg{fill:currentColor}
 
 /* Franja de arriba del catálogo: título, buscador, categorías y orden sobre el
    mismo color, cerrada con una línea. Sin caja: los elementos quedan como estaban. */
