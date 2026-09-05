@@ -486,3 +486,8 @@ en los 103 productos a granel, con 1 kg preseleccionado.
   más anchas a cambio de margen: con 16 px y separación de 9 px entre tarjetas, cada una
   pasó de 154 a 167 px en un celular de 375, y los botones de medida de 31 a 34. Ninguna
   vista desborda a lo ancho (verificado en las seis).
+- **Lo que se edita en el carrito se repinta en la tarjeta.** `mas()`, `quitar()` y
+  `quitarBloque()` llaman a `repintarCardDeLinea()`: si la línea era de un producto, se
+  vuelve a dibujar su tarjeta con la pastilla de "lo que llevás" y el estado en pedido.
+  `repintarCard()` ahora recorre **todas** las tarjetas de ese producto (`$$`), porque el
+  mismo producto puede estar a la vez en las ofertas del inicio y en el catálogo.

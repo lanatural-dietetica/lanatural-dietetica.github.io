@@ -135,12 +135,15 @@ function cambiarCant(key, delta) {
   guardar(LS_CARRITO, estado.carrito);
   pintarContadorCarrito();
   refrescarCarrito();
+  repintarCardDeLinea(it);
 }
 function quitar(key) {
+  const it = estado.carrito.find(i => i.key === key);
   estado.carrito = estado.carrito.filter(i => i.key !== key);
   guardar(LS_CARRITO, estado.carrito);
   pintarContadorCarrito();
   pintarCarrito();
+  repintarCardDeLinea(it);
 }
 /* un mismo producto en varias presentaciones se muestra como un solo bloque */
 function agruparCarrito() {
@@ -198,10 +201,12 @@ function cantidadBloqueCarrito(b) {
 }
 
 function quitarBloque(clave) {
+  const it = estado.carrito.find(i => (i.tipo === 'producto' ? 'prod:' + i.id : i.key) === clave);
   estado.carrito = estado.carrito.filter(i => (i.tipo === 'producto' ? 'prod:' + i.id : i.key) !== clave);
   guardar(LS_CARRITO, estado.carrito);
   pintarContadorCarrito();
   pintarCarrito();
+  repintarCardDeLinea(it);
 }
 
 const totalCarrito = () => estado.carrito.reduce((s, i) => s + i.precio * i.cant, 0);
@@ -351,11 +356,17 @@ function preciosCard(p, presId) {
 }
 
 /* vuelve a dibujar una sola tarjeta, sin tocar el resto de la grilla */
+/* Un mismo producto puede estar en dos grillas a la vez (ofertas del inicio y
+   catálogo): se repintan todas sus tarjetas, no la primera que aparece. */
 function repintarCard(id) {
   const p = prodPorId(id);
-  const el = document.querySelector('.prod[data-prod="' + id + '"]');
-  if (!p || !el) return;
-  el.outerHTML = tarjetaProducto(p);
+  if (!p) return;
+  $$('.prod[data-prod="' + id + '"]').forEach(el => { el.outerHTML = tarjetaProducto(p); });
+}
+
+/* Lo que se toca en el carrito tiene que verse también en la tarjeta. */
+function repintarCardDeLinea(item) {
+  if (item && item.tipo === 'producto') repintarCard(item.id);
 }
 
 const grilla = arr => '<div class="grilla">' + arr.map(tarjetaProducto).join('') + '</div>';
