@@ -467,3 +467,17 @@ Mercado Libre. Lo que se hizo:
 - `favicon.ico` en la raíz (16/32/48 dentro del mismo archivo, sacado de
   `assets/logo/icono-192.png`). El navegador lo pide solo aunque estén declarados los PNG:
   sin él, cada visita dejaba un 404 en la consola.
+
+
+## Cuatro medidas por tarjeta — 2026-09-06 (cambios hechos por Claude)
+Antes eran tres como máximo. Juani pidió probar con cuatro: **50 g · 100 g · 250 g · 1 kg**
+en los 103 productos a granel, con 1 kg preseleccionado.
+- `presentacionesCard()` corta en 4, no en 3.
+- `.pesos` pasó a `grid-auto-flow:column` con `grid-auto-columns:minmax(0,1fr)`: entra la
+  cantidad que sea, siempre en una fila y del mismo ancho. Con cuatro, la regla
+  `.pesos:has(.peso-btn:nth-child(4))` achica la letra a 10,5 px y el espacio a 4 px.
+- Medido en un celular de 375 px: cuatro botones de 31 px, ninguno desborda. En escritorio,
+  54 px.
+- **Pendiente de criterio**: el 50 g quedó también en granos, legumbres y harinas, donde no
+  tiene mucho sentido (nadie compra 50 g de garbanzos). Si se quiere afinar, va producto por
+  producto desde el panel.

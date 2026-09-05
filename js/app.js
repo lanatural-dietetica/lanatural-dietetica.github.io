@@ -250,10 +250,10 @@ const ICO = {
 };
 
 /* ---------------- componentes ---------------- */
-/* cada producto define sus propias medidas en datos.js; la tarjeta muestra hasta tres,
-   que entran en una sola fila */
+/* cada producto define sus propias medidas en el catálogo; la tarjeta las muestra
+   todas, hasta cuatro, siempre en una sola fila */
 function presentacionesCard(p) {
-  return p.presentaciones.slice(0, 3);
+  return p.presentaciones.slice(0, 4);
 }
 
 function estadoCard(p) {

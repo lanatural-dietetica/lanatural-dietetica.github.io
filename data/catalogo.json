@@ -184,8 +184,9 @@
       "margen": 62,
       "descuento": 10,
       "presentaciones": [
+        "50g",
         "100g",
-        "500g",
+        "250g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -222,9 +223,10 @@
       "presentaciones": [
         "50g",
         "100g",
-        "250g"
+        "250g",
+        "1kg"
       ],
-      "presentacionDefecto": "250g",
+      "presentacionDefecto": "1kg",
       "tags": [
         "vegano"
       ],
@@ -255,8 +257,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -291,11 +294,12 @@
       "margen": 58,
       "descuento": 10,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
-        "500g"
+        "1kg"
       ],
-      "presentacionDefecto": "500g",
+      "presentacionDefecto": "1kg",
       "tags": [
         "vegano",
         "sintacc"
@@ -327,11 +331,12 @@
       "margen": 55,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
-        "500g"
+        "1kg"
       ],
-      "presentacionDefecto": "500g",
+      "presentacionDefecto": "1kg",
       "tags": [
         "sintacc"
       ],
@@ -363,8 +368,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -400,8 +406,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -436,11 +443,12 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
-        "500g"
+        "1kg"
       ],
-      "presentacionDefecto": "500g",
+      "presentacionDefecto": "1kg",
       "tags": [
         "vegano",
         "sintacc"
@@ -472,8 +480,9 @@
       "margen": 62,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -508,11 +517,12 @@
       "margen": 58,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
-        "500g"
+        "1kg"
       ],
-      "presentacionDefecto": "500g",
+      "presentacionDefecto": "1kg",
       "tags": [
         "vegano"
       ],
@@ -543,11 +553,12 @@
       "margen": 55,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
-        "500g"
+        "1kg"
       ],
-      "presentacionDefecto": "500g",
+      "presentacionDefecto": "1kg",
       "tags": [
         "sintacc",
         "vegano"
@@ -579,8 +590,9 @@
       "margen": 58,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -751,9 +763,10 @@
       "presentaciones": [
         "50g",
         "100g",
-        "250g"
+        "250g",
+        "1kg"
       ],
-      "presentacionDefecto": "250g",
+      "presentacionDefecto": "1kg",
       "tags": [
         "vegano",
         "nuevo"
@@ -785,8 +798,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -821,8 +835,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -857,6 +872,7 @@
       "margen": 60,
       "descuento": 5,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -1077,8 +1093,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -1110,6 +1127,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -1237,6 +1255,7 @@
       "descuento": 0,
       "presentaciones": [
         "50g",
+        "100g",
         "250g",
         "1kg"
       ],
@@ -1270,6 +1289,7 @@
       "descuento": 0,
       "presentaciones": [
         "50g",
+        "100g",
         "250g",
         "1kg"
       ],
@@ -1302,6 +1322,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -1335,6 +1356,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -1369,6 +1391,7 @@
       "descuento": 0,
       "presentaciones": [
         "50g",
+        "100g",
         "250g",
         "1kg"
       ],
@@ -1402,6 +1425,7 @@
       "descuento": 0,
       "presentaciones": [
         "50g",
+        "100g",
         "250g",
         "1kg"
       ],
@@ -1465,8 +1489,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -1498,8 +1523,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -1531,8 +1557,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -1564,8 +1591,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -1597,8 +1625,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -1630,8 +1659,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -1725,8 +1755,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -1758,8 +1789,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -1791,8 +1823,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -1824,8 +1857,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -1858,6 +1892,7 @@
       "descuento": 0,
       "presentaciones": [
         "50g",
+        "100g",
         "250g",
         "1kg"
       ],
@@ -1890,8 +1925,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -1923,8 +1959,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -1956,8 +1993,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -1989,8 +2027,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -2022,8 +2061,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -2055,8 +2095,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -2088,8 +2129,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -2121,8 +2163,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -2154,8 +2197,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -2187,8 +2231,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -2592,6 +2637,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -2657,6 +2703,7 @@
       "descuento": 0,
       "presentaciones": [
         "50g",
+        "100g",
         "250g",
         "1kg"
       ],
@@ -2689,6 +2736,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -2722,8 +2770,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -2755,8 +2804,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -2788,6 +2838,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -2821,8 +2872,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -2855,6 +2907,7 @@
       "descuento": 0,
       "presentaciones": [
         "50g",
+        "100g",
         "250g",
         "1kg"
       ],
@@ -2887,6 +2940,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -2920,6 +2974,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -2953,6 +3008,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -2986,8 +3042,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3019,8 +3076,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3052,8 +3110,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3085,8 +3144,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3118,8 +3178,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3182,8 +3243,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3215,8 +3277,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3248,8 +3311,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3281,8 +3345,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3314,8 +3379,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3347,8 +3413,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3380,8 +3447,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3413,8 +3481,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3446,8 +3515,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3479,8 +3549,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3512,8 +3583,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3545,8 +3617,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3578,8 +3651,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3611,8 +3685,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3644,8 +3719,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3677,8 +3753,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3710,8 +3787,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3743,8 +3821,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3776,8 +3855,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3809,8 +3889,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3842,8 +3923,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3875,8 +3957,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3908,8 +3991,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3941,8 +4025,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3974,8 +4059,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -4007,8 +4093,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -4040,8 +4127,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -4073,8 +4161,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -4106,8 +4195,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -4139,8 +4229,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -4172,6 +4263,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -4206,6 +4298,7 @@
       "descuento": 0,
       "presentaciones": [
         "50g",
+        "100g",
         "250g",
         "1kg"
       ],
@@ -4238,6 +4331,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -4271,8 +4365,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
-        "500g",
+        "250g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -4304,6 +4399,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -4337,6 +4433,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -4370,6 +4467,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -4403,6 +4501,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -4436,6 +4535,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -4469,6 +4569,7 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
         "100g",
         "250g",
         "1kg"
@@ -4533,8 +4634,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -4566,8 +4668,9 @@
       "margen": 60,
       "descuento": 0,
       "presentaciones": [
+        "50g",
+        "100g",
         "250g",
-        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
