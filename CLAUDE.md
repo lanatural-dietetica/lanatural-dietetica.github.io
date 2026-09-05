@@ -379,8 +379,13 @@ Juani pasó `maquetafondocatalogo.PNG`. De ahí salieron, medidos sobre la image
   reprocesaron las 145 fotos de producto y los `cat-*`, `acceso-*` y `combo-*`; ocho
   quedaron fuera del algoritmo normal (producto del color del fondo) y se hicieron con
   un margen más chico (LEJOS 32 / CERCA 14).
-- Se probaron las **hojas** de la maqueta en las esquinas de la franja y se sacaron el
-  2026-09-05: no quedaron bien. La franja va lisa. No volver a ponerlas.
+- Las hojas recortadas de la maqueta **no sirven**: ahí están tapadas por el buscador y
+  los chips, así que no existe la rama entera y al recortarla queda cortada. Se sacaron.
+  En su lugar va `assets/rama.svg`: una ramita de olivo dibujada en SVG (1,6 KB), **entera**,
+  de 64 px en la esquina de arriba a la izquierda de la franja y por detrás del contenido
+  (`.cat-cabecera::before`, con el `.contenedor` en `z-index:1`). Al ser SVG no se pixela y
+  el tamaño se cambia en un solo lugar. La regla que salió de acá: **el adorno tiene que
+  entrar entero en su lugar; si hay que cortarlo, no va.**
 - La fila de abajo de la franja (`.orden-fila`) lleva "N productos" a la izquierda y el
   orden a la derecha, separada por una línea, como en la maqueta.
 
