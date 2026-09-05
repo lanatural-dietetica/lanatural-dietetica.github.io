@@ -379,13 +379,9 @@ Juani pasó `maquetafondocatalogo.PNG`. De ahí salieron, medidos sobre la image
   reprocesaron las 145 fotos de producto y los `cat-*`, `acceso-*` y `combo-*`; ocho
   quedaron fuera del algoritmo normal (producto del color del fondo) y se hicieron con
   un margen más chico (LEJOS 32 / CERCA 14).
-- Las hojas recortadas de la maqueta **no sirven**: ahí están tapadas por el buscador y
-  los chips, así que no existe la rama entera y al recortarla queda cortada. Se sacaron.
-  En su lugar va `assets/rama.svg`: una ramita de olivo dibujada en SVG (1,6 KB), **entera**,
-  de 64 px en la esquina de arriba a la izquierda de la franja y por detrás del contenido
-  (`.cat-cabecera::before`, con el `.contenedor` en `z-index:1`). Al ser SVG no se pixela y
-  el tamaño se cambia en un solo lugar. La regla que salió de acá: **el adorno tiene que
-  entrar entero en su lugar; si hay que cortarlo, no va.**
+- **La franja va lisa, sin adornos.** Se probaron las hojas recortadas de la maqueta
+  (quedaban cortadas, porque ahí están tapadas por el buscador) y después una ramita de
+  olivo dibujada en SVG. Juani rechazó las dos. No volver a poner adornos ahí.
 - La fila de abajo de la franja (`.orden-fila`) lleva "N productos" a la izquierda y el
   orden a la derecha, separada por una línea, como en la maqueta.
 
@@ -402,3 +398,18 @@ Juani pasó `maquetafondocatalogo.PNG`. De ahí salieron, medidos sobre la image
   reemplazar el HTML, **no** sólo en el evento de scroll.
 - El botón "Ver productos" del hero apunta a `#/catalogo?cat=todos` para que no arrastre
   la categoría que estaba filtrada.
+
+
+## Mensaje de WhatsApp, carrito y portadas — 2026-09-05 (cambios hechos por Claude)
+- El mensaje del pedido copia el formato de Paladear: `🛒 *Pedido - La Natural*`, una línea
+  por producto con la cantidad en negrita, `*TOTAL: $…*`, y abajo el bloque de entrega con
+  íconos (🏬/🚚, 👤, 🕐, 📍, 📝, 💳) y el aviso en cursiva. **Ya no lleva número de pedido**:
+  Juani lo sacó, `numeroPedido()` se borró.
+- **Las fotos del carrito ya no titilan.** Antes cada `+`/`−` rehacía todo el HTML del panel
+  y las `<img>` se volvían a crear. Ahora `refrescarCarrito()` reescribe sólo el
+  `.item__cuerpo` de cada bloque y el pie; las imágenes no se tocan. Si cambia la cantidad
+  de bloques, recién ahí se rehace todo con `pintarCarrito()`.
+- El botón de avanzar y el de enviar por WhatsApp van en `.co-fijo`, pegados abajo del panel
+  (`position:sticky`), para no tener que scrollear hasta el final con muchos productos.
+- Las portadas de **Armá tu mix** y **Combos** (`.portada-vista`) van centradas: título,
+  bajada y el filete de separación.

@@ -128,7 +128,7 @@ function cambiarCant(key, delta) {
   if (it.cant <= 0) estado.carrito = estado.carrito.filter(i => i.key !== key);
   guardar(LS_CARRITO, estado.carrito);
   pintarContadorCarrito();
-  pintarCarrito();
+  refrescarCarrito();
 }
 function quitar(key) {
   estado.carrito = estado.carrito.filter(i => i.key !== key);
@@ -1044,6 +1044,42 @@ function resumenChico() {
   '</div>';
 }
 
+function cuerpoBloqueCarrito(b) {
+  const prod = prodPorId(b.lineas[0].id);
+  const porKg = prod && prod.tipo === 'granel' ? money(precioKgVenta(prod)) + ' / kg' : '';
+  return '<p class="item__nom">' + esc(b.nombre) + '</p>' +
+    '<p class="item__acum">Llevás ' + esc(cantidadBloqueCarrito(b)) + '</p>' +
+    b.lineas.map(i => {
+      const totalLinea = cantidadLineaCarrito(i);
+      return '<div class="item__var">' +
+        '<span class="item__var-lbl">' + esc(i.detalle || '') +
+          '<em>' + (porKg || money(i.precio) + ' c/u') + '</em>' +
+          '<small class="item__var-total">' + i.cant + ' × ' + esc(i.detalle || 'unidad') + ' = ' + esc(totalLinea) + '</small></span>' +
+        '<span class="stepper stepper--mini">' +
+          '<button data-mas="' + i.key + '" data-delta="-1" aria-label="Quitar uno de ' + esc(i.detalle || i.nombre) + '">−</button>' +
+          '<span>' + i.cant + '</span>' +
+          '<button data-mas="' + i.key + '" data-delta="1" aria-label="Sumar uno de ' + esc(i.detalle || i.nombre) + '">+</button>' +
+        '</span>' +
+        '<strong class="item__monto">' + money(i.precio * i.cant) + '</strong>' +
+        '<button class="item__papelera" data-quitar="' + esc(i.key) + '" aria-label="Quitar ' + esc(i.detalle || i.nombre) + '">' + ICO.basura + '</button>' +
+      '</div>';
+    }).join('') +
+    (b.lineas.length > 1
+      ? '<div class="item__sub"><span>Subtotal</span><strong>' + money(b.subtotal) + '</strong></div>'
+      : '');
+}
+
+function pieCarrito() {
+  const total = totalCarrito();
+  const falta = Math.max((CONFIG.compraMinima || 0) - total, 0);
+  return '<div class="totales">' +
+      '<div class="totales__fila"><span>Productos (' + unidadesCarrito() + ')</span><span>' + money(total) + '</span></div>' +
+      '<div class="totales__fila totales__total"><span>Total estimado</span><span>' + money(total) + '</span></div>' +
+    '</div>' +
+    (falta > 0 ? '<p class="aviso">Te faltan ' + money(falta) + ' para llegar a la compra mínima de ' + money(CONFIG.compraMinima) + '.</p>' : '') +
+    '<p class="aviso">' + esc(CONFIG.avisoStock) + '</p>';
+}
+
 function pasoProductos() {
   if (!estado.carrito.length) {
     const ultimo = leer(LS_ULTIMO, []);
@@ -1057,46 +1093,39 @@ function pasoProductos() {
       '</p>';
   }
 
-  const total = totalCarrito();
-  const falta = Math.max((CONFIG.compraMinima || 0) - total, 0);
+  const falta = Math.max((CONFIG.compraMinima || 0) - totalCarrito(), 0);
 
-  return agruparCarrito().map(b => {
-      const prod = prodPorId(b.lineas[0].id);
-      const porKg = prod && prod.tipo === 'granel' ? money(precioKgVenta(prod)) + ' / kg' : '';
-      return '<div class="item">' +
-        '<div class="item__fig"><img src="' + b.img + '" alt="" width="70" height="70" loading="lazy"></div>' +
-        '<div class="item__cuerpo">' +
-          '<p class="item__nom">' + esc(b.nombre) + '</p>' +
-          '<p class="item__acum">Llevás ' + esc(cantidadBloqueCarrito(b)) + '</p>' +
-          b.lineas.map(i => {
-            const totalLinea = cantidadLineaCarrito(i);
-            return '<div class="item__var">' +
-              '<span class="item__var-lbl">' + esc(i.detalle || '') +
-                '<em>' + (porKg || money(i.precio) + ' c/u') + '</em>' +
-                '<small class="item__var-total">' + i.cant + ' × ' + esc(i.detalle || 'unidad') + ' = ' + esc(totalLinea) + '</small></span>' +
-              '<span class="stepper stepper--mini">' +
-                '<button data-mas="' + i.key + '" data-delta="-1" aria-label="Quitar uno de ' + esc(i.detalle || i.nombre) + '">−</button>' +
-                '<span>' + i.cant + '</span>' +
-                '<button data-mas="' + i.key + '" data-delta="1" aria-label="Sumar uno de ' + esc(i.detalle || i.nombre) + '">+</button>' +
-              '</span>' +
-              '<strong class="item__monto">' + money(i.precio * i.cant) + '</strong>' +
-              '<button class="item__papelera" data-quitar="' + esc(i.key) + '" aria-label="Quitar ' + esc(i.detalle || i.nombre) + '">' + ICO.basura + '</button>' +
-            '</div>';
-          }).join('') +
-          (b.lineas.length > 1
-            ? '<div class="item__sub"><span>Subtotal</span><strong>' + money(b.subtotal) + '</strong></div>'
-            : '') +
-        '</div>' +
-      '</div>';
-    }).join('') +
-
-    '<div class="totales">' +
-      '<div class="totales__fila"><span>Productos (' + unidadesCarrito() + ')</span><span>' + money(total) + '</span></div>' +
-      '<div class="totales__fila totales__total"><span>Total estimado</span><span>' + money(total) + '</span></div>' +
+  return '<div id="carrito-items">' +
+      agruparCarrito().map(b =>
+        '<div class="item" data-bloque="' + esc(b.lineas[0].id) + '">' +
+          '<div class="item__fig"><img src="' + b.img + '" alt="" width="70" height="70" loading="lazy"></div>' +
+          '<div class="item__cuerpo">' + cuerpoBloqueCarrito(b) + '</div>' +
+        '</div>').join('') +
     '</div>' +
-    (falta > 0 ? '<p class="aviso">Te faltan ' + money(falta) + ' para llegar a la compra mínima de ' + money(CONFIG.compraMinima) + '.</p>' : '') +
-    '<button class="btn btn--oliva btn--bloque" id="co-continuar"' + (falta > 0 ? ' disabled' : '') + '>Continuar ' + ICO.flecha + '</button>' +
-    '<p class="aviso">' + esc(CONFIG.avisoStock) + '</p>';
+    '<div id="carrito-pie">' + pieCarrito() + '</div>' +
+    '<div class="co-fijo">' +
+      '<button class="btn btn--oliva btn--bloque" id="co-continuar"' + (falta > 0 ? ' disabled' : '') + '>Continuar ' + ICO.flecha + '</button>' +
+    '</div>';
+}
+
+/* Al sumar o restar no se rehace toda la lista: se reescribe sólo el texto de cada
+   bloque. Si se tocaran las <img> otra vez, las fotos titilarían. */
+function refrescarCarrito() {
+  const cont = $('#carrito-items');
+  if (!cont || estado.checkout.paso !== 0) { pintarCarrito(); return; }
+  const bloques = agruparCarrito();
+  const cajas = $$('.item', cont);
+  if (!bloques.length || bloques.length !== cajas.length) { pintarCarrito(); return; }
+
+  for (let n = 0; n < bloques.length; n++) {
+    if (cajas[n].dataset.bloque !== String(bloques[n].lineas[0].id)) { pintarCarrito(); return; }
+  }
+  bloques.forEach((b, n) => {
+    cajas[n].querySelector('.item__cuerpo').innerHTML = cuerpoBloqueCarrito(b);
+  });
+  $('#carrito-pie').innerHTML = pieCarrito();
+  const btn = $('#co-continuar');
+  if (btn) btn.disabled = totalCarrito() < (CONFIG.compraMinima || 0);
 }
 
 function pasoEntrega() {
@@ -1138,52 +1167,57 @@ function pasoDatos() {
       '<div class="form-campo"><label for="f-obs">Observaciones</label>' +
         '<textarea id="f-obs" name="obs" placeholder="Aclaraciones sobre el pedido"></textarea></div>' +
       '<p class="error-msg oculto" id="err-pedido"></p>' +
-      '<button class="btn btn--wa btn--bloque" type="submit">' + ICO.wa + ' Enviar pedido por WhatsApp</button>' +
       '<p class="co-pago">' + esc(CONFIG.mediosPago) + '</p>' +
       (guardados
         ? '<p class="co-guardado">Guardamos tus datos en este dispositivo para la próxima. ' +
           '<button type="button" id="borrar-perfil">Borrar mis datos</button></p>'
         : '<p class="co-guardado">Vamos a guardar tus datos en este dispositivo para la próxima.</p>') +
       '<p class="aviso">' + esc(CONFIG.avisoStock) + '</p>' +
+      '<div class="co-fijo">' +
+        '<button class="btn btn--wa btn--bloque" type="submit">' + ICO.wa + ' Enviar pedido por WhatsApp</button>' +
+      '</div>' +
     '</form>';
 }
 
-function numeroPedido() {
-  const d = new Date();
-  const dd = String(d.getDate()).padStart(2, '0') + String(d.getMonth() + 1).padStart(2, '0');
-  return dd + '-' + String(Math.floor(Math.random() * 900) + 100);
-}
-
 function armarMensaje(datos) {
+  // Mismo formato que Paladear: título en negrita, cantidad resaltada, total abajo
+  // y el bloque de entrega con íconos.
   const L = [];
-  L.push(CONFIG.waApertura);
+  L.push('\u{1F6D2} *Pedido - ' + CONFIG.marca + '*');
   L.push('');
-  L.push('Pedido N° ' + datos.nro);
-  L.push('');
+
   agruparCarrito().forEach(b => {
     if (b.lineas.length === 1) {
       const i = b.lineas[0];
-      L.push('• ' + b.nombre + (i.detalle ? ' (' + i.detalle + ')' : ''));
-      L.push('   ' + i.cant + ' × ' + money(i.precio) + ' = ' + money(i.precio * i.cant));
+      L.push('*' + i.cant + '* - ' + b.nombre + (i.detalle ? ' (' + i.detalle + ')' : ''));
+      L.push('   ' + money(i.precio * i.cant));
     } else {
-      L.push('• ' + b.nombre);
+      L.push('*' + b.nombre + '*');
       b.lineas.forEach(i => {
-        L.push('   ' + i.detalle + ': ' + i.cant + ' × ' + money(i.precio) + ' = ' + money(i.precio * i.cant));
+        L.push('*' + i.cant + '* - ' + i.detalle + ' — ' + money(i.precio * i.cant));
       });
       L.push('   Subtotal: ' + money(b.subtotal));
     }
   });
+
   L.push('');
-  L.push('TOTAL ESTIMADO: ' + money(totalCarrito()));
+  L.push('*TOTAL: ' + money(totalCarrito()) + '*');
+
+  const envio = datos.entrega === (CONFIG.entrega[1] || 'Envío a domicilio');
   L.push('');
-  L.push('Nombre: ' + datos.nombre);
-  L.push('Entrega: ' + datos.entrega);
-  if (datos.dir) L.push('Dirección: ' + datos.dir);
-  if (datos.hora) L.push('Paso: ' + datos.hora);
-  if (datos.obs) L.push('Observaciones: ' + datos.obs);
+  L.push(envio ? '\u{1F69A} *ENVÍO A DOMICILIO*' : '\u{1F3EC} *RETIRO EN EL LOCAL*');
+  L.push('\u{1F464} ' + datos.nombre);
+  if (envio) {
+    if (datos.dir) L.push('\u{1F4CD} ' + datos.dir);
+  } else {
+    L.push('\u{1F550} Horario: ' + (datos.hora || 'Sin preferencia'));
+    if (CONFIG.direccion) L.push('\u{1F4CD} ' + CONFIG.direccion);
+  }
+  if (datos.obs) L.push('\u{1F4DD} ' + datos.obs);
+  L.push('\u{1F4B3} ' + CONFIG.mediosPago);
+
   L.push('');
-  L.push(CONFIG.avisoStock);
-  L.push(CONFIG.waCierre);
+  L.push('_' + CONFIG.avisoStock + '_');
   return L.join('\n');
 }
 
@@ -1659,8 +1693,7 @@ document.addEventListener('submit', ev => {
     entrega: esEnvio ? (CONFIG.entrega[1] || 'Envío a domicilio') : (CONFIG.entrega[0] || 'Retiro en el local'),
     dir: esEnvio && f.dir ? f.dir.value.trim() : '',
     hora: !esEnvio && f.hora ? f.hora.value.trim() : '',
-    obs: f.obs.value.trim(),
-    nro: numeroPedido()
+    obs: f.obs.value.trim()
   };
 
   let problema = '';
@@ -1681,7 +1714,7 @@ document.addEventListener('submit', ev => {
 
   const url = waLink(armarMensaje(datos));
   window.open(url, '_blank', 'noopener');
-  toast('Pedido ' + datos.nro + ' listo para enviar');
+  toast('Pedido listo para enviar');
 });
 
 document.addEventListener('keydown', ev => {
