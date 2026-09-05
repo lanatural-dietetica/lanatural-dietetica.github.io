@@ -385,7 +385,10 @@ Juani pasó `maquetafondocatalogo.PNG`. De ahí salieron, medidos sobre la image
   lo marrón (líneas y texto) filtrando `r - b > 35` con `r < 200`. Van en
   `.cat-cabecera::before/::after`, medidas **en proporción** (15 % y 8 % del ancho): la
   primera vez se usaron los píxeles de la captura como si fueran píxeles de pantalla y
-  quedaron al doble de tamaño.
+  quedaron al doble de tamaño. En la maqueta las hojas seguían por debajo del buscador y
+  de los chips, así que **el borde de adentro va desvanecido** (rampa de alfa al recortar):
+  si se corta en seco se nota. Los bordes que tocan el costado de la pantalla sí se cortan,
+  y está bien: se leen como que siguen fuera de cuadro.
 - La fila de abajo de la franja (`.orden-fila`) lleva "N productos" a la izquierda y el
   orden a la derecha, separada por una línea, como en la maqueta.
 

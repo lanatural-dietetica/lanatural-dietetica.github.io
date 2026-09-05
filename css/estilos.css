@@ -315,12 +315,12 @@ main{min-height:60vh;padding-bottom:40px}
    la rama ocupa el 15 % del ancho y el ramito de la derecha el 8 %. */
 .cat-cabecera::before{
   left:0;top:0;width:15%;max-width:92px;aspect-ratio:125/166;
-  background-image:url("../assets/hojas-izq.webp?v=1");
+  background-image:url("../assets/hojas-izq.webp?v=2");
   background-position:left top;
 }
 .cat-cabecera::after{
   right:0;top:42%;width:8%;max-width:48px;aspect-ratio:66/128;
-  background-image:url("../assets/hojas-der.webp?v=1");
+  background-image:url("../assets/hojas-der.webp?v=2");
   background-position:right top;
 }
 .seccion.catalogo{padding-top:0}
