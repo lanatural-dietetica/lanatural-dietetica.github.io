@@ -392,7 +392,7 @@ Juani pasó `maquetafondocatalogo.PNG`. De ahí salieron, medidos sobre la image
   orden a la derecha, separada por una línea, como en la maqueta.
 
 ## Datos reales y checkout — 2026-09-05
-- WhatsApp real: **5492622724422**. Dirección: **Libertad 1241, Villa Nueva, Mendoza**.
+- WhatsApp real: **5492612724422** (261, no 2622: Juani lo corrigió). Dirección: **Libertad 1241, Villa Nueva, Mendoza**.
 - El checkout **ya no pide teléfono**: el pedido llega por WhatsApp, así que el número ya
   lo tiene el local. No volver a agregarlo.
 
