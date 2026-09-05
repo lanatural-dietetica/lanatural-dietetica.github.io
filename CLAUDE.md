@@ -383,7 +383,9 @@ Juani pasó `maquetafondocatalogo.PNG`. De ahí salieron, medidos sobre la image
 - Las **hojas** (`assets/hojas-izq.webp`, `hojas-der.webp`) están recortadas de esa
   misma maqueta, no dibujadas: se les sacó el fondo por distancia de color y se borró
   lo marrón (líneas y texto) filtrando `r - b > 35` con `r < 200`. Van en
-  `.cat-cabecera::before/::after`.
+  `.cat-cabecera::before/::after`, medidas **en proporción** (15 % y 8 % del ancho): la
+  primera vez se usaron los píxeles de la captura como si fueran píxeles de pantalla y
+  quedaron al doble de tamaño.
 - La fila de abajo de la franja (`.orden-fila`) lleva "N productos" a la izquierda y el
   orden a la derecha, separada por una línea, como en la maqueta.
 
