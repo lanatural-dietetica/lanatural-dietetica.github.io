@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "actualizado": "2026-09-04",
+  "actualizado": "2026-09-05",
   "demo": true,
   "config": {
     "marca": "La Natural",
@@ -3249,10 +3249,13 @@
         "1kg"
       ],
       "presentacionDefecto": "1kg",
-      "tags": [],
+      "tags": [
+        "organico",
+        "nuevo"
+      ],
       "estado": "publicado",
       "disponible": true,
-      "destacado": false,
+      "destacado": true,
       "orden": 93,
       "mix": true,
       "descripcion": "Almendras de sabor suave y textura crocante, prácticas para colaciones, granolas, repostería y ensaladas. Aportan grasas insaturadas, proteína vegetal, fibra, vitamina E y minerales como el magnesio.",
@@ -5174,5 +5177,5 @@
       "texto": "Elegí envío o retiro en el local."
     }
   ],
-  "sello": 1788498020857
+  "sello": 1788621026212
 }
