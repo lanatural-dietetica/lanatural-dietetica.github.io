@@ -87,7 +87,10 @@ function cuentaMix(ing) {
   return { filas: filas, gramos: gramos, suma: suma, total: redondear(suma * (1 + (MIX.recargo || 0) / 100)) };
 }
 
-const gLabel = g => g >= 1000 && g % 1000 === 0 ? (g / 1000) + ' kg' : g + ' g';
+/* 1000 → "1 kg", 1250 → "1,25 kg", 500 → "500 g". Igual que en Paladear. */
+const gLabel = g => g < 1000
+  ? g + ' g'
+  : (g % 1000 === 0 ? (g / 1000) : (g / 1000).toFixed(2).replace(/0+$/, '').replace(/\.$/, '').replace('.', ',')) + ' kg';
 
 /* ---------------- estado ---------------- */
 const LS_CARRITO = 'dietetica_carrito_v1';
@@ -408,7 +411,7 @@ function pintarBusqueda(valor) {
           const p = x.item;
           const cat = catPorId(p.categoria);
           return '<button type="button" class="busqueda-resultado" data-buscar-producto="' + esc(p.slug) + '">' +
-            '<span class="busqueda-resultado__fig"><img src="' + imgDe(p) + '" alt="" width="72" height="72" loading="lazy"></span>' +
+            '<span class="busqueda-resultado__fig"><img src="' + imgDe(p) + '" alt="" width="72" height="72" decoding="async"></span>' +
             '<span class="busqueda-resultado__txt"><strong>' + esc(p.nombre) + '</strong>' +
               '<small>' + esc(cat ? cat.nombre : '') + '</small>' +
               '<em>' + (p.disponible ? money(precioDesde(p)) : 'Sin stock') + '</em></span>' +
@@ -1098,7 +1101,7 @@ function pasoProductos() {
   return '<div id="carrito-items">' +
       agruparCarrito().map(b =>
         '<div class="item" data-bloque="' + esc(b.lineas[0].id) + '">' +
-          '<div class="item__fig"><img src="' + b.img + '" alt="" width="70" height="70" loading="lazy"></div>' +
+          '<div class="item__fig"><img src="' + b.img + '" alt="" width="70" height="70" decoding="async"></div>' +
           '<div class="item__cuerpo">' + cuerpoBloqueCarrito(b) + '</div>' +
         '</div>').join('') +
     '</div>' +
@@ -1186,15 +1189,17 @@ function armarMensaje(datos) {
   L.push('\u{1F6D2} *Pedido - ' + CONFIG.marca + '*');
   L.push('');
 
+  // Como en Paladear: en lo que va por peso, adelante va el total (2 × 500 g = 1 kg),
+  // no la cantidad de paquetes.
   agruparCarrito().forEach(b => {
     if (b.lineas.length === 1) {
       const i = b.lineas[0];
-      L.push('*' + i.cant + '* - ' + b.nombre + (i.detalle ? ' (' + i.detalle + ')' : ''));
+      L.push('*' + cantidadLineaCarrito(i) + '* - ' + b.nombre);
       L.push('   ' + money(i.precio * i.cant));
     } else {
-      L.push('*' + b.nombre + '*');
+      L.push('*' + b.nombre + '* — ' + cantidadBloqueCarrito(b).replace(' en total', ''));
       b.lineas.forEach(i => {
-        L.push('*' + i.cant + '* - ' + i.detalle + ' — ' + money(i.precio * i.cant));
+        L.push('   *' + cantidadLineaCarrito(i) + '* — ' + money(i.precio * i.cant));
       });
       L.push('   Subtotal: ' + money(b.subtotal));
     }

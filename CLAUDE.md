@@ -411,5 +411,11 @@ Juani pasó `maquetafondocatalogo.PNG`. De ahí salieron, medidos sobre la image
   de bloques, recién ahí se rehace todo con `pintarCarrito()`.
 - El botón de avanzar y el de enviar por WhatsApp van en `.co-fijo`, pegados abajo del panel
   (`position:sticky`), para no tener que scrollear hasta el final con muchos productos.
+- En lo que va **por peso, el mensaje muestra el total, no la cantidad de paquetes**:
+  2 × 500 g sale como `*1 kg*`, igual que Paladear. `gLabel` ahora también resuelve los
+  kilos con decimales (1250 → "1,25 kg").
+- **Nada de `loading="lazy"` dentro de los paneles que entran deslizándose** (carrito,
+  buscador): el navegador los considera fuera de pantalla y la foto nunca se baja, así que
+  quedaban miniaturas en blanco. Van con `decoding="async"` y listo.
 - Las portadas de **Armá tu mix** y **Combos** (`.portada-vista`) van centradas: título,
   bajada y el filete de separación.
