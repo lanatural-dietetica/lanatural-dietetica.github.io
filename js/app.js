@@ -1068,7 +1068,8 @@ function cuerpoBloqueCarrito(b) {
       '</div>';
     }).join('') +
     (b.lineas.length > 1
-      ? '<div class="item__sub"><span>Subtotal</span><strong>' + money(b.subtotal) + '</strong></div>'
+      ? '<div class="item__sub"><span>Se pide junto: ' + esc(cantidadBloqueCarrito(b).replace(' en total', '')) +
+        '</span><strong>' + money(b.subtotal) + '</strong></div>'
       : '');
 }
 
@@ -1189,20 +1190,11 @@ function armarMensaje(datos) {
   L.push('\u{1F6D2} *Pedido - ' + CONFIG.marca + '*');
   L.push('');
 
-  // Como en Paladear: en lo que va por peso, adelante va el total (2 × 500 g = 1 kg),
-  // no la cantidad de paquetes.
+  // Una línea por producto con todo unificado: en el carrito las medidas van
+  // separadas para poder editarlas, pero acá 1 kg + 250 g es "1,25 kg".
   agruparCarrito().forEach(b => {
-    if (b.lineas.length === 1) {
-      const i = b.lineas[0];
-      L.push('*' + cantidadLineaCarrito(i) + '* - ' + b.nombre);
-      L.push('   ' + money(i.precio * i.cant));
-    } else {
-      L.push('*' + b.nombre + '* — ' + cantidadBloqueCarrito(b).replace(' en total', ''));
-      b.lineas.forEach(i => {
-        L.push('   *' + cantidadLineaCarrito(i) + '* — ' + money(i.precio * i.cant));
-      });
-      L.push('   Subtotal: ' + money(b.subtotal));
-    }
+    L.push('*' + cantidadBloqueCarrito(b).replace(' en total', '') + '* - ' + b.nombre);
+    L.push('   ' + money(b.subtotal));
   });
 
   L.push('');

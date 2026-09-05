@@ -411,9 +411,11 @@ Juani pasó `maquetafondocatalogo.PNG`. De ahí salieron, medidos sobre la image
   de bloques, recién ahí se rehace todo con `pintarCarrito()`.
 - El botón de avanzar y el de enviar por WhatsApp van en `.co-fijo`, pegados abajo del panel
   (`position:sticky`), para no tener que scrollear hasta el final con muchos productos.
-- En lo que va **por peso, el mensaje muestra el total, no la cantidad de paquetes**:
-  2 × 500 g sale como `*1 kg*`, igual que Paladear. `gLabel` ahora también resuelve los
-  kilos con decimales (1250 → "1,25 kg").
+- **Todo lo del mismo producto se unifica.** En el carrito las medidas van separadas para
+  poder editarlas, pero el bloque cierra con "Se pide junto: 1,25 kg" y **el mensaje lleva
+  una sola línea por producto** con el total y el precio sumado: 1 kg + 250 g sale como
+  `*1,25 kg* - Damascos Secos`. Nunca listar las medidas por separado en el mensaje.
+  `gLabel` resuelve los kilos con decimales (1250 → "1,25 kg").
 - **Nada de `loading="lazy"` dentro de los paneles que entran deslizándose** (carrito,
   buscador): el navegador los considera fuera de pantalla y la foto nunca se baja, así que
   quedaban miniaturas en blanco. Van con `decoding="async"` y listo.
