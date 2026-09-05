@@ -99,7 +99,7 @@ const LS_ULTIMO  = 'dietetica_ultimo_v1';
 
 const estado = {
   carrito: leer(LS_CARRITO, []),
-  catalogo: { q: '', cat: 'todos', orden: 'nombre' },
+  catalogo: { q: '', cat: 'todos', orden: 'nombre', tags: [] },
   mix: { tam: null, ing: {}, cat: 'todos', q: '', nombre: '' },
   ficha: { pres: null, cant: 1, tab: 'descripcion' },
   comboAbierto: null,
@@ -464,6 +464,10 @@ function cerrarBusqueda() {
 /* ---------------- vistas ---------------- */
 function vistaHome() {
   const destacados = publicados().filter(p => p.destacado).slice(0, 6);
+  const conDescuento = publicados().filter(p => Number(p.descuento) > 0)
+    .sort((a, b) => Number(b.descuento) - Number(a.descuento));
+  const rebajados = conDescuento.slice(0, 4);
+  const hayMasOfertas = conDescuento.length > rebajados.length;
   const cats = categoriasVisibles();
   const paginasCats = [];
   for (let i = 0; i < cats.length; i += 4) paginasCats.push(cats.slice(i, i + 4));
@@ -516,6 +520,16 @@ function vistaHome() {
   '</section>' +
 
   '<div class="franja"><div class="contenedor">' + ICO.camion + '<span>' + esc(CONFIG.franja) + '</span></div></div>' +
+
+  (rebajados.length
+    ? '<section class="seccion ofertas-home"><div class="contenedor">' +
+        '<div class="titulo-filete"><h2>Ofertas de la semana</h2></div>' +
+        grilla(rebajados) +
+        (hayMasOfertas
+          ? '<p style="text-align:center;margin-top:22px"><a class="btn btn--fantasma" href="#/catalogo?ofertas=1">Ver todas las ofertas</a></p>'
+          : '') +
+      '</div></section>'
+    : '') +
 
   '<section class="seccion favoritos"><div class="contenedor">' +
     '<div class="titulo-filete"><h2>Nuestros favoritos</h2></div>' +
@@ -595,22 +609,33 @@ function prepararCategoriasHome() {
 
 function filtrarCatalogo() {
   const f = estado.catalogo;
-  const q = f.q.trim().toLowerCase();
+  const q = normalizarBusqueda(f.q);            // "acido" tiene que encontrar "Ácido"
   let arr = publicados();
- if (f.cat !== 'todos') arr = arr.filter(p => p.categoria === f.cat || (p.tags || []).includes(f.cat));
-  if (q) arr = arr.filter(p =>
-    (p.nombre + ' ' + (p.subtitulo || '') + ' ' + (p.descripcion || '') + ' ' + (p.tags || []).join(' '))
-      .toLowerCase().includes(q));
+  if (f.cat !== 'todos') arr = arr.filter(p => p.categoria === f.cat || (p.tags || []).includes(f.cat));
+  if (q) arr = arr.filter(p => normalizarBusqueda(
+    p.nombre + ' ' + (p.subtitulo || '') + ' ' + (p.descripcion || '') + ' ' + (p.tags || []).join(' ')
+  ).includes(q));
+
+  // las etiquetas se suman entre sí: sin TACC + vegano deja lo que cumple las dos
+  if (f.tags.length) arr = arr.filter(p => f.tags.every(t => (p.tags || []).includes(t)));
 
   if (f.orden === 'destacados') arr = arr.filter(p => p.destacado);
   else if (f.orden === 'ofertas') arr = arr.filter(p => Number(p.descuento) > 0);
-  else if (f.orden === 'sintacc') arr = arr.filter(p => (p.tags || []).includes('sintacc'));
-  else if (f.orden === 'vegano') arr = arr.filter(p => (p.tags || []).includes('vegano'));
 
   if (f.orden === 'precio-asc') arr.sort((a, b) => precioDesde(a) - precioDesde(b) || porNombre(a, b));
   else if (f.orden === 'precio-desc') arr.sort((a, b) => precioDesde(b) - precioDesde(a) || porNombre(a, b));
+  else if (f.orden === 'recomendados') arr.sort((a, b) =>
+    (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0) || (a.orden || 0) - (b.orden || 0) || porNombre(a, b));
   else arr.sort(porNombre);
   return arr;
+}
+
+/* Etiquetas que valen la pena mostrar: sólo las que tienen productos publicados. */
+function etiquetasConProductos() {
+  const base = publicados();
+  return ETIQUETAS
+    .map(e => ({ id: e.id, nombre: e.nombre || e.id, n: base.filter(p => (p.tags || []).includes(e.id)).length }))
+    .filter(e => e.n > 0);
 }
 
 function pintarGrillaCatalogo() {
@@ -635,6 +660,7 @@ function vistaCatalogo() {
   const f = estado.catalogo;
   const chips = [{ id: 'todos', nombre: 'Todos' }]
     .concat(categoriasVisibles());
+  const etiquetas = etiquetasConProductos();
 
   return '' +
   '<section class="seccion catalogo">' +
@@ -646,18 +672,23 @@ function vistaCatalogo() {
     '<div class="chips" role="group" aria-label="Categorías">' +
       chips.map(c => '<button class="chip" data-chip="' + c.id + '" aria-pressed="' + (f.cat === c.id) + '">' + esc(c.nombre) + '</button>').join('') +
     '</div>' +
+    (etiquetas.length
+      ? '<div class="chips chips--tags" role="group" aria-label="Filtrar por tipo de alimentación">' +
+          etiquetas.map(e => '<button class="chip chip--tag" data-tag="' + e.id + '" aria-pressed="' + f.tags.includes(e.id) + '">' +
+            esc(e.nombre) + '<small>' + e.n + '</small></button>').join('') +
+        '</div>'
+      : '') +
     '<div class="orden-fila">' +
       '<p id="conteo-catalogo"></p>' +
       '<div class="orden-campo">' +
       '<label class="visually-hidden" for="orden">Ordenar o filtrar productos</label>' +
       '<select id="orden">' +
         '<option value="nombre"' + (f.orden === 'nombre' ? ' selected' : '') + '>Nombre A-Z</option>' +
+        '<option value="recomendados"' + (f.orden === 'recomendados' ? ' selected' : '') + '>Recomendados</option>' +
         '<option value="precio-asc"' + (f.orden === 'precio-asc' ? ' selected' : '') + '>Precio: menor a mayor</option>' +
         '<option value="precio-desc"' + (f.orden === 'precio-desc' ? ' selected' : '') + '>Precio: mayor a menor</option>' +
         '<option value="destacados"' + (f.orden === 'destacados' ? ' selected' : '') + '>Solo destacados</option>' +
         '<option value="ofertas"' + (f.orden === 'ofertas' ? ' selected' : '') + '>Solo ofertas</option>' +
-        '<option value="sintacc"' + (f.orden === 'sintacc' ? ' selected' : '') + '>Solo Sin TACC</option>' +
-        '<option value="vegano"' + (f.orden === 'vegano' ? ' selected' : '') + '>Solo veganos</option>' +
       '</select>' +
       '<svg class="orden-campo__flecha" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
       '</div>' +
@@ -818,10 +849,10 @@ function pintarMixLista() {
   const cont = $('#mix-lista');
   if (!cont) return;
   const st = estado.mix;
-  const q = st.q.trim().toLowerCase();
+  const q = normalizarBusqueda(st.q);
   let arr = mixProductos();
   if (st.cat !== 'todos') arr = arr.filter(p => p.categoria === st.cat);
-  if (q) arr = arr.filter(p => p.nombre.toLowerCase().includes(q));
+  if (q) arr = arr.filter(p => normalizarBusqueda(p.nombre).includes(q));
 
   if (!arr.length) {
     cont.innerHTML = '<p class="mix-lista__vacio">' +
@@ -1085,6 +1116,23 @@ function cuerpoBloqueCarrito(b) {
       : '');
 }
 
+/* Se arma solo con lo que esté cargado en el panel: si no hay costo ni umbral,
+   no aparece nada. */
+function avisosEnvio(total) {
+  const costo = Number(CONFIG.envioCosto) || 0;
+  const gratis = Number(CONFIG.envioGratisDesde) || 0;
+  const L = [];
+  if (gratis > 0 && total > 0) {
+    L.push(total >= gratis
+      ? '<p class="envio-aviso envio-aviso--ok">' + ICO.camion + '<span>Tenés el envío sin cargo</span></p>'
+      : '<p class="envio-aviso">' + ICO.camion + '<span>Te faltan <b>' + money(gratis - total) + '</b> para el envío sin cargo</span></p>');
+  } else if (costo > 0) {
+    L.push('<p class="envio-aviso">' + ICO.camion + '<span>Envío a domicilio: <b>' + money(costo) + '</b></span></p>');
+  }
+  if (CONFIG.envioCorte) L.push('<p class="aviso">' + esc(CONFIG.envioCorte) + '</p>');
+  return L.join('');
+}
+
 function pieCarrito() {
   const total = totalCarrito();
   const falta = Math.max((CONFIG.compraMinima || 0) - total, 0);
@@ -1093,6 +1141,7 @@ function pieCarrito() {
       '<div class="totales__fila totales__total"><span>Total estimado</span><span>' + money(total) + '</span></div>' +
     '</div>' +
     (falta > 0 ? '<p class="aviso">Te faltan ' + money(falta) + ' para llegar a la compra mínima de ' + money(CONFIG.compraMinima) + '.</p>' : '') +
+    avisosEnvio(total) +
     '<p class="aviso">' + esc(CONFIG.avisoStock) + '</p>';
 }
 
@@ -1147,7 +1196,9 @@ function refrescarCarrito() {
 function pasoEntrega() {
   const opciones = [
     { id: 'retiro',    titulo: CONFIG.entrega[0] || 'Retiro en el local', sub: CONFIG.direccion + ' · ' + CONFIG.horarios, ico: ICO.tienda },
-    { id: 'domicilio', titulo: CONFIG.entrega[1] || 'Envío a domicilio',  sub: CONFIG.zonas, ico: ICO.camion }
+    { id: 'domicilio', titulo: CONFIG.entrega[1] || 'Envío a domicilio',
+      sub: CONFIG.zonas + (Number(CONFIG.envioCosto) > 0 ? ' · Envío ' + money(Number(CONFIG.envioCosto)) : ''),
+      ico: ICO.camion }
   ];
   return resumenChico() +
     '<p class="co-lbl">¿Cómo querés recibir tu pedido?</p>' +
@@ -1270,6 +1321,7 @@ function render() {
 
   if (vista === 'catalogo') {
     if (params.cat) estado.catalogo.cat = params.cat;
+    if (params.ofertas) { estado.catalogo.cat = 'todos'; estado.catalogo.orden = 'ofertas'; }
     html = vistaCatalogo();
     titulo = 'Catálogo · ' + CONFIG.marca;
   } else if (vista === 'producto') {
@@ -1467,6 +1519,16 @@ document.addEventListener('click', ev => {
     onda(add, ev);
     confirmarBoton(add, 'Agregado');
     agregarProductoDesdeTarjeta(add.dataset.add);
+    return;
+  }
+
+  const tag = t.closest('[data-tag]');
+  if (tag) {
+    const id = tag.dataset.tag;
+    const f = estado.catalogo;
+    f.tags = f.tags.includes(id) ? f.tags.filter(x => x !== id) : f.tags.concat(id);
+    tag.setAttribute('aria-pressed', f.tags.includes(id));
+    pintarGrillaCatalogo();
     return;
   }
 
@@ -1852,6 +1914,7 @@ function pintarCascara() {
       '<a href="#/catalogo">Catálogo</a><a href="#/mix">Armá tu mix</a>' +
       '<a href="#/combos">Combos</a><a href="#/como-comprar">Cómo comprar</a>' +
       (hayWa ? '<a href="' + waLink('¡Hola! Quería hacerles una consulta.') + '" target="_blank" rel="noopener">WhatsApp</a>' : '') +
+      (CONFIG.whatsappLista ? '<a href="' + esc(CONFIG.whatsappLista) + '" target="_blank" rel="noopener">Ofertas por WhatsApp</a>' : '') +
       (CONFIG.instagram ? '<a href="' + esc(CONFIG.instagram) + '" target="_blank" rel="noopener">Instagram</a>' : '') +
     '</div></div>';
 

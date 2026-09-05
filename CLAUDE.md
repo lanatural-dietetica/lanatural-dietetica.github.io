@@ -421,3 +421,26 @@ Juani pasó `maquetafondocatalogo.PNG`. De ahí salieron, medidos sobre la image
   quedaban miniaturas en blanco. Van con `decoding="async"` y listo.
 - Las portadas de **Armá tu mix** y **Combos** (`.portada-vista`) van centradas: título,
   bajada y el filete de separación.
+
+
+## Mejoras de la auditoría comparativa — 2026-09-05 (cambios hechos por Claude)
+Salieron de comparar la tienda con Nuts.com, Bulk.com, Bulk Barn, Thrive Market y
+Mercado Libre. Lo que se hizo:
+- **Chips de dieta** debajo de las categorías (`.chips--tags`), con el número de productos
+  de cada etiqueta. **Se combinan entre sí**: sin TACC + vegano deja lo que cumple las dos
+  (`estado.catalogo.tags`, filtra con `every`). Sólo aparecen las etiquetas que tienen
+  productos publicados. Salieron del desplegable de orden, donde no las veía nadie.
+  **Falta cargar las etiquetas**: hoy sólo 20 de 145 productos las tienen.
+- **"Ofertas de la semana" en el inicio**: las 4 de mayor descuento, y si hay más, un botón
+  a `#/catalogo?ofertas=1`. La sección no existe si no hay productos rebajados.
+- **Orden "Recomendados"**: destacados primero, después por el orden del catálogo. No es
+  "más vendidos" porque no hay datos de ventas; no inventar ese dato.
+- **Búsqueda sin acentos en todos lados**: `filtrarCatalogo` y el buscador de Armá tu mix
+  usaban `toLowerCase()` pelado, así que "acido" no encontraba "Ácido Ascórbico". Ahora los
+  tres buscadores pasan por `normalizarBusqueda`.
+- **Avisos de envío** (`avisosEnvio`): campos nuevos en `config` — `envioCosto`,
+  `envioGratisDesde`, `envioCorte`. Están **vacíos a propósito**: mientras no tengan valor
+  no se muestra nada. Con `envioGratisDesde` cargado, el carrito dice cuánto falta para el
+  envío sin cargo; con `envioCosto`, lo muestra en el paso de entrega.
+- **`whatsappLista`**: si se carga el link de una lista de difusión, aparece "Ofertas por
+  WhatsApp" en el pie. Vacío por defecto.
