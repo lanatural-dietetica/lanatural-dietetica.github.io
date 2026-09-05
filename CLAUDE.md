@@ -431,8 +431,11 @@ Mercado Libre. Lo que se hizo:
   (`estado.catalogo.tags`, filtra con `every`). Sólo aparecen las etiquetas que tienen
   productos publicados. Salieron del desplegable de orden, donde no las veía nadie.
   **Falta cargar las etiquetas**: hoy sólo 20 de 145 productos las tienen.
-- **"Ofertas de la semana" en el inicio**: las 4 de mayor descuento, y si hay más, un botón
-  a `#/catalogo?ofertas=1`. La sección no existe si no hay productos rebajados.
+- **"Ofertas de la semana" en el inicio**: las 4 de mayor descuento. La sección no existe si
+  no hay productos rebajados. El botón de abajo lleva a **todo el catálogo**
+  (`#/catalogo?cat=todos`), no a las ofertas filtradas: Juani lo pidió así para que del
+  inicio se salga a ver todo. El link `#/catalogo?ofertas=1` sigue andando y prende el chip
+  de ofertas, sirve para mandarlo por WhatsApp.
 - **Ofertas es un chip, no un orden** (`estado.catalogo.oferta`). Estuvo un rato como opción
   del desplegable y dejaba encerrado: entrabas a las ofertas y no se veía cómo volver al
   resto. Como chip se apaga de un toque. Va en rojo y **necesita dos clases**

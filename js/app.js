@@ -469,7 +469,6 @@ function vistaHome() {
   const conDescuento = publicados().filter(p => Number(p.descuento) > 0)
     .sort((a, b) => Number(b.descuento) - Number(a.descuento));
   const rebajados = conDescuento.slice(0, 4);
-  const hayMasOfertas = conDescuento.length > rebajados.length;
   const cats = categoriasVisibles();
   const paginasCats = [];
   for (let i = 0; i < cats.length; i += 4) paginasCats.push(cats.slice(i, i + 4));
@@ -527,9 +526,7 @@ function vistaHome() {
     ? '<section class="seccion ofertas-home"><div class="contenedor">' +
         '<div class="titulo-filete"><h2>Ofertas de la semana</h2></div>' +
         grilla(rebajados) +
-        (hayMasOfertas
-          ? '<p style="text-align:center;margin-top:22px"><a class="btn btn--fantasma" href="#/catalogo?ofertas=1">Ver todas las ofertas</a></p>'
-          : '') +
+        '<p style="text-align:center;margin-top:22px"><a class="btn btn--fantasma" href="#/catalogo?cat=todos">Ver todo el catálogo</a></p>' +
       '</div></section>'
     : '') +
 
