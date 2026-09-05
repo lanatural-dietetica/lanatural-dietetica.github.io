@@ -335,24 +335,39 @@ function tarjetaProducto(p) {
 }
 
 /* precio por kilo primero (como pidió Juani) y debajo el de la medida elegida */
+/* El número grande es el de la medida elegida; el precio por kilo queda siempre
+   abajo, más chico. Con 1 kg elegido son el mismo número, así que no se repite. */
 function preciosCard(p, presId) {
   const pr = precios(p, presId);
   if (p.tipo === 'granel') {
     const porKg = precioKgVenta(p);
     const listaKg = redondear((p.costoKg || 0) * (1 + (Number.isFinite(p.margen) ? p.margen : CONFIG.margenPorDefecto) / 100));
+    const esKilo = (pres(presId) || {}).gramos === 1000;
     return '<span class="precio precio--kg">' +
-        (pr.descuento ? '<span class="precio__antes">' + money(listaKg) + '</span>' : '') +
-        money(porKg) + '<em> / kg</em>' +
+        (pr.descuento ? '<span class="precio__antes">' + money(esKilo ? listaKg : pr.venta) + '</span>' : '') +
+        money(esKilo ? porKg : pr.final) +
+        '<em> ' + (esKilo ? '/ kg' : esc(presNombre(presId))) + '</em>' +
       '</span>' +
-      ((pres(presId) || {}).gramos === 1000
-        ? ''
-        : '<span class="precio-medida">' + esc(presNombre(presId)) + ' · <strong>' + money(pr.final) + '</strong></span>');
+      '<span class="precio-medida">' + (esKilo ? '' : money(porKg) + ' / kg') + '</span>';
   }
   return '<span class="precio precio--kg">' +
       (pr.descuento ? '<span class="precio__antes">' + money(pr.venta) + '</span>' : '') +
       money(pr.final) +
     '</span>' +
     '<span class="precio-medida">' + esc(presNombre(presId)) + '</span>';
+}
+
+/* El precio viejo se achica y se va, el nuevo entra desde abajo agrandándose. */
+function cambiarPrecio(cont, html) {
+  if (!cont) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { cont.innerHTML = html; return; }
+  cont.classList.remove('precio--entra');
+  cont.classList.add('precio--sale');
+  setTimeout(() => {
+    cont.innerHTML = html;
+    cont.classList.remove('precio--sale');
+    cont.classList.add('precio--entra');
+  }, 110);
 }
 
 /* vuelve a dibujar una sola tarjeta, sin tocar el resto de la grilla */
@@ -1495,8 +1510,7 @@ document.addEventListener('click', ev => {
     estadoCard(p).pres = peso.dataset.peso;
     const card = peso.closest('.prod');
     card.querySelectorAll('[data-peso]').forEach(b => b.setAttribute('aria-pressed', b === peso));
-    const cont = card.querySelector('[data-precio]');
-    if (cont) cont.innerHTML = preciosCard(p, peso.dataset.peso);
+    cambiarPrecio(card.querySelector('[data-precio]'), preciosCard(p, peso.dataset.peso));
     return;
   }
 
@@ -1743,8 +1757,7 @@ function render2Ficha() {
     b.setAttribute('aria-pressed', activo);
     b.innerHTML = esc(presNombre(b.dataset.pres)) + (activo ? ' ' + ICO.check : '');
   });
-  const el = $('#precio-ficha');
-  if (el) el.textContent = money(pr.final);
+  cambiarPrecio($('#precio-ficha'), money(pr.final));
   const ah = $('#ahorro-ficha');
   if (ah) ah.textContent = pr.descuento ? '−' + pr.descuento + '% de descuento' : '';
   const antes = $('.fila-precio .precio__antes');

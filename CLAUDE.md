@@ -491,3 +491,10 @@ en los 103 productos a granel, con 1 kg preseleccionado.
   vuelve a dibujar su tarjeta con la pastilla de "lo que llevás" y el estado en pedido.
   `repintarCard()` ahora recorre **todas** las tarjetas de ese producto (`$$`), porque el
   mismo producto puede estar a la vez en las ofertas del inicio y en el catálogo.
+- **El precio grande es el de la medida elegida**, no el del kilo. El precio por kilo queda
+  siempre abajo, chico (`.precio-medida`), con el renglón reservado (`min-height`) para que
+  la tarjeta no salte al cambiar de medida. Con 1 kg elegido son el mismo número, así que
+  ahí el renglón de abajo va vacío en vez de repetirlo.
+- Al cambiar de medida, `cambiarPrecio()` achica y desvanece el precio viejo (110 ms) y hace
+  entrar el nuevo desde abajo (300 ms). Respeta `prefers-reduced-motion`. Vale para la
+  tarjeta y para la ficha.

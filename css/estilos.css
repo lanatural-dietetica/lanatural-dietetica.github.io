@@ -1470,6 +1470,13 @@ body.compacto .icon-btn svg{width:22px;height:22px}
    Subtotales con el peso visual que tienen en Paladear.
    ============================================================ */
 .prod__precios{display:flex;flex-direction:column;gap:1px;margin:0 0 8px}
+/* el renglón del precio por kilo se reserva siempre, así la tarjeta no salta al
+   cambiar de medida */
+.prod__precios .precio-medida{min-height:1.25em}
+@keyframes precioSale{to{opacity:0;transform:scale(.9)}}
+@keyframes precioEntra{from{opacity:0;transform:translateY(14px) scale(.92)}to{opacity:1;transform:none}}
+.precio--sale{animation:precioSale .11s ease-in forwards}
+.precio--entra{animation:precioEntra .3s cubic-bezier(.2,.72,.3,1)}
 .precio--kg{font-size:19px;line-height:1.1;white-space:nowrap}
 .precio--kg em{font-style:normal;font-family:var(--sans);font-size:12px;color:var(--gris-txt)}
 .precio-medida{font-size:12px;color:var(--gris-txt);white-space:nowrap}
