@@ -241,8 +241,9 @@ main{min-height:60vh;padding-bottom:40px}
   padding:5px 9px;border-radius:999px;color:#fff;background:var(--russet);
 }
 .prod__badge--tag{background:var(--oliva)}
-.prod__nom{font-family:var(--serif);font-size:16px;margin:10px 0 2px;line-height:1.25}
-.prod__sub{font-size:12px;color:var(--gris-txt);margin:0 0 8px}
+.prod__nom{font-family:var(--serif);font-size:16px;margin:7px 0 2px;line-height:1.25}
+.prod__sub{font-size:12px;color:var(--gris-txt);margin:0 0 6px}
+.prod__sub:empty{display:none}
 .prod__sel{
   width:100%;font:inherit;font-size:13px;color:var(--marron-txt);
   padding:9px 10px;border:1px solid var(--linea);border-radius:var(--r-sm);
@@ -1303,17 +1304,20 @@ body::before{
   font-size:11.5px;line-height:1.3;
 }
 .prod__enpedido strong{font-weight:600}
-.prod__acciones{display:flex;gap:6px;margin-top:6px}
+/* Fila chica: la tarjeta ya es alta, esto no tiene que sumarle altura. */
+.prod__acciones{display:flex;gap:5px;margin-top:4px}
 .prod__quitar{
-  width:36px;height:34px;flex:0 0 auto;border-radius:8px;
-  border:1.5px solid rgba(168,52,42,.3);background:rgba(168,52,42,.08);color:var(--rojo);
+  width:30px;height:28px;flex:0 0 auto;border-radius:7px;
+  border:1px solid rgba(168,52,42,.3);background:rgba(168,52,42,.08);color:var(--rojo);
   display:flex;align-items:center;justify-content:center;transition:background .18s ease;
 }
+.prod__quitar svg{width:15px;height:15px}
 .prod__quitar:hover{background:rgba(168,52,42,.16)}
 .prod__vercarrito{
-  flex:1;height:34px;border-radius:8px;
-  border:1.5px solid var(--linea);background:var(--champan-claro);color:var(--marron-txt);
-  font-size:12px;letter-spacing:.04em;transition:background .18s ease;
+  flex:1;height:28px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  border:1px solid var(--linea);background:var(--champan-claro);color:var(--marron-txt);
+  font-size:11.5px;letter-spacing:.04em;transition:background .18s ease;
 }
 .prod__vercarrito:hover{background:var(--oliva-claro)}
 .prod--en-pedido{border-color:var(--oliva)}
@@ -1469,7 +1473,7 @@ body.compacto .icon-btn svg{width:22px;height:22px}
    Precios de la tarjeta: primero el kilo, después la medida.
    Subtotales con el peso visual que tienen en Paladear.
    ============================================================ */
-.prod__precios{display:flex;flex-direction:column;gap:1px;margin:0 0 8px}
+.prod__precios{display:flex;flex-direction:column;gap:1px;margin:0 0 6px}
 /* el renglón del precio por kilo se reserva siempre, así la tarjeta no salta al
    cambiar de medida */
 .prod__precios .precio-medida{min-height:1.25em}
@@ -1524,9 +1528,9 @@ body.compacto .icon-btn svg{width:22px;height:22px}
 
 /* cantidad + lo que ya está en el pedido en una fila; Agregar ancho abajo */
 .prod__pie{display:flex;align-items:center;gap:6px;margin-top:auto;padding-top:2px;flex-wrap:wrap}
-.prod__pie .prod__enpedido{margin:0;padding:4px 8px;font-size:10.5px;flex:1 1 auto;min-width:0}
+.prod__pie .prod__enpedido{margin:0;padding:3px 7px;font-size:10.5px;flex:1 1 auto;min-width:0}
 .prod__pie .prod__enpedido span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.prod__add{width:100%;flex:none;margin-top:9px;padding:0 10px}
+.prod__add{width:100%;flex:none;margin-top:7px;min-height:38px;padding:0 10px}
 .prod__add span{font-size:12px}
 @media (min-width:640px){
   .prod__add span{font-size:13px}
@@ -1550,7 +1554,7 @@ body.compacto .icon-btn svg{width:22px;height:22px}
 /* las medidas, siempre en una sola fila y todas del mismo ancho, sean 2, 3 o 4 */
 .pesos{
   display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);
-  gap:5px;margin:0 0 9px;
+  gap:5px;margin:0 0 6px;
 }
 .peso-btn{
   flex:none;width:100%;padding:6px 2px;font-size:11.5px;min-height:30px;
@@ -1825,8 +1829,8 @@ body.compacto .icon-btn__img--carrito{width:23px;height:23px}
 .peso-btn{min-height:36px}
 .stepper--card button{width:34px;height:36px}
 .stepper--card span{min-width:26px;line-height:36px}
-.prod__quitar{width:40px;height:38px}
-.prod__vercarrito{height:38px}
+.prod__quitar{width:32px;height:30px}
+.prod__vercarrito{height:30px}
 @media (min-width:640px){
   .stepper--card button{width:36px;height:38px}
   .stepper--card span{line-height:38px}

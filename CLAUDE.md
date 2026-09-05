@@ -498,3 +498,9 @@ en los 103 productos a granel, con 1 kg preseleccionado.
 - Al cambiar de medida, `cambiarPrecio()` achica y desvanece el precio viejo (110 ms) y hace
   entrar el nuevo desde abajo (300 ms). Respeta `prefers-reduced-motion`. Vale para la
   tarjeta y para la ficha.
+- **Fila de acciones de la tarjeta más chica**: el tacho pasó a 32×30 y el botón de al lado
+  dice **"Editar"** con el ícono de lápiz de Paladear (`ICO.lapiz`), 30 px de alto. Se
+  recortaron además los espacios verticales de la tarjeta (nombre, medidas, precios,
+  pastilla y botón Agregar): la tarjeta pasó de 429 a 415 px en un celular de 375.
+  El tacho quedó por debajo del mínimo de 36 px de la auditoría porque Juani lo pidió
+  explícitamente más chico.
