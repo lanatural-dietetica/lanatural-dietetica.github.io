@@ -481,3 +481,8 @@ en los 103 productos a granel, con 1 kg preseleccionado.
 - **Pendiente de criterio**: el 50 g quedó también en granos, legumbres y harinas, donde no
   tiene mucho sentido (nadie compra 50 g de garbanzos). Si se quiere afinar, va producto por
   producto desde el panel.
+- **Margen del celular: 16 px, uno solo para todas las vistas.** Estaba en 28 px en el
+  catálogo y la ficha, 25 en ofertas y 21 en categorías, mix y combos. Juani pidió tarjetas
+  más anchas a cambio de margen: con 16 px y separación de 9 px entre tarjetas, cada una
+  pasó de 154 a 167 px en un celular de 375, y los botones de medida de 31 a 34. Ninguna
+  vista desborda a lo ancho (verificado en las seis).
