@@ -538,3 +538,26 @@ con teclado, que es un requisito de accesibilidad de la auditoría.
   el botón principal pasa a decir "Agregar otro". `agregar(item, false)` es la forma de
   sumar al carrito sin el toast. Todo lo que se toca en el carrito repinta la tarjeta del
   combo (`repintarCombo`), igual que con los productos.
+
+
+## Panel: lo último que se tocó — 2026-09-06 (cambios hechos por Claude)
+La clienta necesita ver qué fue lo último que hizo, no una lista alfabética.
+- Al guardar, el producto queda con `editado` (fecha). La lista abre con el grupo
+  **"Lo último que tocaste"** (hasta 6) y después sigue agrupada por rubro.
+- El desplegable de la cabecera cambia entre **Últimos cambios** (de fábrica) y
+  **Nombre A-Z**. El orden alfabético no se sacó, se corrió de lugar.
+- Cada fila muestra "hace 4 minutos / hace 3 horas / hace 2 días" mientras el cambio tenga
+  menos de una semana.
+- La cabecera de la lista pasó a dos renglones en el celular: el conteo arriba y los
+  controles abajo, porque con el desplegable nuevo el texto se partía en tres líneas.
+
+## Editar desde la tarjeta lleva al producto en el carrito — 2026-09-06
+El botón Editar de la tarjeta (y el del combo) abre el carrito, **baja hasta ese producto y
+lo resalta 2,6 segundos** (`resaltarEnCarrito`, clase `item--resaltado`). Con muchos
+productos en el pedido, antes había que buscarlo a ojo.
+
+## Dato para el futuro: el Excel de la clienta
+Está armando un Excel con los productos y precios reales: va a ser la primera carga de datos
+de verdad. Juani quiere que la importación trabaje **por `id`** para que nada se duplique.
+Cuando llegue ese archivo, la importación tiene que casar por `id` y no por nombre, y dejar
+un informe de qué se creó, qué se actualizó y qué quedó sin pareja.

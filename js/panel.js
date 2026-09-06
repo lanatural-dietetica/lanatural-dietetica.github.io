@@ -23,7 +23,7 @@ const money = n => '$ ' + fmt.format(Math.round(n || 0));
 
 const estado = { token: '', catalogo: null, sha: '', q: '', rubro: 'todos',
                  seccion: 'productos', editando: null, editandoCombo: null, alta: null,
-                 eligiendo: false, sucio: false };
+                 eligiendo: false, sucio: false, orden: 'recientes' };
 
 /* ---------------- red de seguridad ----------------
    Nada de lo que se escribe se pierde: cada cambio queda guardado en el propio
@@ -547,7 +547,11 @@ function filaProducto(p, conRubro) {
       '<p class="fila__precio">' + money(c.final) + (p.tipo === 'granel' ? ' / kg' : ' / unidad') +
         (conRubro && cat ? ' · ' + esc(cat.nombre) : '') + '</p>' +
     '</span>' +
-    '<span class="fila__estado estado--' + e + '">' + ETIQUETA_ESTADO[e] + '</span>' +
+    '<span class="fila__lado">' +
+      (p.editado && Date.now() - p.editado < 7 * 24 * 3600e3
+        ? '<span class="fila__editado">' + esc(haceCuanto(p.editado)) + '</span>' : '') +
+      '<span class="fila__estado estado--' + e + '">' + ETIQUETA_ESTADO[e] + '</span>' +
+    '</span>' +
   '</button>';
 }
 
@@ -567,6 +571,11 @@ function vistaLista() {
     ).includes(q));
   }
   arr.sort(porNombre);
+  const recientes = (estado.catalogo.productos || [])
+    .filter(p => p.editado)
+    .sort((a, b) => b.editado - a.editado)
+    .slice(0, 6);
+  const verRecientes = estado.orden === 'recientes' && estado.rubro === 'todos' && !q && recientes.length;
 
   const sinStock = (estado.catalogo.productos || []).filter(p => estadoDe(p) === 'sinstock').length;
   const rubros = [{ id: 'todos', nombre: 'Todos' }].concat(cats.slice().sort((a, b) => (a.orden || 99) - (b.orden || 99)));
@@ -576,7 +585,11 @@ function vistaLista() {
   if (!arr.length) {
     cuerpo = '<p class="cargando">No hay productos que coincidan.</p>';
   } else if (estado.rubro === 'todos' && !q) {
-    cuerpo = cats.slice().sort((a, b) => (a.orden || 99) - (b.orden || 99)).map(cat => {
+    cuerpo = (verRecientes
+      ? '<p class="grupo-lbl grupo-lbl--recientes">Lo último que tocaste <span>' + recientes.length + '</span></p>' +
+        recientes.map(p => filaProducto(p, true)).join('')
+      : '') +
+      cats.slice().sort((a, b) => (a.orden || 99) - (b.orden || 99)).map(cat => {
       const dentro = arr.filter(p => p.categoria === cat.id);
       if (!dentro.length) return '';
       return '<p class="grupo-lbl">' + esc(cat.nombre) + ' <span>' + dentro.length + '</span></p>' +
@@ -602,6 +615,11 @@ function vistaLista() {
         '<p class="panel-resumen">' + arr.length + (arr.length === 1 ? ' producto' : ' productos') +
           (sinStock ? ' · ' + sinStock + ' sin stock' : '') + '</p>' +
         '<span class="lista-acciones">' +
+          '<label class="visually-hidden" for="orden-lista">Ordenar la lista</label>' +
+          '<select id="orden-lista" class="orden-lista">' +
+            '<option value="recientes"' + (estado.orden === 'recientes' ? ' selected' : '') + '>Últimos cambios</option>' +
+            '<option value="nombre"' + (estado.orden === 'nombre' ? ' selected' : '') + '>Nombre A-Z</option>' +
+          '</select>' +
           '<a class="btn-ver" href="./?fresco=1" target="_blank" rel="noopener">Ver tienda</a>' +
           '<button class="btn-nuevo" id="btn-nuevo">+ Nuevo</button>' +
         '</span>' +
@@ -978,6 +996,7 @@ async function guardarProducto() {
   p.nombre = nombreLindo(p.nombre);
   p.slug = slugLibre(aSlug(p.nombre), p.id);
   acomodarMedidas(p);
+  p.editado = Date.now();          // para que aparezca arriba de todo en la lista
 
   const botones = [$('#guardar'), $('#btn-guardar-top')].filter(Boolean);
   botones.forEach(b => { b.disabled = true; });
@@ -1268,6 +1287,14 @@ document.addEventListener('change', async ev => {
   } finally {
     boton.disabled = false;
     ev.target.value = '';
+  }
+});
+
+document.addEventListener('change', ev => {
+  if (ev.target.id === 'orden-lista') {
+    estado.orden = ev.target.value;
+    $('#panel-main').innerHTML = vistaLista();
+    window.scrollTo(0, 0);
   }
 });
 

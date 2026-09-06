@@ -74,6 +74,21 @@
 .fila__txt{flex:1;min-width:0}
 .fila__nom{font-family:var(--serif);font-size:16px;line-height:1.2;margin:0}
 .fila__precio{font-size:12.5px;color:var(--gris-txt);margin:3px 0 0}
+/* Cuándo se tocó, al lado del estado */
+.fila__lado{display:flex;align-items:center;gap:7px;flex:0 0 auto}
+.fila__editado{
+  font-size:10.5px;letter-spacing:.02em;color:var(--gris-txt);
+  white-space:nowrap;
+}
+.grupo-lbl--recientes{color:var(--oliva-osc)}
+.grupo-lbl--recientes span{background:var(--oliva-claro);color:var(--oliva-osc)}
+.orden-lista{
+  font:inherit;font-size:12px;color:var(--marron-txt);
+  border:1px solid var(--linea);border-radius:8px;
+  background:var(--crema-card);padding:6px 8px;min-height:34px;
+  -webkit-appearance:none;appearance:none;
+}
+
 .fila__estado{
   flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;
   font-size:11px;letter-spacing:.04em;text-transform:uppercase;
@@ -163,8 +178,15 @@
 .foto-caja__lado .campo__ayuda{margin-top:7px}
 
 /* ---------- alta y campos nuevos ---------- */
-.lista-cab{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
-.lista-cab .panel-resumen{margin:0}
+/* Dos renglones en el celular: el conteo arriba y los controles abajo, si no
+   queda todo apretado y el texto se parte en tres líneas. */
+.lista-cab{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-bottom:10px}
+.lista-cab .panel-resumen{margin:0;flex:1 1 100%;white-space:nowrap}
+.lista-acciones{flex:1 1 100%;justify-content:space-between}
+@media (min-width:520px){
+  .lista-cab .panel-resumen{flex:1 1 auto}
+  .lista-acciones{flex:0 0 auto;justify-content:flex-end}
+}
 .btn-nuevo{
   background:var(--oliva);color:#fff;border:0;border-radius:999px;
   padding:9px 16px;font-size:13px;font-weight:600;letter-spacing:.03em;min-height:38px;

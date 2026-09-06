@@ -1311,6 +1311,16 @@ body::before{
 /* Fila chica: la tarjeta ya es alta, esto no tiene que sumarle altura. */
 .prod__acciones{display:flex;gap:5px;margin-top:4px}
 /* Lo que ya está en el pedido, dentro de la tarjeta del combo */
+/* Resalta un momento el producto que se vino a editar */
+@keyframes resaltarItem{
+  0%{background:var(--oliva-claro);box-shadow:0 0 0 2px var(--oliva)}
+  70%{background:var(--oliva-claro);box-shadow:0 0 0 2px var(--oliva)}
+  100%{background:transparent;box-shadow:0 0 0 2px transparent}
+}
+.item--resaltado{
+  animation:resaltarItem 2.6s ease-out;
+  border-radius:12px;
+}
 .combo__pedido{display:flex;flex-direction:column;gap:5px;margin-top:8px}
 .combo__pedido .prod__enpedido{margin:0;display:flex;align-items:center;gap:7px}
 .combo__pedido .prod__acciones{margin-top:0}

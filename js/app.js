@@ -347,7 +347,7 @@ function tarjetaProducto(p) {
     (ped
       ? '<div class="prod__acciones">' +
           '<button class="prod__quitar" data-quitar-prod="' + p.id + '" aria-label="Quitar ' + esc(p.nombre) + ' del pedido">' + ICO.basura + '</button>' +
-          '<button class="prod__vercarrito" data-abrir-carrito>' + ICO.lapiz + '<span>Editar</span></button>' +
+          '<button class="prod__vercarrito" data-abrir-carrito="' + p.id + '">' + ICO.lapiz + '<span>Editar</span></button>' +
         '</div>'
       : '') +
   '</article>';
@@ -1067,7 +1067,7 @@ function comboHTML(c) {
           '</span>' +
           '<div class="prod__acciones">' +
             '<button class="prod__quitar" data-quitar-combo="' + c.id + '" aria-label="Quitar el combo del pedido">' + ICO.basura + '</button>' +
-            '<button class="prod__vercarrito" data-abrir-carrito>' + ICO.lapiz + '<span>Editar</span></button>' +
+            '<button class="prod__vercarrito" data-abrir-carrito="' + c.id + '">' + ICO.lapiz + '<span>Editar</span></button>' +
           '</div>' +
         '</div>'
       : '') +
@@ -1229,6 +1229,22 @@ function pasoProductos() {
     '<div class="co-fijo">' +
       '<button class="btn btn--oliva btn--bloque" id="co-continuar"' + (falta > 0 ? ' disabled' : '') + '>Continuar ' + ICO.flecha + '</button>' +
     '</div>';
+}
+
+/* Al tocar Editar en una tarjeta, el carrito se abre y muestra ese producto:
+   lo trae a la vista y lo resalta unos segundos para que se vea cuál es. */
+function resaltarEnCarrito(id) {
+  if (!id) return;
+  setTimeout(() => {
+    const caja = $('.item[data-bloque="' + id + '"]') ||
+                 $('.item[data-bloque="' + id + '"]', $('#carrito-cuerpo'));
+    if (!caja) return;
+    caja.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    caja.classList.remove('item--resaltado');
+    void caja.offsetWidth;                       // reinicia la animación
+    caja.classList.add('item--resaltado');
+    setTimeout(() => caja.classList.remove('item--resaltado'), 2600);
+  }, 320);                                       // después de que el panel terminó de entrar
 }
 
 /* Al sumar o restar no se rehace toda la lista: se reescribe sólo el texto de cada
@@ -1572,7 +1588,12 @@ document.addEventListener('click', ev => {
     return;
   }
 
-  if (t.closest('[data-abrir-carrito]')) { abrirPanel('carrito'); return; }
+  const verEnCarrito = t.closest('[data-abrir-carrito]');
+  if (verEnCarrito) {
+    abrirPanel('carrito');
+    resaltarEnCarrito(verEnCarrito.dataset.abrirCarrito);
+    return;
+  }
 
   const add = t.closest('[data-add]');
   if (add) {
