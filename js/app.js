@@ -119,13 +119,25 @@ function guardar(k, v) {
 }
 
 /* ---------------- carrito ---------------- */
-function agregar(item) {
+function agregar(item, conAviso) {
   const ya = estado.carrito.find(i => i.key === item.key);
   if (ya) ya.cant += item.cant;
   else estado.carrito.push(item);
   guardar(LS_CARRITO, estado.carrito);
   pintarContadorCarrito();
-  toast(item.cant + ' × ' + item.nombre + ' agregado');
+  if (conAviso !== false) toast(item.cant + ' × ' + item.nombre + ' agregado');
+}
+
+/* Cuántos combos de éste hay en el pedido. */
+function comboEnPedido(c) {
+  const i = estado.carrito.find(x => x.tipo === 'combo' && x.id === c.id);
+  return i ? { cant: i.cant, subtotal: i.precio * i.cant, key: i.key } : null;
+}
+
+function repintarCombo(id) {
+  const c = COMBOS.find(x => x.id === id);
+  if (!c) return;
+  $$('[data-comboid="' + id + '"]').forEach(el => { el.outerHTML = comboHTML(c); });
 }
 function cambiarCant(key, delta) {
   const it = estado.carrito.find(i => i.key === key);
@@ -388,7 +400,9 @@ function repintarCard(id) {
 
 /* Lo que se toca en el carrito tiene que verse también en la tarjeta. */
 function repintarCardDeLinea(item) {
-  if (item && item.tipo === 'producto') repintarCard(item.id);
+  if (!item) return;
+  if (item.tipo === 'producto') repintarCard(item.id);
+  if (item.tipo === 'combo') repintarCombo(item.id);
 }
 
 const grilla = arr => '<div class="grilla">' + arr.map(tarjetaProducto).join('') + '</div>';
@@ -1003,6 +1017,7 @@ function comboHTML(c) {
   const pr = preciosCombo(c);
   const n = c.items.reduce((s, i) => s + (i.cant || 1), 0);
   const abierto = estado.comboAbierto === c.id;
+  const ped = comboEnPedido(c);
   return '<article class="combo' + (abierto ? ' combo--abierto' : '') + '" data-comboid="' + c.id + '">' +
     '<button class="combo__cab" data-abrircombo="' + c.id + '" aria-expanded="' + abierto + '">' +
       '<span class="combo__txt">' +
@@ -1043,7 +1058,19 @@ function comboHTML(c) {
       '</span>' +
       (c.descuento ? '<span class="desc-chip">−' + c.descuento + '% de descuento</span>' : '') +
     '</div>' +
-    '<button class="btn btn--oliva btn--bloque" data-combo="' + c.id + '">Agregar el combo ' + ICO.flecha + '</button>' +
+    '<button class="btn btn--oliva btn--bloque" data-combo="' + c.id + '">' +
+      (ped ? 'Agregar otro ' : 'Agregar el combo ') + ICO.flecha + '</button>' +
+    (ped
+      ? '<div class="combo__pedido">' +
+          '<span class="prod__enpedido">' + ICO.carrito +
+            '<span>' + ped.cant + (ped.cant === 1 ? ' en el pedido' : ' en el pedido') + ' · <strong>' + money(ped.subtotal) + '</strong></span>' +
+          '</span>' +
+          '<div class="prod__acciones">' +
+            '<button class="prod__quitar" data-quitar-combo="' + c.id + '" aria-label="Quitar el combo del pedido">' + ICO.basura + '</button>' +
+            '<button class="prod__vercarrito" data-abrir-carrito>' + ICO.lapiz + '<span>Editar</span></button>' +
+          '</div>' +
+        '</div>'
+      : '') +
     '<button class="combo__ver" data-abrircombo="' + c.id + '">' + (abierto ? 'Ocultar el detalle' : 'Ver qué trae') + '</button>' +
   '</article>';
 }
@@ -1697,6 +1724,17 @@ document.addEventListener('click', ev => {
     return;
   }
 
+  const quitarCombo = t.closest('[data-quitar-combo]');
+  if (quitarCombo) {
+    const id = quitarCombo.dataset.quitarCombo;
+    estado.carrito = estado.carrito.filter(i => !(i.tipo === 'combo' && i.id === id));
+    guardar(LS_CARRITO, estado.carrito);
+    pintarContadorCarrito();
+    pintarCarrito();
+    repintarCombo(id);
+    return;
+  }
+
   const combo = t.closest('[data-combo]');
   if (combo) {
     const c = COMBOS.find(x => x.id === combo.dataset.combo);
@@ -1710,7 +1748,9 @@ document.addEventListener('click', ev => {
         return p ? p.nombre + ' ' + presNombre(i.presentacionId) : '';
       }).filter(Boolean).join(' + '),
       precio: pr.final, cant: 1, img: imgDemo(c.color, c.color2)
-    });
+    }, false);          // sin burbuja: el estado se ve en la propia tarjeta
+    confirmarBoton(combo, 'Agregado');
+    repintarCombo(c.id);
     return;
   }
 

@@ -533,3 +533,8 @@ Juani planteó el riesgo: la clienta edita precios, no toca Guardar y pierde tod
 `-webkit-tap-highlight-color:transparent` y `:focus{outline:none}` en la tienda y en el
 panel. **El `:focus-visible` se conserva**: el recuadro sigue apareciendo para quien navega
 con teclado, que es un requisito de accesibilidad de la auditoría.
+- **El combo no muestra burbuja al agregarse**: el estado va en la propia tarjeta, como en
+  los productos. Aparece la pastilla "N en el pedido · $ X", el tacho y el botón Editar, y
+  el botón principal pasa a decir "Agregar otro". `agregar(item, false)` es la forma de
+  sumar al carrito sin el toast. Todo lo que se toca en el carrito repinta la tarjeta del
+  combo (`repintarCombo`), igual que con los productos.
