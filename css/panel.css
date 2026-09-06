@@ -12,7 +12,18 @@
   border:1px solid var(--linea);border-radius:var(--r-lg);
   padding:28px 22px;box-shadow:0 12px 32px rgba(63,36,22,.10);
 }
+/* Nada de destello azul ni recuadro al tocar; el foco de teclado se conserva. */
+.panel-body button,.panel-body a,.panel-body input,.panel-body select,.panel-body textarea,.panel-body label{-webkit-tap-highlight-color:transparent}
+.panel-body :focus{outline:none}
+.panel-body :focus-visible{outline:3px solid var(--oliva);outline-offset:2px}
+
 .acceso__logo{display:block;height:26px;width:auto;margin:0 0 14px}
+/* Mientras haya algo escrito y sin publicar, el botón lo dice. */
+.panel-top__guardar.pendiente{position:relative}
+.panel-top__guardar.pendiente::after{
+  content:"";position:absolute;top:-3px;right:-3px;width:9px;height:9px;
+  border-radius:50%;background:var(--rojo);border:2px solid var(--russet);
+}
 .acceso h1{font-size:20px;font-weight:500;line-height:1.2;margin-bottom:10px}
 .acceso h1 em{font-style:normal;color:var(--russet)}
 .acceso__txt{font-size:14px;color:var(--gris-txt);margin:0 0 20px;line-height:1.5}

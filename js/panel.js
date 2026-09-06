@@ -10,6 +10,7 @@
 const REPO  = { duenio: 'lanatural-dietetica', nombre: 'lanatural-dietetica.github.io' };
 const RUTA  = 'data/catalogo.json';
 const LS_TOKEN = 'lanatural_clave_panel';
+const LS_BORRADOR = 'lanatural_borrador_v1';
 
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
@@ -21,7 +22,64 @@ const fmt = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
 const money = n => '$ ' + fmt.format(Math.round(n || 0));
 
 const estado = { token: '', catalogo: null, sha: '', q: '', rubro: 'todos',
-                 seccion: 'productos', editando: null, editandoCombo: null, alta: null, eligiendo: false };
+                 seccion: 'productos', editando: null, editandoCombo: null, alta: null,
+                 eligiendo: false, sucio: false };
+
+/* ---------------- red de seguridad ----------------
+   Nada de lo que se escribe se pierde: cada cambio queda guardado en el propio
+   celular al instante. Publicar en la tienda sigue siendo un paso aparte, porque
+   cada publicación es una versión nueva del catálogo y no conviene hacer una por
+   cada tecla.
+--------------------------------------------------------------- */
+let guardarBorradorLuego;
+function marcarSucio() {
+  estado.sucio = true;
+  const b = $('#btn-guardar-top');
+  if (b) b.classList.add('pendiente');
+  clearTimeout(guardarBorradorLuego);
+  guardarBorradorLuego = setTimeout(guardarBorrador, 700);
+}
+
+function guardarBorrador() {
+  if (!estado.catalogo) return;
+  try {
+    localStorage.setItem(LS_BORRADOR, JSON.stringify({
+      sha: estado.sha, cuando: Date.now(), catalogo: estado.catalogo
+    }));
+  } catch (e) { /* si no entra, se sigue igual */ }
+}
+
+function limpiarBorrador() {
+  estado.sucio = false;
+  const b = $('#btn-guardar-top');
+  if (b) b.classList.remove('pendiente');
+  clearTimeout(guardarBorradorLuego);
+  try { localStorage.removeItem(LS_BORRADOR); } catch (e) {}
+}
+
+function borradorGuardado() {
+  try {
+    const d = JSON.parse(localStorage.getItem(LS_BORRADOR) || 'null');
+    return d && d.catalogo && d.catalogo.productos ? d : null;
+  } catch (e) { return null; }
+}
+
+function haceCuanto(ts) {
+  const m = Math.round((Date.now() - ts) / 60000);
+  if (m < 1) return 'recién';
+  if (m < 60) return 'hace ' + m + (m === 1 ? ' minuto' : ' minutos');
+  const h = Math.round(m / 60);
+  if (h < 24) return 'hace ' + h + (h === 1 ? ' hora' : ' horas');
+  const d = Math.round(h / 24);
+  return 'hace ' + d + (d === 1 ? ' día' : ' días');
+}
+
+/* El navegador avisa si se va con algo sin publicar. */
+window.addEventListener('beforeunload', ev => {
+  if (!estado.sucio) return;
+  ev.preventDefault();
+  ev.returnValue = '';
+});
 
 /* ---------------- avisos ---------------- */
 let avisoTimer;
@@ -70,6 +128,23 @@ async function traerCatalogo() {
   const d = await api('/contents/' + RUTA + '?ref=main&t=' + Date.now());
   estado.sha = d.sha;
   estado.catalogo = JSON.parse(b64aTexto(d.content.replace(/\n/g, '')));
+
+  // Si quedó algo escrito y sin publicar, se ofrece recuperarlo.
+  const b = borradorGuardado();
+  if (b && b.sha === estado.sha) {
+    if (confirm('Quedaron cambios sin publicar de ' + haceCuanto(b.cuando) + '.\n\n' +
+                'Aceptar: los recupero y los ves en la lista.\n' +
+                'Cancelar: los descarto y arranco con lo que hay en la tienda.')) {
+      estado.catalogo = b.catalogo;
+      estado.sucio = true;
+      setTimeout(() => aviso('Recuperé lo que habías escrito. Entrá al producto y tocá Guardar para publicarlo.', 'ok'), 400);
+    } else {
+      limpiarBorrador();
+    }
+  } else if (b) {
+    // el catálogo cambió desde otro lado: el borrador viejo ya no sirve
+    limpiarBorrador();
+  }
 }
 
 async function guardarCatalogo(mensaje) {
@@ -909,6 +984,7 @@ async function guardarProducto() {
   aviso('Guardando…', 'trabajando');
   try {
     await guardarCatalogo('Panel: ' + p.nombre);
+    limpiarBorrador();
     const sello = estado.catalogo.sello;
     aviso('Guardado. Publicando en la tienda…', 'trabajando');
     mostrarLista();
@@ -1025,6 +1101,7 @@ document.addEventListener('click', async ev => {
 
   if (t.closest('#btn-volver')) {
     if (estado.eligiendo && estado.editandoCombo) { mostrarEditorCombo(estado.editandoCombo.id); return; }
+    if (estado.sucio && !confirm('Tenés cambios sin publicar. Si volvés ahora quedan guardados en el celular, pero todavía no se ven en la tienda.\n\n¿Volver igual?')) return;
     mostrarLista();
     return;
   }
@@ -1213,6 +1290,7 @@ document.addEventListener('input', ev => {
   }
   const k = estado.editandoCombo;
   if (k) {
+    marcarSucio();
     if (id === 'k-nombre') { k.nombre = ev.target.value; $('#panel-titulo').textContent = ev.target.value || 'Combo nuevo'; return; }
     if (id === 'k-desc') { k.descripcion = ev.target.value; return; }
     if (id === 'k-descuento') {
@@ -1227,6 +1305,7 @@ document.addEventListener('input', ev => {
   }
   const p = estado.editando;
   if (!p) return;
+  marcarSucio();
   if (id === 'f-costo') {
     const v = Math.max(0, Number(ev.target.value) || 0);
     if (p.tipo === 'granel') p.costoKg = v; else p.costoUnidad = v;

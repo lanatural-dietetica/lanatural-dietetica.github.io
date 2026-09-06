@@ -511,3 +511,23 @@ en los 103 productos a granel, con 1 kg preseleccionado.
 - **Botón Volver también en Armá tu mix y en Combos** (`botonVolver()`, el mismo componente
   que la ficha). Si se entró directo por link y no hay historia propia (`saltos === 0`), en
   vez de sacar a la persona del sitio lleva al inicio.
+
+
+## Nada de lo que se escribe en el panel se pierde — 2026-09-06 (cambios hechos por Claude)
+Juani planteó el riesgo: la clienta edita precios, no toca Guardar y pierde todo.
+- Cada cambio en el editor **se guarda en el propio celular al instante**
+  (`LS_BORRADOR`, con 700 ms de espera para no escribir por cada tecla).
+- Si se cierra la pestaña con algo sin publicar, el navegador avisa (`beforeunload`).
+- Al volver a la lista con cambios sin publicar, se pide confirmación.
+- Al abrir el panel, si hay borrador **y el catálogo de la tienda no cambió desde otro lado**
+  (mismo `sha`), se ofrece recuperarlo. Si el catálogo cambió, el borrador viejo se descarta:
+  mezclarlos a ciegas es peor que perderlos.
+- El botón Guardar de arriba lleva un punto rojo mientras haya algo pendiente.
+- **No se hace un commit por tecla a propósito**: cada publicación es una versión nueva del
+  catálogo y dispara un rebuild de GitHub Pages (~1 minuto). El borrador local da la
+  seguridad; publicar sigue siendo un acto deliberado.
+
+## Sin destello azul al tocar — 2026-09-06
+`-webkit-tap-highlight-color:transparent` y `:focus{outline:none}` en la tienda y en el
+panel. **El `:focus-visible` se conserva**: el recuadro sigue apareciendo para quien navega
+con teclado, que es un requisito de accesibilidad de la auditoría.
