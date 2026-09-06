@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "actualizado": "2026-09-05",
+  "actualizado": "2026-09-06",
   "demo": true,
   "config": {
     "marca": "La Natural",
@@ -3379,12 +3379,11 @@
       "subtitulo": "",
       "marca": "",
       "tipo": "granel",
-      "margen": 60,
+      "margen": 20,
       "descuento": 0,
       "presentaciones": [
-        "50g",
-        "100g",
         "250g",
+        "500g",
         "1kg"
       ],
       "presentacionDefecto": "1kg",
@@ -3402,7 +3401,8 @@
       "img": "assets/productos/nuez-con-cascara.webp?v=20260905a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
-      "costoKg": 4900
+      "costoKg": 5000,
+      "costoUnidad": 4900
     },
     {
       "id": "p99",
@@ -5177,5 +5177,5 @@
       "texto": "Elegí envío o retiro en el local."
     }
   ],
-  "sello": 1788621026212
+  "sello": 1788736114886
 }
