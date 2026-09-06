@@ -508,6 +508,8 @@ en los 103 productos a granel, con 1 kg preseleccionado.
   son hijos directos, así que se comían dos columnas y los tres bloques de texto se
   desordenaban. Van con `grid-column:1 / -1`. En el celular no se notaba porque la grilla
   es de una sola columna.
+- El botón Volver **no es pegajoso**: se queda arriba de todo y se va con el scroll. Se
+  probó con `position:sticky` y Juani dijo que incomodaba.
 - **Botón Volver también en Armá tu mix y en Combos** (`botonVolver()`, el mismo componente
   que la ficha). Si se entró directo por link y no hay historia propia (`saltos === 0`), en
   vez de sacar a la persona del sitio lleva al inicio.
