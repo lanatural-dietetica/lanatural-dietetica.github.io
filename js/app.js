@@ -256,6 +256,12 @@ const ICO = {
 };
 
 /* ---------------- componentes ---------------- */
+/* Vuelve a la pantalla anterior. Si se entró directo por link, va al inicio. */
+function botonVolver() {
+  return '<button class="volver-atras" type="button" data-volver aria-label="Volver">' +
+    '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>' +
+    '<span>Volver</span></button>';
+}
 /* cada producto define sus propias medidas en el catálogo; la tarjeta las muestra
    todas, hasta cuatro, siempre en una sola fila */
 function presentacionesCard(p) {
@@ -750,10 +756,7 @@ function vistaProducto(slug) {
   ];
 
   return '' +
-  '<button class="volver-atras" type="button" data-volver aria-label="Volver">' +
-    '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>' +
-    '<span>Volver</span>' +
-  '</button>' +
+  botonVolver() +
   '<section class="seccion ficha"><div class="contenedor">' +
     '<p class="ficha__cat"><a href="#/catalogo?cat=' + p.categoria + '">' + esc(cat ? cat.nombre : '') + '</a></p>' +
     '<h1>' + esc(p.nombre) + '</h1>' +
@@ -823,6 +826,7 @@ function vistaMix() {
   const st = estado.mix;
 
   return '' +
+  botonVolver() +
   '<section class="seccion creador-mix"><div class="contenedor">' +
     '<div class="portada-vista">' +
       '<h1>' + esc(MIX.titulo) + '</h1>' +
@@ -984,6 +988,7 @@ function pintarMix() {
 function vistaCombos() {
   const activos = COMBOS.filter(c => c.activo).sort((a, b) => a.orden - b.orden);
   return '' +
+  botonVolver() +
   '<section class="seccion combos"><div class="contenedor">' +
     '<div class="portada-vista">' +
       '<h1>Combos para cada día</h1>' +
@@ -1502,7 +1507,10 @@ document.addEventListener('click', ev => {
   if (t.closest('#btn-categorias-compactas')) { abrirPanel('categorias'); return; }
   if (t.closest('.carrito-btn') || t.closest('#cart-fab')) { abrirPanel('carrito'); return; }
 
-  if (t.closest('[data-volver]')) { history.back(); return; }
+  if (t.closest('[data-volver]')) {
+    if (saltos > 0) history.back(); else location.hash = '#/';
+    return;
+  }
 
   const peso = t.closest('[data-peso]');
   if (peso) {
@@ -1833,6 +1841,8 @@ window.addEventListener('hashchange', render);
 const posiciones = {};
 let hashPrevio = location.hash || '#/';
 let volviendo = false;
+let saltos = 0;                       // cuántas pantallas se recorrieron dentro del sitio
+window.addEventListener('hashchange', () => { saltos++; });
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 window.addEventListener('popstate', () => { volviendo = true; });
 
