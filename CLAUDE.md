@@ -504,3 +504,7 @@ en los 103 productos a granel, con 1 kg preseleccionado.
   pastilla y botón Agregar): la tarjeta pasó de 429 a 415 px en un celular de 375.
   El tacho quedó por debajo del mínimo de 36 px de la auditoría porque Juani lo pidió
   explícitamente más chico.
+- **Pie en escritorio**: `.pie__cols` es una grilla de tres columnas, y el sello y el filete
+  son hijos directos, así que se comían dos columnas y los tres bloques de texto se
+  desordenaban. Van con `grid-column:1 / -1`. En el celular no se notaba porque la grilla
+  es de una sola columna.

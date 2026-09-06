@@ -1866,6 +1866,10 @@ body.compacto .icon-btn__img--carrito{width:23px;height:23px}
 .filete img{width:44px;height:auto;opacity:.85;flex:0 0 auto}
 .filete--claro{color:var(--champan)}
 .pie__sello{display:block;margin:0 auto 14px;height:78px;width:auto;opacity:.9}
+/* En escritorio el pie es una grilla de tres columnas: el sello y el filete tienen
+   que cruzarla entera, si no se comen dos columnas y los bloques se desordenan. */
+.pie__sello,
+.pie .filete--pie{grid-column:1 / -1}
 .filete--pie{margin:0 auto 20px;width:min(240px,70%);opacity:.75}
 .menu-wa{
   display:inline-flex;align-items:center;gap:7px;margin-top:12px;
