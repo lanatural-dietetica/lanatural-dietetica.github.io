@@ -590,10 +590,21 @@ frutos secos y semillas (19) · frutas deshidratadas (10) · cereales y granolas
 granos y legumbres (12) · harinas y repostería (24) · especias y condimentos (52) ·
 infusiones y hierbas (19) · chocolates y golosinas (15) · dulces y mermeladas (15) ·
 aceites y vinagres (10) · conservas y encurtidos (5) · suplementos (8).
-**Faltan cinco fotos de categoría**: `cat-frutas-secas`, `cat-cereales`, `cat-especias`,
-`cat-mermeladas` y `cat-aceites` son copias provisorias de las más parecidas.
+**Falta una foto de categoría**: `cat-frutas-secas` todavía reutiliza provisoriamente la
+imagen de Frutos secos y semillas.
 
 ## El precio de referencia es por 100 g — 2026-09-21
 `precio100Venta()` reemplazó al precio por kilo en la tarjeta, en el carrito y en la lista
 del mix. La medida preseleccionada de todo lo que va a granel es **100 g**. El cálculo
 interno sigue siendo por kilo (`precioKgVenta`).
+
+## Portadas de categorías reales — 2026-09-22 (cambios hechos por Codex)
+- Se reemplazaron las portadas provisorias de Cereales y granolas, Harinas y repostería,
+  Especias y condimentos, Infusiones y hierbas, Dulces y mermeladas y Aceites y vinagres
+  por las seis ruedas que subió Juani a Descargas.
+- Salidas: `cat-cereales.webp`, `cat-harinas.webp`, `cat-especias.webp`,
+  `cat-infusiones.webp`, `cat-mermeladas.webp` y `cat-aceites.webp`.
+- Todas quedaron en lienzo 260×260, contenido visual máximo de 226 px, fondo plano exacto
+  `#F6EEE3` y entre 26 y 33 KB. En la interfaz miden 110×110 mobile y 148×148 desktop.
+- `scripts/icono-categoria.py` se corrigió al crema oficial `#F6EEE3`; antes todavía tenía
+  el viejo `#FAE6D0`. Publicado en `ad8df3c`.
