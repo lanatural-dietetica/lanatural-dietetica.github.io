@@ -561,3 +561,39 @@ Está armando un Excel con los productos y precios reales: va a ser la primera c
 de verdad. Juani quiere que la importación trabaje **por `id`** para que nada se duplique.
 Cuando llegue ese archivo, la importación tiene que casar por `id` y no por nombre, y dejar
 un informe de qué se creó, qué se actualizó y qué quedó sin pareja.
+
+
+## Catálogo real de la clienta — 2026-09-21 (cambios hechos por Claude)
+Llegó `productos dietetica.xlsx` con **200 productos** y precios **por 100 g** (los envasados,
+por unidad). Se reemplazó todo el catálogo: **los productos que venían de Paladear se
+borraron**, no eran de ella.
+- 155 quedaron **a la venta** y **45 ocultos** porque la planilla no traía precio: existen en
+  el panel con el interruptor de oculto encendido, así los completa y los publica.
+- El precio de la planilla se tomó como **precio de venta**: el costo se dedujo con el margen
+  del 60 %, así la tienda muestra exactamente el número que ella puso. Verificado producto
+  por producto: **cero desvíos** mayores al 2 %.
+- **`config.redondeo` pasó de 50 a 10.** Con 50, Garbanzos a $230 los 100 g se mostraba
+  $250: un 8 % de error. Vendiendo por cantidades chicas, el redondeo grueso distorsiona.
+- Se corrigieron erratas y acentos de la planilla (azúcar, anís, orégano, fariña, alubia,
+  páprika, azafrán, chocolate, manzanilla, equinácea, japonés, cedrón, maíz, sésamo, chía…).
+  Están en la lista `ARREGLOS` del script de importación, en el scratchpad.
+- Se recuperaron **50 fotos** de las que ya había, casando por nombre. Cuatro coincidencias
+  eran falsas (chips de chocolate blanco, salvado de trigo, quinoa inflada, té verde en caja)
+  y se dejaron **sin foto a propósito**: mejor vacío que una foto que no es.
+- Quedan **115 archivos de foto sin usar** en `assets/productos/`. No se borraron: sirven
+  cuando se carguen los productos que faltan.
+
+## Categorías nuevas — 2026-09-21
+Las 8 anteriores no servían para este catálogo. Ahora son **12**, pensadas sobre los
+productos que hay de verdad (entran en 3 páginas de 4 en el carrusel del inicio):
+frutos secos y semillas (19) · frutas deshidratadas (10) · cereales y granolas (11) ·
+granos y legumbres (12) · harinas y repostería (24) · especias y condimentos (52) ·
+infusiones y hierbas (19) · chocolates y golosinas (15) · dulces y mermeladas (15) ·
+aceites y vinagres (10) · conservas y encurtidos (5) · suplementos (8).
+**Faltan cinco fotos de categoría**: `cat-frutas-secas`, `cat-cereales`, `cat-especias`,
+`cat-mermeladas` y `cat-aceites` son copias provisorias de las más parecidas.
+
+## El precio de referencia es por 100 g — 2026-09-21
+`precio100Venta()` reemplazó al precio por kilo en la tarjeta, en el carrito y en la lista
+del mix. La medida preseleccionada de todo lo que va a granel es **100 g**. El cálculo
+interno sigue siendo por kilo (`precioKgVenta`).

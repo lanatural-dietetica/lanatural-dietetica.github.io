@@ -73,6 +73,12 @@ function preciosCombo(combo) {
 }
 
 /* precio de venta por kilo de un producto a granel (con su margen y descuento) */
+/* La referencia que se muestra es por 100 g: la clienta vende mayormente en
+   cantidades chicas. El cálculo interno sigue siendo por kilo. */
+function precio100Venta(prod) {
+  return redondear(precioKgVenta(prod) / 10);
+}
+
 function precioKgVenta(prod) {
   const margen = Number.isFinite(prod.margen) ? prod.margen : CONFIG.margenPorDefecto;
   const desc   = Math.min(Math.max(prod.descuento || 0, 0), 90);
@@ -359,15 +365,15 @@ function tarjetaProducto(p) {
 function preciosCard(p, presId) {
   const pr = precios(p, presId);
   if (p.tipo === 'granel') {
-    const porKg = precioKgVenta(p);
-    const listaKg = redondear((p.costoKg || 0) * (1 + (Number.isFinite(p.margen) ? p.margen : CONFIG.margenPorDefecto) / 100));
-    const esKilo = (pres(presId) || {}).gramos === 1000;
+    const por100 = precio100Venta(p);
+    const lista100 = redondear((p.costoKg || 0) * (1 + (Number.isFinite(p.margen) ? p.margen : CONFIG.margenPorDefecto) / 100) / 10);
+    const esCien = (pres(presId) || {}).gramos === 100;
     return '<span class="precio precio--kg">' +
-        (pr.descuento ? '<span class="precio__antes">' + money(esKilo ? listaKg : pr.venta) + '</span>' : '') +
-        money(esKilo ? porKg : pr.final) +
-        '<em> ' + (esKilo ? '/ kg' : esc(presNombre(presId))) + '</em>' +
+        (pr.descuento ? '<span class="precio__antes">' + money(esCien ? lista100 : pr.venta) + '</span>' : '') +
+        money(esCien ? por100 : pr.final) +
+        '<em> ' + (esCien ? '/ 100 g' : esc(presNombre(presId))) + '</em>' +
       '</span>' +
-      '<span class="precio-medida">' + (esKilo ? '' : money(porKg) + ' / kg') + '</span>';
+      '<span class="precio-medida">' + (esCien ? '' : money(por100) + ' / 100 g') + '</span>';
   }
   return '<span class="precio precio--kg">' +
       (pr.descuento ? '<span class="precio__antes">' + money(pr.venta) + '</span>' : '') +
@@ -589,8 +595,8 @@ function vistaHome() {
       '<a class="cat-card" href="#/como-comprar"><span class="cat-card__nom">Cómo comprar</span>' +
         '<img class="cat-card__fig" src="assets/acceso-info.webp?v=20260905a" alt="" width="400" height="400" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Leer ' + ICO.flecha + '</span></a>' +
-      '<a class="cat-card" href="#/catalogo?cat=sintacc"><span class="cat-card__nom">Sin TACC</span>' +
-        '<img class="cat-card__fig" src="assets/cat-sintacc.webp?v=20260905a" alt="" width="400" height="400" loading="lazy" decoding="async">' +
+      '<a class="cat-card" href="#/catalogo?cat=especias"><span class="cat-card__nom">Especias</span>' +
+        '<img class="cat-card__fig" src="assets/cat-especias.webp?v=20260921a" alt="" width="400" height="400" loading="lazy" decoding="async">' +
         '<span class="cat-card__ver">Ver productos ' + ICO.flecha + '</span></a>' +
     '</div>' +
   '</div></section>';
@@ -913,7 +919,7 @@ function pintarMixLista() {
       '<img class="mix-fila__fig" src="' + (p.mixImg || imgDe(p)) + '" alt="" width="120" height="120" loading="lazy" decoding="async">' +
       '<div class="mix-fila__txt">' +
         '<p class="mix-fila__nom">' + esc(p.nombre) + '</p>' +
-        '<p class="mix-fila__precio">' + money(precioKgVenta(p)) + ' / kg</p>' +
+        '<p class="mix-fila__precio">' + money(precio100Venta(p)) + ' / 100 g</p>' +
       '</div>' +
       '<div class="stepper stepper--mini">' +
         '<button data-mixmenos="' + p.id + '" aria-label="Quitar ' + MIX.pasoGramos + ' gramos de ' + esc(p.nombre) + '"' + (g ? '' : ' disabled') + '>−</button>' +
@@ -1150,7 +1156,7 @@ function resumenChico() {
 
 function cuerpoBloqueCarrito(b) {
   const prod = prodPorId(b.lineas[0].id);
-  const porKg = prod && prod.tipo === 'granel' ? money(precioKgVenta(prod)) + ' / kg' : '';
+  const porKg = prod && prod.tipo === 'granel' ? money(precio100Venta(prod)) + ' / 100 g' : '';
   return '<p class="item__nom">' + esc(b.nombre) + '</p>' +
     '<p class="item__acum">Llevás ' + esc(cantidadBloqueCarrito(b)) + '</p>' +
     b.lineas.map(i => {
