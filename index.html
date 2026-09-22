@@ -33,7 +33,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Karla:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/estilos.css?v=20260921a">
+<link rel="stylesheet" href="css/estilos.css?v=20260922a">
 </head>
 <body>
 
@@ -61,12 +61,19 @@
 
 <div class="header-compacta" id="header-compacta" aria-hidden="true">
   <div class="header-compacta__in">
-    <button class="header-compacta__buscar" type="button" data-abrir-busqueda aria-label="Buscar productos">
+    <div class="header-compacta__rubro">
+      <small>Estás viendo</small>
+      <strong data-catalogo-rubro>Todos los productos</strong>
+    </div>
+    <button class="header-compacta__accion header-compacta__accion--buscar" type="button" data-abrir-busqueda aria-label="Buscar productos">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
-      <span>Buscar productos</span>
     </button>
-    <button class="header-compacta__cats" id="btn-categorias-compactas" type="button" aria-label="Ver categorías" aria-controls="panel-categorias">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    <button class="header-compacta__accion header-compacta__accion--categorias" type="button" data-abrir-categorias aria-label="Elegir categoría" aria-controls="panel-categorias" aria-expanded="false">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="6" height="6" rx="1.5"/><rect x="14.5" y="3.5" width="6" height="6" rx="1.5"/><rect x="3.5" y="14.5" width="6" height="6" rx="1.5"/><rect x="14.5" y="14.5" width="6" height="6" rx="1.5"/></svg>
+    </button>
+    <button class="header-compacta__accion header-compacta__accion--filtros" type="button" data-abrir-filtros aria-label="Abrir filtros" aria-controls="panel-filtros" aria-expanded="false">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+      <span class="catalogo-control__badge" data-filtros-badge hidden>0</span>
     </button>
   </div>
 </div>
@@ -160,7 +167,19 @@
     </button>
   </div>
   <div class="panel__cuerpo">
-    <nav class="menu-nav" id="menu-cats-compact"></nav>
+    <p class="panel-catalogo__intro">Elegí un rubro para ver solamente esos productos.</p>
+    <nav class="menu-nav menu-nav--catalogo" id="menu-cats-compact"></nav>
+  </div>
+</aside>
+
+<aside class="panel panel--izq" id="panel-filtros" aria-hidden="true" aria-label="Filtros del catálogo">
+  <div class="panel__top panel__top--filtros">
+    <span class="panel__titulo">Filtrar productos</span>
+    <button class="icon-btn" data-cerrar aria-label="Cerrar filtros">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="panel__cuerpo" id="filtros-catalogo-panel">
   </div>
 </aside>
 
@@ -180,6 +199,6 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="js/datos.js?v=20260921a"></script>
-<script src="js/app.js?v=20260921a"></script>
+<script src="js/app.js?v=20260922a"></script>
 </body>
 </html>

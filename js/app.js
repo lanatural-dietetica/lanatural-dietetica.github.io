@@ -687,6 +687,79 @@ function etiquetasConProductos() {
     .filter(e => e.n > 0);
 }
 
+function categoriaCatalogoActiva() {
+  return estado.catalogo.cat === 'todos' ? null : catPorId(estado.catalogo.cat);
+}
+
+function nombreRubroCatalogo() {
+  const cat = categoriaCatalogoActiva();
+  return cat ? cat.nombre : 'Todos los productos';
+}
+
+function htmlFiltrosCatalogo() {
+  const f = estado.catalogo;
+  const etiquetas = etiquetasConProductos();
+  const nOfertas = publicados().filter(p => Number(p.descuento) > 0).length;
+  const opciones = [];
+
+  if (nOfertas) {
+    opciones.push(
+      '<button class="filtro-opcion filtro-opcion--oferta" type="button" data-oferta="1" aria-pressed="' + f.oferta + '">' +
+        '<span class="filtro-opcion__ico" aria-hidden="true">%</span>' +
+        '<span class="filtro-opcion__texto"><strong>Ofertas</strong><small>' + nOfertas + (nOfertas === 1 ? ' producto' : ' productos') + '</small></span>' +
+        '<span class="filtro-opcion__check" aria-hidden="true">✓</span>' +
+      '</button>'
+    );
+  }
+
+  etiquetas.forEach(e => {
+    opciones.push(
+      '<button class="filtro-opcion" type="button" data-tag="' + e.id + '" aria-pressed="' + f.tags.includes(e.id) + '">' +
+        '<span class="filtro-opcion__ico" aria-hidden="true">' + esc(e.nombre).slice(0, 1) + '</span>' +
+        '<span class="filtro-opcion__texto"><strong>' + esc(e.nombre) + '</strong><small>' + e.n + (e.n === 1 ? ' producto' : ' productos') + '</small></span>' +
+        '<span class="filtro-opcion__check" aria-hidden="true">✓</span>' +
+      '</button>'
+    );
+  });
+
+  return '<p class="panel-catalogo__intro">Combiná los sellos que necesites. Los productos se actualizan al instante.</p>' +
+    (opciones.length
+      ? '<div class="panel-filtros__lista">' + opciones.join('') + '</div>'
+      : '<p class="panel-filtros__vacio">Todavía no hay sellos disponibles.</p>') +
+    '<button class="panel-filtros__limpiar" type="button" data-limpiar-filtros' +
+      (f.tags.length || f.oferta ? '' : ' disabled') + '>Quitar filtros</button>';
+}
+
+function actualizarCabeceraCatalogo() {
+  const f = estado.catalogo;
+  const rubro = nombreRubroCatalogo();
+  const nFiltros = f.tags.length + (f.oferta ? 1 : 0);
+
+  $$('[data-catalogo-rubro]').forEach(el => { el.textContent = rubro; });
+  $$('[data-filtros-badge]').forEach(el => {
+    el.textContent = nFiltros;
+    el.hidden = !nFiltros;
+  });
+
+  const panelFiltros = $('#filtros-catalogo-panel');
+  if (panelFiltros) {
+    if (!panelFiltros.children.length) panelFiltros.innerHTML = htmlFiltrosCatalogo();
+    const oferta = panelFiltros.querySelector('[data-oferta]');
+    if (oferta) oferta.setAttribute('aria-pressed', f.oferta);
+    panelFiltros.querySelectorAll('[data-tag]').forEach(btn => {
+      btn.setAttribute('aria-pressed', f.tags.includes(btn.dataset.tag));
+    });
+    const limpiar = panelFiltros.querySelector('[data-limpiar-filtros]');
+    if (limpiar) limpiar.disabled = !(f.tags.length || f.oferta);
+  }
+
+  $$('#menu-cats-compact a').forEach(a => {
+    const id = a.dataset.catPanel || 'todos';
+    if (id === f.cat) a.setAttribute('aria-current', 'true');
+    else a.removeAttribute('aria-current');
+  });
+}
+
 function pintarGrillaCatalogo() {
   const cont = $('#grilla-catalogo');
   if (!cont) return;
@@ -703,34 +776,36 @@ function pintarGrillaCatalogo() {
   }
   const n = $('#conteo-catalogo');
   if (n) n.textContent = arr.length + (arr.length === 1 ? ' producto' : ' productos');
+  actualizarCabeceraCatalogo();
 }
 
 function vistaCatalogo() {
   const f = estado.catalogo;
-  const chips = [{ id: 'todos', nombre: 'Todos' }]
-    .concat(categoriasVisibles());
-  const etiquetas = etiquetasConProductos();
-  const nOfertas = publicados().filter(p => Number(p.descuento) > 0).length;
+  const rubro = nombreRubroCatalogo();
 
   return '' +
   '<section class="seccion catalogo">' +
     '<div class="cat-cabecera"><div class="contenedor">' +
-    '<div class="titulo-filete"><h2>Nuestra selección</h2></div>' +
+    '<div class="catalogo-presentacion">' +
+      '<div class="catalogo-titulo">' +
+        '<span class="catalogo-titulo__kicker">Catálogo natural</span>' +
+        '<h1 data-catalogo-rubro>' + esc(rubro) + '</h1>' +
+      '</div>' +
+      '<div class="catalogo-controles" aria-label="Opciones del catálogo">' +
+        '<button class="catalogo-control catalogo-control--categorias" type="button" data-abrir-categorias aria-label="Elegir categoría" aria-controls="panel-categorias" aria-expanded="false">' +
+          '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="6" height="6" rx="1.5"/><rect x="14.5" y="3.5" width="6" height="6" rx="1.5"/><rect x="3.5" y="14.5" width="6" height="6" rx="1.5"/><rect x="14.5" y="14.5" width="6" height="6" rx="1.5"/></svg>' +
+          '<span class="catalogo-control__texto">Categorías</span>' +
+        '</button>' +
+        '<button class="catalogo-control catalogo-control--filtros" type="button" data-abrir-filtros aria-label="Abrir filtros" aria-controls="panel-filtros" aria-expanded="false">' +
+          '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>' +
+          '<span class="catalogo-control__texto">Filtros</span>' +
+          '<span class="catalogo-control__badge" data-filtros-badge hidden>0</span>' +
+        '</button>' +
+      '</div>' +
+    '</div>' +
     '<button class="buscador-abrir" type="button" data-abrir-busqueda>' + ICO.lupa +
       '<span>Buscar productos</span><small>Escribí un nombre o categoría</small>' +
     '</button>' +
-    '<div class="chips" role="group" aria-label="Categorías">' +
-      chips.map(c => '<button class="chip" data-chip="' + c.id + '" aria-pressed="' + (f.cat === c.id) + '">' + esc(c.nombre) + '</button>').join('') +
-    '</div>' +
-    (etiquetas.length || nOfertas
-      ? '<div class="chips chips--tags" role="group" aria-label="Filtros">' +
-          (nOfertas
-            ? '<button class="chip chip--tag chip--oferta" data-oferta="1" aria-pressed="' + f.oferta + '">Ofertas<small>' + nOfertas + '</small></button>'
-            : '') +
-          etiquetas.map(e => '<button class="chip chip--tag" data-tag="' + e.id + '" aria-pressed="' + f.tags.includes(e.id) + '">' +
-            esc(e.nombre) + '<small>' + e.n + '</small></button>').join('') +
-        '</div>'
-      : '') +
     '<div class="orden-fila">' +
       '<p id="conteo-catalogo"></p>' +
       '<div class="orden-campo">' +
@@ -1363,11 +1438,19 @@ function armarMensaje(datos) {
 
 /* ---------------- paneles ---------------- */
 function abrirPanel(cual) {
-  const p = cual === 'menu' ? $('#panel-menu') : (cual === 'categorias' ? $('#panel-categorias') : $('#panel-carrito'));
+  const paneles = {
+    menu: $('#panel-menu'),
+    categorias: $('#panel-categorias'),
+    filtros: $('#panel-filtros'),
+    carrito: $('#panel-carrito')
+  };
+  const p = paneles[cual];
   if (cual === 'carrito') { estado.checkout.paso = 0; pintarCarrito(); }
+  if (cual === 'filtros') actualizarCabeceraCatalogo();
   if (!p) return;
   p.classList.add('abierto');
   p.setAttribute('aria-hidden', 'false');
+  $$('[aria-controls="' + p.id + '"]').forEach(btn => btn.setAttribute('aria-expanded', 'true'));
   $('#overlay').classList.add('abierto');
   document.body.style.overflow = 'hidden';
   const foco = p.querySelector('button, a, input');
@@ -1375,6 +1458,7 @@ function abrirPanel(cual) {
 }
 function cerrarPaneles() {
   $$('.panel').forEach(p => { p.classList.remove('abierto'); p.setAttribute('aria-hidden', 'true'); });
+  $$('[aria-expanded="true"][aria-controls]').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
   $('#overlay').classList.remove('abierto');
   document.body.style.overflow = '';
 }
@@ -1400,7 +1484,7 @@ function render() {
   let titulo = CONFIG.marca;
 
   if (vista === 'catalogo') {
-    if (params.cat) estado.catalogo.cat = params.cat;
+    estado.catalogo.cat = params.cat && (params.cat === 'todos' || catPorId(params.cat)) ? params.cat : 'todos';
     if (params.ofertas) { estado.catalogo.cat = 'todos'; estado.catalogo.oferta = true; }
     html = vistaCatalogo();
     titulo = 'Catálogo · ' + CONFIG.marca;
@@ -1553,7 +1637,8 @@ document.addEventListener('click', ev => {
   if (t.id === 'overlay') { cerrarPaneles(); return; }
 
   if (t.closest('#btn-menu'))    { abrirPanel('menu'); return; }
-  if (t.closest('#btn-categorias-compactas')) { abrirPanel('categorias'); return; }
+  if (t.closest('[data-abrir-categorias]')) { abrirPanel('categorias'); return; }
+  if (t.closest('[data-abrir-filtros]')) { abrirPanel('filtros'); return; }
   if (t.closest('.carrito-btn') || t.closest('#cart-fab')) { abrirPanel('carrito'); return; }
 
   if (t.closest('[data-volver]')) {
@@ -1612,7 +1697,6 @@ document.addEventListener('click', ev => {
   const oferta = t.closest('[data-oferta]');
   if (oferta) {
     estado.catalogo.oferta = !estado.catalogo.oferta;
-    oferta.setAttribute('aria-pressed', estado.catalogo.oferta);
     pintarGrillaCatalogo();
     return;
   }
@@ -1622,7 +1706,13 @@ document.addEventListener('click', ev => {
     const id = tag.dataset.tag;
     const f = estado.catalogo;
     f.tags = f.tags.includes(id) ? f.tags.filter(x => x !== id) : f.tags.concat(id);
-    tag.setAttribute('aria-pressed', f.tags.includes(id));
+    pintarGrillaCatalogo();
+    return;
+  }
+
+  if (t.closest('[data-limpiar-filtros]')) {
+    estado.catalogo.tags = [];
+    estado.catalogo.oferta = false;
     pintarGrillaCatalogo();
     return;
   }
@@ -2001,7 +2091,20 @@ function pintarCascara() {
   const linksCategorias = categoriasVisibles()
     .map(c => '<a href="#/catalogo?cat=' + c.id + '" data-cerrar>' + esc(c.nombre) + '</a>').join('');
   $('#menu-cats').innerHTML = linksCategorias;
-  $('#menu-cats-compact').innerHTML = '<a href="#/catalogo" data-cerrar>Todos los productos</a>' + linksCategorias;
+  const linksPanelCategorias = categoriasVisibles().map(c =>
+    '<a href="#/catalogo?cat=' + c.id + '" data-cat-panel="' + c.id + '" data-cerrar>' +
+      '<span class="panel-categoria__marca" aria-hidden="true"></span>' +
+      '<span>' + esc(c.nombre) + '</span>' +
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>' +
+    '</a>'
+  ).join('');
+  $('#menu-cats-compact').innerHTML =
+    '<a href="#/catalogo?cat=todos" data-cat-panel="todos" data-cerrar>' +
+      '<span class="panel-categoria__marca panel-categoria__marca--todos" aria-hidden="true"></span>' +
+      '<span>Todos los productos</span>' +
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>' +
+    '</a>' + linksPanelCategorias;
+  actualizarCabeceraCatalogo();
 
   const hayWa = waValido();
   const linkWa = hayWa
