@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-FONDO = np.array([250, 230, 208], dtype=float)  # #FAE6D0
+FONDO = np.array([246, 238, 227], dtype=float)  # #F6EEE3 (--foto-crema)
 TAM = 260
 DIAMETRO = 226
 CERCA, LEJOS = 32.0, 82.0
