@@ -91,7 +91,7 @@
     {
       "id": "frutas-secas",
       "nombre": "Frutas deshidratadas",
-      "img": "assets/cat-frutas-secas.webp",
+      "img": "assets/cat-frutas-secas-v2.webp",
       "visible": true,
       "orden": 2,
       "color": "#c8a97e",
