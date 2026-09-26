@@ -372,7 +372,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/avena-instantanea.webp?v=20260905a",
+      "img": "assets/productos/avena-instantanea-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 1880
@@ -443,7 +443,7 @@
       "origen": "Filipinas",
       "ingredientes": "Coco deshidratado.",
       "alergenos": "Puede contener trazas de frutos secos.",
-      "img": "assets/productos/coco-en-escamas.webp?v=20260905a",
+      "img": "assets/productos/coco-en-escamas-pal-v1.webp?v=20260926a",
       "color": "#f0ece3",
       "color2": "#ffffff",
       "costoKg": 18750
@@ -477,7 +477,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/coco-rallado-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 9380
@@ -613,7 +613,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/mani-japones.webp?v=20260905a",
+      "img": "assets/productos/mani-japones-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 38120
@@ -681,7 +681,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/chips-de-banana.webp?v=20260921a",
+      "img": "assets/productos/bananas-chips-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 12500
@@ -715,7 +715,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/canela-molida-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 12500
@@ -783,7 +783,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/nuez-de-brasil-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 34380
@@ -817,7 +817,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/canela-en-rama-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 31250
@@ -954,7 +954,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/azucar-impalpable-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 3120
@@ -988,7 +988,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/azucar-negra-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 3120
@@ -1192,7 +1192,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/quinoa-pop-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 5940
@@ -1362,7 +1362,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/laurel-en-hojas-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 15620
@@ -1396,7 +1396,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/tomillo-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 12500
@@ -1430,7 +1430,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/oregano-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 7500
@@ -1498,7 +1498,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/adobo-para-pizza-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 10620
@@ -1532,7 +1532,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/chimichurri-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 11880
@@ -1702,7 +1702,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/ajo-en-polvo.webp?v=20260905a",
+      "img": "assets/productos/ajo-en-polvo-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 11250
@@ -1736,7 +1736,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/provenzal-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 13750
@@ -2320,7 +2320,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/salvado-de-avena.webp?v=20260905a",
+      "img": "assets/productos/salvado-de-avena-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 2380
@@ -2354,7 +2354,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/harina-de-lino-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 2250
@@ -2422,7 +2422,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/harina-de-chia-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 7500
@@ -2524,7 +2524,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/harina-de-arroz.webp?v=20260905a",
+      "img": "assets/productos/harina-de-arroz-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 17500
@@ -2558,7 +2558,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/harina-de-avena.webp?v=20260905a",
+      "img": "assets/productos/harina-de-avena-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 2380
@@ -2629,7 +2629,7 @@
       "origen": "Salta, Argentina",
       "ingredientes": "Garbanzos.",
       "alergenos": "Puede contener trazas de gluten.",
-      "img": "assets/productos/garbanzos.webp?v=20260905a",
+      "img": "assets/productos/garbanzos-pal-v1.webp?v=20260926a",
       "color": "#d9b476",
       "color2": "#eccb95",
       "costoKg": 1440
@@ -2663,7 +2663,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/porotos-colorados.webp?v=20260905a",
+      "img": "assets/productos/porotos-colorados-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 2880
@@ -2697,7 +2697,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/porotos-negros.webp?v=20260905a",
+      "img": "assets/productos/porotos-negros-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 3000
@@ -2731,7 +2731,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/porotos-alubia.webp?v=20260905a",
+      "img": "assets/productos/porotos-alubia-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 2440
@@ -2799,7 +2799,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/lentejas.webp?v=20260905a",
+      "img": "assets/productos/lentejas-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 2500
@@ -2833,7 +2833,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/arroz-integral.webp?v=20260905a",
+      "img": "assets/productos/arroz-integral-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 2560
@@ -2867,7 +2867,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/arroz-yamani.webp?v=20260905a",
+      "img": "assets/productos/arroz-yamani-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 3120
@@ -2969,7 +2969,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/coriandro-molido-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 11560
@@ -3003,7 +3003,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/nuez-moscada-molida-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 38750
@@ -3037,7 +3037,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/nuez-moscada-entera-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 8120
@@ -3105,7 +3105,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/paprika-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 16880
@@ -3275,7 +3275,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/condimento-para-arroz-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 15620
@@ -3921,7 +3921,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/almendras-con-chocolate-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 28750
@@ -3955,7 +3955,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/avellanas-con-chocolate-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 25000
@@ -3989,7 +3989,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/arandanos-con-chocolate-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 29380
@@ -4329,7 +4329,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "",
+      "img": "assets/productos/arandanos-deshidratados-pal-v1.webp?v=20260926a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoKg": 18750
@@ -4719,7 +4719,7 @@
       "origen": "",
       "ingredientes": "",
       "alergenos": "",
-      "img": "assets/productos/pasta-de-mani-stevia.webp?v=20260921a",
+      "img": "",
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoUnidad": 2750
