@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "actualizado": "2026-09-05",
+  "actualizado": "2026-09-26",
   "demo": true,
   "config": {
     "marca": "La Natural",
@@ -907,11 +907,11 @@
         "250g",
         "1kg"
       ],
-      "presentacionDefecto": "100g",
+      "presentacionDefecto": "1kg",
       "tags": [],
       "estado": "publicado",
       "disponible": true,
-      "destacado": false,
+      "destacado": true,
       "orden": 21,
       "mix": true,
       "descripcion": "",
@@ -922,7 +922,8 @@
       "img": "assets/productos/almendras-nonpareil.webp?v=20260921a",
       "color": "#c8a97e",
       "color2": "#e3cba6",
-      "costoKg": 18120
+      "costoKg": 18120,
+      "editado": 1790435934859
     },
     {
       "id": "n022",
@@ -7086,5 +7087,5 @@
       "texto": "Elegí envío o retiro en el local."
     }
   ],
-  "sello": 1788621026212
+  "sello": 1790435934860
 }
