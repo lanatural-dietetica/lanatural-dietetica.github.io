@@ -341,3 +341,64 @@
   flex:0 0 auto;width:30px;height:30px;border:0;border-radius:50%;
   background:rgba(168,52,42,.1);color:var(--rojo);font-size:17px;line-height:1;
 }
+
+/* ============================================================
+   Guía para la clienta: qué falta y filtros grandes
+   ============================================================ */
+.chequeo{
+  border:1px solid rgba(168,52,42,.28);background:rgba(168,52,42,.06);
+  border-radius:14px;padding:14px 16px;margin-bottom:16px;
+}
+.chequeo--listo{border-color:rgba(111,122,82,.35);background:var(--oliva-claro)}
+.chequeo__lbl{margin:0 0 10px;font-weight:700;font-size:14px;color:var(--rojo)}
+.chequeo--listo .chequeo__lbl{color:var(--oliva-osc)}
+.chequeo__lista{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.chequeo__lista li{
+  display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gris-txt);
+}
+.chequeo__lista li::before{
+  content:"✓";width:20px;height:20px;flex:0 0 auto;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+  background:var(--oliva);color:#fff;
+}
+.chequeo__lista li.mal{color:var(--marron-txt);font-weight:600}
+.chequeo__lista li.mal::before{content:"!";background:var(--rojo)}
+.chequeo__lista li span{flex:1}
+.chequeo__ir{
+  border:1px solid var(--rojo);color:var(--rojo);background:#fff;
+  border-radius:999px;padding:5px 12px;font:inherit;font-size:12px;font-weight:600;
+}
+
+.chips-falta{padding-bottom:6px}
+.chip-falta{display:inline-flex;align-items:center;gap:7px}
+.chip-falta small{
+  font-size:11px;padding:1px 7px;border-radius:999px;
+  background:rgba(122,68,35,.10);color:var(--gris-txt);
+}
+.chip-falta--aviso[aria-pressed="false"]{border-color:rgba(168,52,42,.45);color:var(--rojo)}
+.chip-falta--aviso[aria-pressed="false"] small{background:rgba(168,52,42,.12);color:var(--rojo)}
+.chip-falta[aria-pressed="true"] small{background:rgba(255,255,255,.25);color:#fff}
+
+.fila__falta{
+  font-size:10.5px;font-weight:600;color:var(--rojo);white-space:nowrap;
+  background:rgba(168,52,42,.10);border-radius:999px;padding:3px 8px;
+}
+
+/* ============================================================
+   Escritorio: la lista en dos columnas y el editor aprovechando el ancho
+   ============================================================ */
+@media (min-width:900px){
+  .panel-main{max-width:1100px;padding:24px 24px 60px}
+  .barra-fija{margin:-24px -24px 18px;padding:16px 24px 10px}
+
+  .grupo-lbl{margin-top:22px}
+  .lista-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .fila{margin:0}
+
+  .editor{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+  .editor .chequeo,
+  .editor__cab,
+  .editor > .btn,
+  .editor > .btn-borrar{grid-column:1 / -1}
+  .campos{grid-template-columns:repeat(3,minmax(0,1fr))}
+}

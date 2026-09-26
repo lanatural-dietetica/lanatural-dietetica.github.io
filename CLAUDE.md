@@ -608,3 +608,24 @@ interno sigue siendo por kilo (`precioKgVenta`).
   `#F6EEE3` y entre 26 y 33 KB. En la interfaz miden 110×110 mobile y 148×148 desktop.
 - `scripts/icono-categoria.py` se corrigió al crema oficial `#F6EEE3`; antes todavía tenía
   el viejo `#FAE6D0`. Publicado en `ad8df3c`.
+
+
+## Panel guiado y a dos columnas — 2026-09-22 (cambios hechos por Claude)
+Juani pidió que la clienta no pueda equivocarse ni saltearse un paso, y que el escritorio
+no desperdicie tanto lugar.
+- **Filtros de "qué falta"** arriba de los rubros, con el número al lado: Todos ·
+  Falta precio · Falta foto · Ocultos · Sin stock. Salen de `faltantes(p)`. Los que tienen
+  algo pendiente se ven en rojo. Un chip que da cero no se muestra.
+- Cada fila de la lista avisa **"Falta la foto"** / **"Falta el precio"**.
+- El editor abre con un **chequeo**: nombre, costo y foto, cada uno con tilde o con
+  admiración y un botón **Completar** que lleva al campo y lo enfoca.
+- El botón de guardar **dice qué va a pasar**: "Guardar y publicar" o "Guardar (queda oculto
+  hasta completar la foto)". Y al terminar, el aviso repite por qué quedó oculto.
+- **Sin precio no se publica**: si el producto está en venta y se borra el costo, al guardar
+  pasa a oculto solo. Antes tiraba un error y no dejaba guardar, que era peor: se perdía lo
+  escrito.
+- **Escritorio**: `.panel-main` llega a 1100 px, la lista va en **dos columnas**
+  (`.lista-grid`) y el editor también, con el chequeo y los botones cruzando el ancho.
+- La cuenta del editor encabeza con el **precio de 100 g** (que es como está la planilla de
+  la clienta y como se ve en la tienda) y deja el kilo abajo. La lista muestra el precio por
+  100 g, no por kilo.

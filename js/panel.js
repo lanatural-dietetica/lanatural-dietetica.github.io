@@ -23,7 +23,7 @@ const money = n => '$ ' + fmt.format(Math.round(n || 0));
 
 const estado = { token: '', catalogo: null, sha: '', q: '', rubro: 'todos',
                  seccion: 'productos', editando: null, editandoCombo: null, alta: null,
-                 eligiendo: false, sucio: false, orden: 'recientes' };
+                 eligiendo: false, sucio: false, orden: 'recientes', falta: 'todos' };
 
 /* ---------------- red de seguridad ----------------
    Nada de lo que se escribe se pierde: cada cambio queda guardado en el propio
@@ -385,6 +385,25 @@ function ponerEstado(p, cual) {
 }
 const ETIQUETA_ESTADO = { publicado: 'En venta', sinstock: 'Sin stock', oculto: 'Oculto' };
 
+/* Qué le falta a un producto para poder venderse. Es la base de los filtros de la
+   lista, del cartel del editor y de lo que dice el botón de guardar. */
+function faltantes(p) {
+  const f = [];
+  if (!p.nombre || p.nombre.trim().length < 2) f.push('nombre');
+  if (!(p.tipo === 'granel' ? p.costoKg : p.costoUnidad)) f.push('precio');
+  if (!p.img) f.push('foto');
+  return f;
+}
+const FALTA_TXT = { nombre: 'el nombre', precio: 'el precio', foto: 'la foto' };
+
+const FILTROS = [
+  { id: 'todos',     nombre: 'Todos',        test: () => true },
+  { id: 'sinprecio', nombre: 'Falta precio', test: p => faltantes(p).includes('precio') },
+  { id: 'sinfoto',   nombre: 'Falta foto',   test: p => !p.img },
+  { id: 'oculto',    nombre: 'Ocultos',      test: p => estadoDe(p) === 'oculto' },
+  { id: 'sinstock',  nombre: 'Sin stock',    test: p => estadoDe(p) === 'sinstock' },
+];
+
 const imgDe = p => p.img || 'data:image/svg+xml,' + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">' +
   '<rect width="40" height="40" fill="#fae6d0"/>' +
@@ -517,8 +536,10 @@ function pintarCuentaAlta() {
   cont.innerHTML =
     '<div class="cuenta__fila"><span>Costo</span><span>' + money(a.costo || 0) + '</span></div>' +
     '<div class="cuenta__fila"><span>Ganancia ' + (a.margen || 0) + '%</span><span>+ ' + money(venta - (a.costo || 0)) + '</span></div>' +
-    '<div class="cuenta__fila cuenta__total"><span>' + (a.tipo === 'granel' ? 'Precio por kilo' : 'Precio final') + '</span>' +
-      '<span>' + money(venta) + '</span></div>';
+    (a.tipo === 'granel'
+      ? '<div class="cuenta__fila cuenta__total"><span>Precio de 100 g</span><span>' + money(redondear(venta / 10)) + '</span></div>' +
+        '<div class="cuenta__fila"><span>El kilo</span><span>' + money(venta) + '</span></div>'
+      : '<div class="cuenta__fila cuenta__total"><span>Precio final</span><span>' + money(venta) + '</span></div>');
 }
 
 function mostrarAlta() {
@@ -539,17 +560,22 @@ function mostrarAlta() {
 function filaProducto(p, conRubro) {
   const c = cuentaDe(p);
   const e = estadoDe(p);
+  const falta = faltantes(p);
   const cat = (estado.catalogo.categorias || []).find(x => x.id === p.categoria);
   return '<button class="fila" data-editar="' + p.id + '">' +
     '<img class="fila__fig" src="' + imgDe(p) + '" alt="" loading="lazy">' +
     '<span class="fila__txt">' +
       '<p class="fila__nom">' + esc(p.nombre || 'Sin nombre') + '</p>' +
-      '<p class="fila__precio">' + money(c.final) + (p.tipo === 'granel' ? ' / kg' : ' / unidad') +
+      '<p class="fila__precio">' + money(p.tipo === 'granel' ? redondear(c.final / 10) : c.final) +
+        (p.tipo === 'granel' ? ' / 100 g' : ' / unidad') +
         (conRubro && cat ? ' · ' + esc(cat.nombre) : '') + '</p>' +
     '</span>' +
     '<span class="fila__lado">' +
       (p.editado && Date.now() - p.editado < 7 * 24 * 3600e3
         ? '<span class="fila__editado">' + esc(haceCuanto(p.editado)) + '</span>' : '') +
+      (falta.length
+        ? '<span class="fila__falta">Falta ' + falta.map(f => FALTA_TXT[f]).join(' y ') + '</span>'
+        : '') +
       '<span class="fila__estado estado--' + e + '">' + ETIQUETA_ESTADO[e] + '</span>' +
     '</span>' +
   '</button>';
@@ -559,10 +585,13 @@ const sinTildes = t => (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, ''
 
 function vistaLista() {
   const q = sinTildes(estado.q.trim());
+  const todos = estado.catalogo.productos || [];
   const cats = estado.catalogo.categorias || [];
   const porNombre = (a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es', { sensitivity: 'base' });
 
   let arr = (estado.catalogo.productos || []).slice();
+  const filtro = FILTROS.find(f => f.id === estado.falta) || FILTROS[0];
+  if (estado.falta !== 'todos') arr = arr.filter(filtro.test);
   if (estado.rubro !== 'todos') arr = arr.filter(p => p.categoria === estado.rubro);
   if (q) {
     const nombreCat = id => (cats.find(c => c.id === id) || {}).nombre || '';
@@ -587,18 +616,19 @@ function vistaLista() {
   } else if (estado.rubro === 'todos' && !q) {
     cuerpo = (verRecientes
       ? '<p class="grupo-lbl grupo-lbl--recientes">Lo último que tocaste <span>' + recientes.length + '</span></p>' +
-        recientes.map(p => filaProducto(p, true)).join('')
+        '<div class="lista-grid">' + recientes.map(p => filaProducto(p, true)).join('') + '</div>'
       : '') +
       cats.slice().sort((a, b) => (a.orden || 99) - (b.orden || 99)).map(cat => {
       const dentro = arr.filter(p => p.categoria === cat.id);
       if (!dentro.length) return '';
       return '<p class="grupo-lbl">' + esc(cat.nombre) + ' <span>' + dentro.length + '</span></p>' +
-             dentro.map(filaProducto).join('');
+             '<div class="lista-grid">' + dentro.map(filaProducto).join('') + '</div>';
     }).join('');
     const huerfanos = arr.filter(p => !cats.some(c => c.id === p.categoria));
-    if (huerfanos.length) cuerpo += '<p class="grupo-lbl">Sin categoría <span>' + huerfanos.length + '</span></p>' + huerfanos.map(filaProducto).join('');
+    if (huerfanos.length) cuerpo += '<p class="grupo-lbl">Sin categoría <span>' + huerfanos.length + '</span></p>' +
+      '<div class="lista-grid">' + huerfanos.map(filaProducto).join('') + '</div>';
   } else {
-    cuerpo = arr.map(p => filaProducto(p, true)).join('');
+    cuerpo = '<div class="lista-grid">' + arr.map(p => filaProducto(p, true)).join('') + '</div>';
   }
 
   return '' +
@@ -606,6 +636,15 @@ function vistaLista() {
       '<div class="panel-buscador">' +
         '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>' +
         '<input id="q" type="search" placeholder="Buscar producto, rubro o marca" value="' + esc(estado.q) + '" autocomplete="off">' +
+      '</div>' +
+      '<div class="chips-rubro chips-falta">' +
+        FILTROS.map(f => {
+          const n = f.id === 'todos' ? todos.length : todos.filter(f.test).length;
+          if (!n && f.id !== 'todos') return '';
+          return '<button class="chip-panel chip-falta' + (f.id !== 'todos' ? ' chip-falta--aviso' : '') +
+            '" data-falta="' + f.id + '" aria-pressed="' + (estado.falta === f.id) + '">' +
+            esc(f.nombre) + '<small>' + n + '</small></button>';
+        }).join('') +
       '</div>' +
       '<div class="chips-rubro">' +
         rubros.map(r => '<button class="chip-panel" data-rubro="' + r.id + '" aria-pressed="' + (estado.rubro === r.id) + '">' +
@@ -644,8 +683,28 @@ function vistaEditor(p) {
       (ayuda ? '<p class="campo__ayuda">' + ayuda + '</p>' : '') +
     '</div>';
 
+  const falta = faltantes(p);
+  const listo = !falta.length;
+
   return '' +
   '<div class="editor">' +
+    '<div class="chequeo' + (listo ? ' chequeo--listo' : '') + '">' +
+      '<p class="chequeo__lbl">' + (listo
+        ? 'Listo para vender'
+        : 'Para que se vea en la tienda falta ' + falta.map(f => FALTA_TXT[f]).join(' y ')) + '</p>' +
+      '<ul class="chequeo__lista">' +
+        [['nombre', 'Nombre', 'f-nombre'],
+         ['precio', p.tipo === 'granel' ? 'Costo por kilo' : 'Costo por unidad', 'f-costo'],
+         ['foto', 'Foto', 'btn-foto']].map(([k, txt, destino]) => {
+          const mal = falta.includes(k);
+          return '<li class="' + (mal ? 'mal' : 'ok') + '">' +
+            '<span>' + txt + '</span>' +
+            (mal ? '<button class="chequeo__ir" data-ir="' + destino + '">Completar</button>' : '') +
+          '</li>';
+        }).join('') +
+      '</ul>' +
+    '</div>' +
+
     '<div class="editor__cab">' +
       '<img class="editor__fig" src="' + imgDe(p) + '" alt="">' +
       '<div>' +
@@ -752,7 +811,9 @@ function vistaEditor(p) {
       '<p class="campo__ayuda">Sin stock se sigue viendo en la tienda pero no se puede comprar. Oculto no aparece.</p>' +
     '</div>' +
 
-    '<button class="btn btn--oliva btn--bloque" id="guardar">Guardar cambios</button>' +
+    '<button class="btn btn--oliva btn--bloque" id="guardar">' +
+      (listo ? 'Guardar y publicar' : 'Guardar (queda oculto hasta completar ' + falta.map(f => FALTA_TXT[f]).join(' y ') + ')') +
+    '</button>' +
     '<button class="btn-borrar" id="borrar">Eliminar este producto</button>' +
   '</div>';
 }
@@ -767,10 +828,11 @@ function pintarCuenta() {
     '<div class="cuenta__fila"><span>Costo</span><span>' + money(c.base) + '</span></div>' +
     '<div class="cuenta__fila"><span>Ganancia ' + c.margen + '%</span><span>+ ' + money(c.venta - c.base) + '</span></div>' +
     (c.desc ? '<div class="cuenta__fila"><span>Descuento ' + c.desc + '%</span><span>− ' + money(c.venta - c.final) + '</span></div>' : '') +
-    '<div class="cuenta__fila cuenta__total"><span>' + (p.tipo === 'granel' ? 'Precio por kilo' : 'Precio final') + '</span><span>' + money(c.final) + '</span></div>' +
     (p.tipo === 'granel'
-      ? '<div class="cuenta__medidas">' + c.medidas.map(m => m.nombre + ': <b>' + money(m.precio) + '</b>').join(' · ') + '</div>'
-      : '');
+      ? '<div class="cuenta__fila cuenta__total"><span>Precio de 100 g</span><span>' + money(redondear(c.final / 10)) + '</span></div>' +
+        '<div class="cuenta__fila"><span>El kilo</span><span>' + money(c.final) + '</span></div>' +
+        '<div class="cuenta__medidas">' + c.medidas.map(m => m.nombre + ': <b>' + money(m.precio) + '</b>').join(' · ') + '</div>'
+      : '<div class="cuenta__fila cuenta__total"><span>Precio final</span><span>' + money(c.final) + '</span></div>');
 }
 
 /* ---------------- combos ---------------- */
@@ -992,7 +1054,10 @@ async function guardarProducto() {
   const p = estado.editando;
   if (!p) return;
   if (!p.nombre || p.nombre.trim().length < 2) { aviso('Ponele un nombre al producto.', 'error'); const n = $('#f-nombre'); if (n) n.focus(); return; }
-  if (!(p.tipo === 'granel' ? p.costoKg : p.costoUnidad)) { aviso('Falta el costo.', 'error'); const c = $('#f-costo'); if (c) c.focus(); return; }
+  const falta = faltantes(p);
+  if (falta.includes('precio') && p.estado === 'publicado') {
+    p.estado = 'oculto';   // sin precio no puede salir a la venta
+  }
   p.nombre = nombreLindo(p.nombre);
   p.slug = slugLibre(aSlug(p.nombre), p.id);
   acomodarMedidas(p);
@@ -1008,8 +1073,10 @@ async function guardarProducto() {
     aviso('Guardado. Publicando en la tienda…', 'trabajando');
     mostrarLista();
     esperarPublicado(sello).then(ok => {
-      aviso(ok ? 'Listo, ya se ve en la tienda.' : 'Guardado. Está tardando en publicarse, mirá en un minuto.',
-            ok ? 'ok' : 'error');
+      if (!ok) { aviso('Guardado. Está tardando en publicarse, mirá en un minuto.', 'error'); return; }
+      aviso(falta.length
+        ? 'Guardado, pero queda oculto hasta que completes ' + falta.map(f => FALTA_TXT[f]).join(' y ') + '.'
+        : 'Listo, ya se ve en la tienda.', falta.length ? 'error' : 'ok');
     });
   } catch (e) {
     aviso(e.codigo === 409
@@ -1105,6 +1172,24 @@ document.addEventListener('click', async ev => {
     guardarCatalogo('Panel: elimina el combo ' + (k.nombre || k.id))
       .then(() => { aviso('Combo eliminado.', 'ok'); estado.editandoCombo = null; mostrarLista(); })
       .catch(e => aviso('No se pudo eliminar: ' + e.message, 'error'));
+    return;
+  }
+
+  const ir = t.closest('[data-ir]');
+  if (ir) {
+    const destino = $('#' + ir.dataset.ir);
+    if (destino) {
+      destino.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      setTimeout(() => { destino.focus(); if (destino.select) destino.select(); }, 320);
+    }
+    return;
+  }
+
+  const chipFalta = t.closest('[data-falta]');
+  if (chipFalta) {
+    estado.falta = chipFalta.dataset.falta;
+    $('#panel-main').innerHTML = vistaLista();
+    window.scrollTo(0, 0);
     return;
   }
 
