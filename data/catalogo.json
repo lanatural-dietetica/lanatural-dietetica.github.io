@@ -6977,7 +6977,7 @@
       ],
       "descuento": 8,
       "precioEspecial": null,
-      "activo": true,
+      "activo": false,
       "destacado": false,
       "orden": 2,
       "img": "assets/combo-pausa.webp",
@@ -7053,5 +7053,5 @@
       "texto": "Elegí envío o retiro en el local."
     }
   ],
-  "sello": 1790437902006
+  "sello": 1790437908254
 }
