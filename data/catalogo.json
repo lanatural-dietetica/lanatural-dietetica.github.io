@@ -6909,40 +6909,6 @@
       "color": "#c8a97e",
       "color2": "#e3cba6",
       "costoUnidad": 0
-    },
-    {
-      "id": "p98",
-      "sku": "",
-      "slug": "nuez-con-cascara",
-      "nombre": "Nuez con Cáscara",
-      "categoria": "frutos-secos",
-      "subtitulo": "",
-      "marca": "",
-      "tipo": "granel",
-      "margen": 20,
-      "descuento": 0,
-      "presentaciones": [
-        "50g",
-        "100g",
-        "250g",
-        "1kg"
-      ],
-      "presentacionDefecto": "100g",
-      "tags": [],
-      "estado": "publicado",
-      "disponible": true,
-      "destacado": false,
-      "orden": 201,
-      "mix": true,
-      "descripcion": "Nueces de sabor suave y textura crocante, ideales para colaciones, ensaladas y repostería. Aportan grasas poliinsaturadas, incluido omega 3 vegetal, además de fibra, proteína y minerales.",
-      "preparacion": "",
-      "origen": "",
-      "ingredientes": "",
-      "alergenos": "",
-      "img": "assets/productos/nuez-con-cascara.webp?v=20260905a",
-      "color": "#c8a97e",
-      "color2": "#e3cba6",
-      "costoKg": 5000
     }
   ],
   "combos": [
@@ -7087,5 +7053,5 @@
       "texto": "Elegí envío o retiro en el local."
     }
   ],
-  "sello": 1790435934860
+  "sello": 1790435990599
 }
