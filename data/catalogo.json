@@ -6941,7 +6941,7 @@
       ],
       "descuento": 10,
       "precioEspecial": null,
-      "activo": true,
+      "activo": false,
       "destacado": true,
       "orden": 1,
       "img": "assets/combo-despensa.webp",
@@ -7053,5 +7053,5 @@
       "texto": "Elegí envío o retiro en el local."
     }
   ],
-  "sello": 1790435990599
+  "sello": 1790437902006
 }
