@@ -536,10 +536,8 @@ function pintarCuentaAlta() {
   cont.innerHTML =
     '<div class="cuenta__fila"><span>Costo</span><span>' + money(a.costo || 0) + '</span></div>' +
     '<div class="cuenta__fila"><span>Ganancia ' + (a.margen || 0) + '%</span><span>+ ' + money(venta - (a.costo || 0)) + '</span></div>' +
-    (a.tipo === 'granel'
-      ? '<div class="cuenta__fila cuenta__total"><span>Precio de 100 g</span><span>' + money(redondear(venta / 10)) + '</span></div>' +
-        '<div class="cuenta__fila"><span>El kilo</span><span>' + money(venta) + '</span></div>'
-      : '<div class="cuenta__fila cuenta__total"><span>Precio final</span><span>' + money(venta) + '</span></div>');
+    '<div class="cuenta__fila cuenta__total"><span>' + (a.tipo === 'granel' ? 'Precio por kilo' : 'Precio final') + '</span>' +
+      '<span>' + money(venta) + '</span></div>';
 }
 
 function mostrarAlta() {
@@ -566,8 +564,7 @@ function filaProducto(p, conRubro) {
     '<img class="fila__fig" src="' + imgDe(p) + '" alt="" loading="lazy">' +
     '<span class="fila__txt">' +
       '<p class="fila__nom">' + esc(p.nombre || 'Sin nombre') + '</p>' +
-      '<p class="fila__precio">' + money(p.tipo === 'granel' ? redondear(c.final / 10) : c.final) +
-        (p.tipo === 'granel' ? ' / 100 g' : ' / unidad') +
+      '<p class="fila__precio">' + money(c.final) + (p.tipo === 'granel' ? ' / kg' : ' / unidad') +
         (conRubro && cat ? ' · ' + esc(cat.nombre) : '') + '</p>' +
     '</span>' +
     '<span class="fila__lado">' +
@@ -828,11 +825,10 @@ function pintarCuenta() {
     '<div class="cuenta__fila"><span>Costo</span><span>' + money(c.base) + '</span></div>' +
     '<div class="cuenta__fila"><span>Ganancia ' + c.margen + '%</span><span>+ ' + money(c.venta - c.base) + '</span></div>' +
     (c.desc ? '<div class="cuenta__fila"><span>Descuento ' + c.desc + '%</span><span>− ' + money(c.venta - c.final) + '</span></div>' : '') +
+    '<div class="cuenta__fila cuenta__total"><span>' + (p.tipo === 'granel' ? 'Precio por kilo' : 'Precio final') + '</span><span>' + money(c.final) + '</span></div>' +
     (p.tipo === 'granel'
-      ? '<div class="cuenta__fila cuenta__total"><span>Precio de 100 g</span><span>' + money(redondear(c.final / 10)) + '</span></div>' +
-        '<div class="cuenta__fila"><span>El kilo</span><span>' + money(c.final) + '</span></div>' +
-        '<div class="cuenta__medidas">' + c.medidas.map(m => m.nombre + ': <b>' + money(m.precio) + '</b>').join(' · ') + '</div>'
-      : '<div class="cuenta__fila cuenta__total"><span>Precio final</span><span>' + money(c.final) + '</span></div>');
+      ? '<div class="cuenta__medidas">' + c.medidas.map(m => m.nombre + ': <b>' + money(m.precio) + '</b>').join(' · ') + '</div>'
+      : '');
 }
 
 /* ---------------- combos ---------------- */

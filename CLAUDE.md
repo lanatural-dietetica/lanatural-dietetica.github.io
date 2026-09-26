@@ -626,6 +626,7 @@ no desperdicie tanto lugar.
   escrito.
 - **Escritorio**: `.panel-main` llega a 1100 px, la lista va en **dos columnas**
   (`.lista-grid`) y el editor también, con el chequeo y los botones cruzando el ancho.
-- La cuenta del editor encabeza con el **precio de 100 g** (que es como está la planilla de
-  la clienta y como se ve en la tienda) y deja el kilo abajo. La lista muestra el precio por
-  100 g, no por kilo.
+- **El panel trabaja por kilo, la tienda muestra 100 g.** Se probó pasar el panel a 100 g
+  para que coincidiera con la planilla y Juani lo revirtió: ella carga los costos por kilo y
+  así es más directo. La cuenta del editor igual desglosa cada medida
+  (50 g · 100 g · 250 g · 1 kg), que es donde se controla contra la planilla.
