@@ -7013,7 +7013,7 @@
       ],
       "descuento": 5,
       "precioEspecial": null,
-      "activo": true,
+      "activo": false,
       "destacado": false,
       "orden": 3,
       "img": "assets/combo-cocina.webp",
@@ -7053,5 +7053,5 @@
       "texto": "Elegí envío o retiro en el local."
     }
   ],
-  "sello": 1790437908254
+  "sello": 1790437914639
 }
