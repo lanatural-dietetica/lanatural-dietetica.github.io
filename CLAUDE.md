@@ -590,8 +590,9 @@ frutos secos y semillas (19) · frutas deshidratadas (10) · cereales y granolas
 granos y legumbres (12) · harinas y repostería (24) · especias y condimentos (52) ·
 infusiones y hierbas (19) · chocolates y golosinas (15) · dulces y mermeladas (15) ·
 aceites y vinagres (10) · conservas y encurtidos (5) · suplementos (8).
-**Falta una foto de categoría**: `cat-frutas-secas` todavía reutiliza provisoriamente la
-imagen de Frutos secos y semillas.
+**Las 12 categorías ya tienen su foto propia** (26/09): las siete últimas llegaron el 22/09
+y Frutas deshidratadas usa `cat-frutas-secas-v2.webp`. Se borraron `cat-despensa.webp`,
+`cat-sintacc.webp` y `cat-frutas-secas.webp`, que quedaron huérfanas tras el rearmado.
 
 ## El precio de referencia es por 100 g — 2026-09-21
 `precio100Venta()` reemplazó al precio por kilo en la tarjeta, en el carrito y en la lista
